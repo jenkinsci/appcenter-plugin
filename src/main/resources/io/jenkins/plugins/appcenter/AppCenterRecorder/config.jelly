@@ -1,0 +1,24 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+
+    <f:entry title="${%API Token}" field="apiToken"
+             description="${%AppCenter API token.}">
+        <f:password/>
+    </f:entry>
+
+    <f:entry title="${%Owner Name}" field="ownerName"
+             description="${%The name of the owner.}">
+        <f:textbox/>
+    </f:entry>
+
+    <f:entry title="${%App Name}" field="appName"
+             description="${%The name of the application.}">
+        <f:textbox/>
+    </f:entry>
+
+    <f:entry title="${%Path To App}" field="pathToApp"
+             description="${%Relative path to app.}">
+        <f:textbox/>
+    </f:entry>
+
+</j:jelly>
