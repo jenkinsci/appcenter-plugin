@@ -15,6 +15,7 @@
         <java.level>8</java.level>
     </properties>
 
+    <groupId>io.jenkins.plugins</groupId>
     <artifactId>appcenter</artifactId>
     <version>0.1.0</version>
     <packaging>hpi</packaging>
