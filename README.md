@@ -1,6 +1,6 @@
 # AppCenter Plugin
 
-Jenkins plugin to upload artefacts to AppCenter. A replacement for the [HockeyApp](https://plugins.jenkins.io/hockeyapp)
+Jenkins plugin to upload artefacts to [AppCenter](https://appcenter.ms). A replacement for the [HockeyApp](https://plugins.jenkins.io/hockeyapp)
 plugin.
 
 ## Roadmap
