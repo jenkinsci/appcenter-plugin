@@ -23,3 +23,19 @@ If you would like to contribute it would be massively helpful if you followed th
 2. Create a branch from `master` referencing your issue id.
 3. Commit, commit, commit.
 4. Push your changes and file a PR.
+
+## Usage Instructions
+
+Up to date syntax for this plugin can always be found in the Jenkins Pipeline Syntax Generator. However in its 
+simplest form you can upload an artefact to AppCenter like this:
+
+```Groovy
+stage('Publish') {
+  environment {
+    APPCENTER_API_TOKEN = credentials('appcenter-api-token')
+  }
+  steps {
+    appCenter apiToken: APPCENTER_API_TOKEN, ownerName: 'owner-name', appName: 'app-name', pathToApp: 'path/to/app.apk'
+  }
+}
+```
