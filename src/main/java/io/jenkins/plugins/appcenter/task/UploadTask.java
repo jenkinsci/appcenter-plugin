@@ -23,16 +23,14 @@ import java.util.concurrent.ExecutionException;
 
 public final class UploadTask extends AppCenterTask {
 
-    private final FilePath filePath;
     private final TaskListener taskListener;
     private final String ownerName;
     private final String appName;
-    private final String pathToApp;
+    private final FilePath pathToApp;
 
-    public UploadTask(final FilePath filePath, final TaskListener taskListener, final AppCenterServiceFactory factory) {
+    public UploadTask(final TaskListener taskListener, final AppCenterServiceFactory factory) {
         super(factory);
 
-        this.filePath = filePath;
         this.taskListener = taskListener;
         this.ownerName = factory.getOwnerName();
         this.appName = factory.getAppName();
@@ -72,8 +70,7 @@ public final class UploadTask extends AppCenterTask {
         final PrintStream logger = taskListener.getLogger();
         logger.println("Uploading app to resource.");
 
-        final FilePath filePath = new FilePath(this.filePath, pathToApp);
-        final File file = new File(filePath.getRemote());
+        final File file = new File(pathToApp.getRemote());
         final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         final MultipartBody.Part body = MultipartBody.Part.createFormData("ipa", file.getName(), requestFile);
 

@@ -1,5 +1,6 @@
 package io.jenkins.plugins.appcenter.task;
 
+import hudson.FilePath;
 import hudson.util.Secret;
 import io.jenkins.plugins.appcenter.remote.AppCenterService;
 import io.jenkins.plugins.appcenter.remote.UploadService;
@@ -24,11 +25,11 @@ public class AppCenterServiceFactory implements Serializable {
     private final Secret apiToken;
     private final String ownerName;
     private final String appName;
-    private final String pathToApp;
+    private final FilePath pathToApp;
     private final String baseUrl;
 
     public AppCenterServiceFactory(@Nonnull Secret apiToken, @Nonnull String ownerName, @Nonnull String appName,
-                                   @Nonnull String pathToApp, @Nullable URL baseUrl) {
+                                   @Nonnull FilePath pathToApp, @Nullable URL baseUrl) {
         this.apiToken = apiToken;
         this.ownerName = ownerName;
         this.appName = appName;
@@ -105,7 +106,7 @@ public class AppCenterServiceFactory implements Serializable {
         return appName;
     }
 
-    public String getPathToApp() {
+    public FilePath getPathToApp() {
         return pathToApp;
     }
 }

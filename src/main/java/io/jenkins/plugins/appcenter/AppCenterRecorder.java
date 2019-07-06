@@ -100,9 +100,11 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         final PrintStream logger = taskListener.getLogger();
 
         try {
-            final AppCenterServiceFactory appCenterServiceFactory = new AppCenterServiceFactory(getApiToken(), getOwnerName(), getAppName(), getPathToApp(), getBaseUrl());
+            final FilePath remoteablePath = filePath.child(getPathToApp());
+            final AppCenterServiceFactory appCenterServiceFactory = new AppCenterServiceFactory(getApiToken(),
+                    getOwnerName(), getAppName(), remoteablePath, getBaseUrl());
 
-            return filePath.act(new UploadTask(filePath, taskListener, appCenterServiceFactory));
+            return filePath.act(new UploadTask(taskListener, appCenterServiceFactory));
         } catch (AppCenterException e) {
             logger.println(e.toString());
             return false;
