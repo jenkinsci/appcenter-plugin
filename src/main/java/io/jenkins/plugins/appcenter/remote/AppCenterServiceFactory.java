@@ -1,6 +1,5 @@
 package io.jenkins.plugins.appcenter.remote;
 
-import hudson.FilePath;
 import hudson.util.Secret;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
@@ -23,11 +22,11 @@ public class AppCenterServiceFactory implements Serializable {
     private final Secret apiToken;
     private final String ownerName;
     private final String appName;
-    private final FilePath pathToApp;
+    private final String pathToApp;
     private final String baseUrl;
 
     public AppCenterServiceFactory(@Nonnull Secret apiToken, @Nonnull String ownerName, @Nonnull String appName,
-                                   @Nonnull FilePath pathToApp, @Nullable URL baseUrl) {
+                                   @Nonnull String pathToApp, @Nullable URL baseUrl) {
         this.apiToken = apiToken;
         this.ownerName = ownerName;
         this.appName = appName;
@@ -104,7 +103,7 @@ public class AppCenterServiceFactory implements Serializable {
         return appName;
     }
 
-    public FilePath getPathToApp() {
+    public String getPathToApp() {
         return pathToApp;
     }
 }

@@ -2,6 +2,7 @@ package io.jenkins.plugins.appcenter.task;
 
 import hudson.FilePath;
 import hudson.model.TaskListener;
+import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.remote.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.remote.DestinationId;
 import io.jenkins.plugins.appcenter.remote.ReleaseDetailsUpdateRequest;
@@ -16,6 +17,7 @@ import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collections;
 import java.util.List;
@@ -29,17 +31,21 @@ public final class UploadTask extends AppCenterTask {
     private final String appName;
     private final FilePath pathToApp;
 
-    public UploadTask(final TaskListener taskListener, final AppCenterServiceFactory factory) {
+    public UploadTask(final FilePath filePath, final TaskListener taskListener, final AppCenterServiceFactory factory) {
         super(factory);
 
         this.taskListener = taskListener;
         this.ownerName = factory.getOwnerName();
         this.appName = factory.getAppName();
-        this.pathToApp = factory.getPathToApp();
+        this.pathToApp = filePath.child(factory.getPathToApp());
     }
 
     @Override
-    protected Boolean execute() throws ExecutionException, InterruptedException {
+    protected Boolean execute() throws ExecutionException, InterruptedException, AppCenterException, IOException {
+
+        if (!pathToApp.exists()) {
+            throw new AppCenterException(String.format("File not found: %s", pathToApp.getRemote()));
+        }
 
         return createUploadResource()
                 .thenCompose(releaseUploadBeginResponse -> uploadAppToResource(releaseUploadBeginResponse.upload_url, releaseUploadBeginResponse.upload_id))
