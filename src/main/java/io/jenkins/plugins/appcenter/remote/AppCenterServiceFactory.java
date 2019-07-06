@@ -1,9 +1,7 @@
-package io.jenkins.plugins.appcenter.task;
+package io.jenkins.plugins.appcenter.remote;
 
 import hudson.FilePath;
 import hudson.util.Secret;
-import io.jenkins.plugins.appcenter.remote.AppCenterService;
-import io.jenkins.plugins.appcenter.remote.UploadService;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -37,7 +35,7 @@ public class AppCenterServiceFactory implements Serializable {
         this.baseUrl = baseUrl != null ? baseUrl.toString() : APPCENTER_BASE_URL;
     }
 
-    AppCenterService createAppCenterService() {
+    public AppCenterService createAppCenterService() {
         final MoshiConverterFactory converterFactory = MoshiConverterFactory.create();
 
         final OkHttpClient.Builder builder = createHttpClientBuilder();
@@ -69,7 +67,7 @@ public class AppCenterServiceFactory implements Serializable {
         return retrofit.create(AppCenterService.class);
     }
 
-    UploadService createUploadService() {
+    public UploadService createUploadService() {
         final MoshiConverterFactory converterFactory = MoshiConverterFactory.create();
 
         final OkHttpClient.Builder builder = createHttpClientBuilder();

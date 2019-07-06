@@ -2,6 +2,7 @@ package io.jenkins.plugins.appcenter.task;
 
 import hudson.FilePath;
 import hudson.model.TaskListener;
+import io.jenkins.plugins.appcenter.remote.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.remote.DestinationId;
 import io.jenkins.plugins.appcenter.remote.ReleaseDetailsUpdateRequest;
 import io.jenkins.plugins.appcenter.remote.ReleaseDetailsUpdateResponse;
