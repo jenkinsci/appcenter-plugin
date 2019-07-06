@@ -2,7 +2,6 @@ package io.jenkins.plugins.appcenter.task;
 
 import hudson.FilePath;
 import hudson.model.TaskListener;
-import io.jenkins.plugins.appcenter.model.Upload;
 import io.jenkins.plugins.appcenter.remote.DestinationId;
 import io.jenkins.plugins.appcenter.remote.ReleaseDetailsUpdateRequest;
 import io.jenkins.plugins.appcenter.remote.ReleaseDetailsUpdateResponse;
@@ -24,12 +23,17 @@ import java.util.concurrent.ExecutionException;
 public final class UploadTask extends AppCenterTask {
 
     private final FilePath filePath;
-    private final Upload upload;
+    private final String ownerName;
+    private final String appName;
+    private final String pathToApp;
 
-    public UploadTask(final FilePath filePath, final TaskListener taskListener, final Upload upload) {
-        super(taskListener, upload);
+    public UploadTask(final FilePath filePath, final TaskListener taskListener, final AppCenterServiceFactory factory) {
+        super(taskListener, factory);
+
         this.filePath = filePath;
-        this.upload = upload;
+        this.ownerName = factory.getOwnerName();
+        this.appName = factory.getAppName();
+        this.pathToApp = factory.getPathToApp();
     }
 
     @Override
@@ -49,7 +53,7 @@ public final class UploadTask extends AppCenterTask {
         // TODO: Pass in the release_id as an optional parameter from the UI. Don't use it if  not available
         //  final ReleaseUploadBeginRequest releaseUploadBeginRequest = new ReleaseUploadBeginRequest(upload.getReleaseId());
         //  using the overloaded releaseUploadBegin method.
-        return appCenterService.releaseUploadBegin(upload.getOwnerName(), upload.getAppName())
+        return appCenterService.releaseUploadBegin(ownerName, appName)
                 .whenComplete((releaseUploadBeginResponse, throwable) -> {
                     if (throwable != null) {
                         logger.println("Upload resource unsuccessful.");
@@ -63,7 +67,7 @@ public final class UploadTask extends AppCenterTask {
     private CompletableFuture<String> uploadAppToResource(@Nonnull final String uploadUrl, @Nonnull final String uploadId) {
         logger.println("Uploading app to resource.");
 
-        final FilePath filePath = new FilePath(this.filePath, upload.getPathToApp());
+        final FilePath filePath = new FilePath(this.filePath, pathToApp);
         final File file = new File(filePath.getRemote());
         final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         final MultipartBody.Part body = MultipartBody.Part.createFormData("ipa", file.getName(), requestFile);
@@ -84,7 +88,7 @@ public final class UploadTask extends AppCenterTask {
         logger.println("Committing resource.");
 
         final ReleaseUploadEndRequest releaseUploadEndRequest = new ReleaseUploadEndRequest(Status.committed);
-        return appCenterService.releaseUploadEnd(upload.getOwnerName(), upload.getAppName(), uploadId, releaseUploadEndRequest)
+        return appCenterService.releaseUploadEnd(ownerName, appName, uploadId, releaseUploadEndRequest)
                 .whenComplete((releaseUploadBeginResponse, throwable) -> {
                     if (throwable != null) {
                         logger.println("Committing resource unsuccessful.");
@@ -95,7 +99,7 @@ public final class UploadTask extends AppCenterTask {
                 });
     }
 
-    private CompletableFuture<ReleaseDetailsUpdateResponse> distributeResource(@Nonnull final int releaseId) {
+    private CompletableFuture<ReleaseDetailsUpdateResponse> distributeResource(final int releaseId) {
         logger.println("Distributing resource.");
 
         final String releaseNotes = "";
@@ -104,7 +108,7 @@ public final class UploadTask extends AppCenterTask {
         final boolean notifyTesters = false;
         final ReleaseDetailsUpdateRequest releaseDetailsUpdateRequest = new ReleaseDetailsUpdateRequest(releaseNotes, mandatoryUpdate, destinations, null, notifyTesters);
 
-        return appCenterService.releaseDetailsUpdate(upload.getOwnerName(), upload.getAppName(), releaseId, releaseDetailsUpdateRequest)
+        return appCenterService.releaseDetailsUpdate(ownerName, appName, releaseId, releaseDetailsUpdateRequest)
                 .whenComplete((releaseUploadBeginResponse, throwable) -> {
                     if (throwable != null) {
                         logger.println("Distributing resource unsuccessful.");
