@@ -39,3 +39,6 @@ stage('Publish') {
   }
 }
 ```
+
+It may sound obvious but ensure the file you are trying to upload is available on the node that you are running the 
+plugin from.
