@@ -15,6 +15,7 @@ import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
 import java.io.File;
+import java.io.PrintStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -23,14 +24,16 @@ import java.util.concurrent.ExecutionException;
 public final class UploadTask extends AppCenterTask {
 
     private final FilePath filePath;
+    private final TaskListener taskListener;
     private final String ownerName;
     private final String appName;
     private final String pathToApp;
 
     public UploadTask(final FilePath filePath, final TaskListener taskListener, final AppCenterServiceFactory factory) {
-        super(taskListener, factory);
+        super(factory);
 
         this.filePath = filePath;
+        this.taskListener = taskListener;
         this.ownerName = factory.getOwnerName();
         this.appName = factory.getAppName();
         this.pathToApp = factory.getPathToApp();
@@ -48,6 +51,7 @@ public final class UploadTask extends AppCenterTask {
     }
 
     private CompletableFuture<ReleaseUploadBeginResponse> createUploadResource() {
+        final PrintStream logger = taskListener.getLogger();
         logger.println("Creating an upload resource.");
 
         // TODO: Pass in the release_id as an optional parameter from the UI. Don't use it if  not available
@@ -65,6 +69,7 @@ public final class UploadTask extends AppCenterTask {
     }
 
     private CompletableFuture<String> uploadAppToResource(@Nonnull final String uploadUrl, @Nonnull final String uploadId) {
+        final PrintStream logger = taskListener.getLogger();
         logger.println("Uploading app to resource.");
 
         final FilePath filePath = new FilePath(this.filePath, pathToApp);
@@ -85,6 +90,7 @@ public final class UploadTask extends AppCenterTask {
     }
 
     private CompletableFuture<ReleaseUploadEndResponse> commitUploadResource(@Nonnull final String uploadId) {
+        final PrintStream logger = taskListener.getLogger();
         logger.println("Committing resource.");
 
         final ReleaseUploadEndRequest releaseUploadEndRequest = new ReleaseUploadEndRequest(Status.committed);
@@ -100,6 +106,7 @@ public final class UploadTask extends AppCenterTask {
     }
 
     private CompletableFuture<ReleaseDetailsUpdateResponse> distributeResource(final int releaseId) {
+        final PrintStream logger = taskListener.getLogger();
         logger.println("Distributing resource.");
 
         final String releaseNotes = "";

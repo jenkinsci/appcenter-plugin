@@ -1,24 +1,20 @@
 package io.jenkins.plugins.appcenter.task;
 
-import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.remote.AppCenterService;
 import io.jenkins.plugins.appcenter.remote.UploadService;
 import jenkins.security.MasterToSlaveCallable;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.concurrent.ExecutionException;
 
 abstract class AppCenterTask extends MasterToSlaveCallable<Boolean, AppCenterException> {
 
-    final PrintStream logger;
     private final AppCenterServiceFactory appCenterServiceFactory;
     AppCenterService appCenterService;
     UploadService uploadService;
 
-    AppCenterTask(final TaskListener taskListener, final AppCenterServiceFactory appCenterServiceFactory) {
-        this.logger = taskListener.getLogger();
+    AppCenterTask(final AppCenterServiceFactory appCenterServiceFactory) {
         this.appCenterServiceFactory = appCenterServiceFactory;
     }
 
