@@ -12,8 +12,8 @@ public final class ReleaseUploadEndResponse {
     @Override
     public String toString() {
         return "ReleaseUploadEndResponse{" +
-                "release_id='" + release_id + '\'' +
-                ", release_url='" + release_url + '\'' +
-                '}';
+            "release_id='" + release_id + '\'' +
+            ", release_url='" + release_url + '\'' +
+            '}';
     }
 }

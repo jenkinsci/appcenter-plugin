@@ -10,7 +10,7 @@ public final class ReleaseUploadBeginRequest {
     @Override
     public String toString() {
         return "ReleaseUploadBeginRequest{" +
-                "release_id='" + release_id + '\'' +
-                '}';
+            "release_id='" + release_id + '\'' +
+            '}';
     }
 }
