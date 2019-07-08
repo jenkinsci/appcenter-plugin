@@ -29,6 +29,7 @@ public final class UploadTask extends AppCenterTask {
     private final TaskListener taskListener;
     private final String ownerName;
     private final String appName;
+    private final String distributionGroup;
     private final FilePath pathToApp;
 
     public UploadTask(final FilePath filePath, final TaskListener taskListener, final AppCenterServiceFactory factory) {
@@ -37,6 +38,7 @@ public final class UploadTask extends AppCenterTask {
         this.taskListener = taskListener;
         this.ownerName = factory.getOwnerName();
         this.appName = factory.getAppName();
+        this.distributionGroup = factory.getDistributionGroup();
         this.pathToApp = filePath.child(factory.getPathToApp());
     }
 
@@ -115,7 +117,7 @@ public final class UploadTask extends AppCenterTask {
 
         final String releaseNotes = "";
         final boolean mandatoryUpdate = false;
-        final List<DestinationId> destinations = Collections.singletonList(new DestinationId("Collaborators", null));
+        final List<DestinationId> destinations = Collections.singletonList(new DestinationId(distributionGroup, null));
         final boolean notifyTesters = false;
         final ReleaseDetailsUpdateRequest releaseDetailsUpdateRequest = new ReleaseDetailsUpdateRequest(releaseNotes, mandatoryUpdate, destinations, null, notifyTesters);
 
