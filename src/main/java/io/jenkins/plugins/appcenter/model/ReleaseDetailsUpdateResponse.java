@@ -1,4 +1,4 @@
-package io.jenkins.plugins.appcenter.remote;
+package io.jenkins.plugins.appcenter.model;
 
 public class ReleaseDetailsUpdateResponse {
     public final String release_notes;

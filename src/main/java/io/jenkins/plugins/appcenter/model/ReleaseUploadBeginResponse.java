@@ -1,4 +1,4 @@
-package io.jenkins.plugins.appcenter.remote;
+package io.jenkins.plugins.appcenter.model;
 
 public final class ReleaseUploadBeginResponse {
     public final String upload_id;

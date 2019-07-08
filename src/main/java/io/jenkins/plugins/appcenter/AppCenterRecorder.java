@@ -14,7 +14,7 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.Secret;
-import io.jenkins.plugins.appcenter.remote.AppCenterServiceFactory;
+import io.jenkins.plugins.appcenter.model.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.task.UploadTask;
 import io.jenkins.plugins.appcenter.validator.*;
 import jenkins.tasks.SimpleBuildStep;

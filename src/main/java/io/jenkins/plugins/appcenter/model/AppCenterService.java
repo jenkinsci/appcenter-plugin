@@ -1,4 +1,4 @@
-package io.jenkins.plugins.appcenter.remote;
+package io.jenkins.plugins.appcenter.model;
 
 import retrofit2.http.Body;
 import retrofit2.http.PATCH;

@@ -1,9 +1,9 @@
 package io.jenkins.plugins.appcenter.task;
 
 import io.jenkins.plugins.appcenter.AppCenterException;
-import io.jenkins.plugins.appcenter.remote.AppCenterService;
-import io.jenkins.plugins.appcenter.remote.AppCenterServiceFactory;
-import io.jenkins.plugins.appcenter.remote.UploadService;
+import io.jenkins.plugins.appcenter.model.AppCenterService;
+import io.jenkins.plugins.appcenter.model.AppCenterServiceFactory;
+import io.jenkins.plugins.appcenter.model.UploadService;
 import jenkins.security.MasterToSlaveCallable;
 
 import java.io.IOException;
