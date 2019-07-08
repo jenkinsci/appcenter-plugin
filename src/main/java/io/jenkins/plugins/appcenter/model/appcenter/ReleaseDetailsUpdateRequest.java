@@ -1,4 +1,4 @@
-package io.jenkins.plugins.appcenter.model.remote;
+package io.jenkins.plugins.appcenter.model.appcenter;
 
 import java.util.List;
 

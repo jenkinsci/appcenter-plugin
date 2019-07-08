@@ -1,4 +1,4 @@
-package io.jenkins.plugins.appcenter.model.remote;
+package io.jenkins.plugins.appcenter.model.appcenter;
 
 public final class ReleaseUploadEndResponse {
     public final int release_id;
