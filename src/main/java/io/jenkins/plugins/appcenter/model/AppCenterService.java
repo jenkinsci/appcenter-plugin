@@ -1,5 +1,11 @@
 package io.jenkins.plugins.appcenter.model;
 
+import io.jenkins.plugins.appcenter.model.remote.ReleaseDetailsUpdateRequest;
+import io.jenkins.plugins.appcenter.model.remote.ReleaseDetailsUpdateResponse;
+import io.jenkins.plugins.appcenter.model.remote.ReleaseUploadBeginRequest;
+import io.jenkins.plugins.appcenter.model.remote.ReleaseUploadBeginResponse;
+import io.jenkins.plugins.appcenter.model.remote.ReleaseUploadEndRequest;
+import io.jenkins.plugins.appcenter.model.remote.ReleaseUploadEndResponse;
 import retrofit2.http.Body;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
