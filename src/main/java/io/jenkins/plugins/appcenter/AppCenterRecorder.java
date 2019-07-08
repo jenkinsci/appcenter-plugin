@@ -14,7 +14,7 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.Secret;
-import io.jenkins.plugins.appcenter.model.Upload;
+import io.jenkins.plugins.appcenter.remote.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.task.UploadTask;
 import io.jenkins.plugins.appcenter.validator.ApiTokenValidator;
 import io.jenkins.plugins.appcenter.validator.AppNameValidator;
@@ -100,8 +100,11 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         final PrintStream logger = taskListener.getLogger();
 
         try {
-            final Upload upload = new Upload(getApiToken(), getOwnerName(), getAppName(), getPathToApp(), getBaseUrl());
-            return filePath.act(new UploadTask(filePath, taskListener, upload));
+            final AppCenterServiceFactory appCenterServiceFactory = new AppCenterServiceFactory(
+                    getApiToken(), getOwnerName(), getAppName(), getPathToApp(), getBaseUrl()
+            );
+
+            return filePath.act(new UploadTask(filePath, taskListener, appCenterServiceFactory));
         } catch (AppCenterException e) {
             logger.println(e.toString());
             return false;
