@@ -1,5 +1,6 @@
 package io.jenkins.plugins.appcenter;
 
+import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -25,7 +26,7 @@ import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
-
+import org.apache.commons.collections.iterators.ArrayIterator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -100,11 +101,26 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         final PrintStream logger = taskListener.getLogger();
 
         try {
-            final AppCenterServiceFactory appCenterServiceFactory = new AppCenterServiceFactory(
-                    getApiToken(), getOwnerName(), getAppName(), getPathToApp(), getBaseUrl()
-            );
-
-            return filePath.act(new UploadTask(filePath, taskListener, appCenterServiceFactory));
+        	EnvVars vars = run.getEnvironment(taskListener);
+        	String pathParsed = vars.expand(getPathToApp());
+        	logger.println("Path is " + pathParsed);
+        	FilePath localFiles[] = filePath.list(pathParsed);
+        	if(localFiles.length == 0) {
+        		logger.println("No file found to upload: " + pathParsed);
+        		return false;
+        	}
+        	boolean result = true;
+        	ArrayIterator localFilesIterator = new ArrayIterator(localFiles);
+        	while(localFilesIterator.hasNext()) {
+        		FilePath localFile = (FilePath) localFilesIterator.next();
+        		logger.println(localFile.getRemote());
+        		final AppCenterServiceFactory appCenterServiceFactory = new AppCenterServiceFactory(
+                        getApiToken(), getOwnerName(), getAppName(), localFile.getRemote(), getBaseUrl()
+                );
+        		result &= filePath.act(new UploadTask(filePath, taskListener, appCenterServiceFactory));
+        	}
+            
+            return result;
         } catch (AppCenterException e) {
             logger.println(e.toString());
             return false;
