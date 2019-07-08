@@ -1,6 +1,5 @@
 package io.jenkins.plugins.appcenter;
 
-import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -15,7 +14,7 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.Secret;
-import io.jenkins.plugins.appcenter.model.Upload;
+import io.jenkins.plugins.appcenter.remote.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.task.UploadTask;
 import io.jenkins.plugins.appcenter.validator.ApiTokenValidator;
 import io.jenkins.plugins.appcenter.validator.AppNameValidator;
@@ -26,7 +25,6 @@ import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
-import org.apache.commons.collections.iterators.ArrayIterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -102,24 +100,11 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         final PrintStream logger = taskListener.getLogger();
 
         try {
-        	EnvVars vars = run.getEnvironment(taskListener);
-        	String pathParsed = vars.expand(getPathToApp());
-        	logger.println("Path is " + pathParsed);
-        	FilePath localFiles[] = filePath.list(pathParsed);
-        	if(localFiles.length == 0) {
-        		logger.println("No file found to upload in: " + pathParsed);
-        		return false;
-        	}
-        	
-        	boolean result = true;
-        	ArrayIterator localFilesIterator = new ArrayIterator(localFiles);
-        	while (localFilesIterator.hasNext()) {
-        		FilePath localFile = (FilePath) localFilesIterator.next();
-        		logger.println(localFile.getRemote());
-        		final Upload upload = new Upload(getApiToken(), getOwnerName(), getAppName(), localFile.getRemote(), getBaseUrl());
-                result &= filePath.act(new UploadTask(filePath, taskListener, upload));
-        	}
-        	return result;
+            final AppCenterServiceFactory appCenterServiceFactory = new AppCenterServiceFactory(
+                    getApiToken(), getOwnerName(), getAppName(), getPathToApp(), getBaseUrl()
+            );
+
+            return filePath.act(new UploadTask(filePath, taskListener, appCenterServiceFactory));
         } catch (AppCenterException e) {
             logger.println(e.toString());
             return false;
