@@ -1,4 +1,4 @@
-package io.jenkins.plugins.appcenter.model;
+package io.jenkins.plugins.appcenter.api;
 
 import hudson.util.Secret;
 import okhttp3.Headers;

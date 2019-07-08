@@ -3,7 +3,7 @@ package io.jenkins.plugins.appcenter.task;
 import hudson.FilePath;
 import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
-import io.jenkins.plugins.appcenter.model.AppCenterServiceFactory;
+import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.model.remote.DestinationId;
 import io.jenkins.plugins.appcenter.model.remote.ReleaseDetailsUpdateRequest;
 import io.jenkins.plugins.appcenter.model.remote.ReleaseDetailsUpdateResponse;

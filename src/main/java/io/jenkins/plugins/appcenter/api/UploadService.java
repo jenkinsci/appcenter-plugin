@@ -1,4 +1,4 @@
-package io.jenkins.plugins.appcenter.model;
+package io.jenkins.plugins.appcenter.api;
 
 import okhttp3.MultipartBody;
 import retrofit2.http.Multipart;

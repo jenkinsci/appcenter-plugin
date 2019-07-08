@@ -1,4 +1,4 @@
-package io.jenkins.plugins.appcenter.model;
+package io.jenkins.plugins.appcenter.api;
 
 import io.jenkins.plugins.appcenter.model.remote.ReleaseDetailsUpdateRequest;
 import io.jenkins.plugins.appcenter.model.remote.ReleaseDetailsUpdateResponse;
