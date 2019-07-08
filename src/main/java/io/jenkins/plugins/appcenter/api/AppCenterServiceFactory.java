@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.net.URL;
 
-public class AppCenterServiceFactory implements Serializable {
+public final class AppCenterServiceFactory implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -45,14 +45,14 @@ public class AppCenterServiceFactory implements Serializable {
             final Request request = chain.request();
 
             final Headers newHeaders = request.headers().newBuilder()
-                    .add("Accept", "application/json")
-                    .add("Content-Type", "application/json")
-                    .add("X-API-Token", Secret.toString(apiToken))
-                    .build();
+                .add("Accept", "application/json")
+                .add("Content-Type", "application/json")
+                .add("X-API-Token", Secret.toString(apiToken))
+                .build();
 
             final Request newRequest = request.newBuilder()
-                    .headers(newHeaders)
-                    .build();
+                .headers(newHeaders)
+                .build();
 
             return chain.proceed(newRequest);
         });
@@ -60,10 +60,10 @@ public class AppCenterServiceFactory implements Serializable {
         final OkHttpClient okHttpClient = builder.build();
 
         final Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .client(okHttpClient)
-                .addConverterFactory(converterFactory)
-                .build();
+            .baseUrl(baseUrl)
+            .client(okHttpClient)
+            .addConverterFactory(converterFactory)
+            .build();
 
         return retrofit.create(AppCenterService.class);
     }
@@ -76,10 +76,10 @@ public class AppCenterServiceFactory implements Serializable {
         final OkHttpClient okHttpClient = builder.build();
 
         final Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .client(okHttpClient)
-                .addConverterFactory(converterFactory)
-                .build();
+            .baseUrl(baseUrl)
+            .client(okHttpClient)
+            .addConverterFactory(converterFactory)
+            .build();
 
         return retrofit.create(UploadService.class);
     }
@@ -90,7 +90,7 @@ public class AppCenterServiceFactory implements Serializable {
         logging.setLevel(HttpLoggingInterceptor.Level.HEADERS);
 
         return new OkHttpClient.Builder()
-                .addInterceptor(logging);
+            .addInterceptor(logging);
     }
 
     public Secret getApiToken() {
