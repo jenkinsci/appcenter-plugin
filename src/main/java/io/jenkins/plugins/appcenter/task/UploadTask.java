@@ -11,6 +11,7 @@ import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadBeginResponse;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadEndRequest;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadEndResponse;
 import io.jenkins.plugins.appcenter.model.appcenter.Status;
+import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -19,34 +20,31 @@ import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public final class UploadTask extends AppCenterTask {
 
+    private final FilePath filePath;
     private final TaskListener taskListener;
-    private final String ownerName;
-    private final String appName;
-    private final String distributionGroup;
-    private final FilePath pathToApp;
+    private final UploadRequest request;
 
-    public UploadTask(final FilePath filePath, final TaskListener taskListener, final AppCenterServiceFactory factory) {
+    public UploadTask(final FilePath filePath, final TaskListener taskListener, final AppCenterServiceFactory factory, final UploadRequest request) {
         super(factory);
 
+        this.filePath = filePath;
         this.taskListener = taskListener;
-        this.ownerName = factory.getOwnerName();
-        this.appName = factory.getAppName();
-        this.distributionGroup = factory.getDistributionGroup();
-        this.pathToApp = filePath.child(factory.getPathToApp());
+        this.request = request;
     }
 
     @Override
     protected Boolean execute() throws ExecutionException, InterruptedException, AppCenterException, IOException {
 
-        if (!pathToApp.exists()) {
-            throw new AppCenterException(String.format("File not found: %s", pathToApp.getRemote()));
+        final FilePath remotablePath = filePath.child(request.pathToApp);
+        if (!remotablePath.exists()) {
+            throw new AppCenterException(String.format("File not found: %s", request.pathToApp));
         }
 
         return createUploadResource()
@@ -64,7 +62,7 @@ public final class UploadTask extends AppCenterTask {
         // TODO: Pass in the release_id as an optional parameter from the UI. Don't use it if  not available
         //  final ReleaseUploadBeginRequest releaseUploadBeginRequest = new ReleaseUploadBeginRequest(upload.getReleaseId());
         //  using the overloaded releaseUploadBegin method.
-        return appCenterService.releaseUploadBegin(ownerName, appName)
+        return appCenterService.releaseUploadBegin(request.ownerName, request.appName)
             .whenComplete((releaseUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
                     logger.println("Upload resource unsuccessful.");
@@ -79,7 +77,7 @@ public final class UploadTask extends AppCenterTask {
         final PrintStream logger = taskListener.getLogger();
         logger.println("Uploading app to resource.");
 
-        final File file = new File(pathToApp.getRemote());
+        final File file = new File(filePath.child(request.pathToApp).getRemote());
         final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         final MultipartBody.Part body = MultipartBody.Part.createFormData("ipa", file.getName(), requestFile);
 
@@ -100,7 +98,7 @@ public final class UploadTask extends AppCenterTask {
         logger.println("Committing resource.");
 
         final ReleaseUploadEndRequest releaseUploadEndRequest = new ReleaseUploadEndRequest(Status.committed);
-        return appCenterService.releaseUploadEnd(ownerName, appName, uploadId, releaseUploadEndRequest)
+        return appCenterService.releaseUploadEnd(request.ownerName, request.appName, uploadId, releaseUploadEndRequest)
             .whenComplete((releaseUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
                     logger.println("Committing resource unsuccessful.");
@@ -117,11 +115,15 @@ public final class UploadTask extends AppCenterTask {
 
         final String releaseNotes = "";
         final boolean mandatoryUpdate = false;
-        final List<DestinationId> destinations = Collections.singletonList(new DestinationId(distributionGroup, null));
+        final List<DestinationId> destinations = request.destinationGroups
+            .stream()
+            .map(name -> new DestinationId(name, null))
+            .collect(Collectors.toList());
         final boolean notifyTesters = false;
         final ReleaseDetailsUpdateRequest releaseDetailsUpdateRequest = new ReleaseDetailsUpdateRequest(releaseNotes, mandatoryUpdate, destinations, null, notifyTesters);
 
-        return appCenterService.releaseDetailsUpdate(ownerName, appName, releaseId, releaseDetailsUpdateRequest)
+        return appCenterService.releaseDetailsUpdate(request.ownerName, request.appName, releaseId,
+            releaseDetailsUpdateRequest)
             .whenComplete((releaseUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
                     logger.println("Distributing resource unsuccessful.");

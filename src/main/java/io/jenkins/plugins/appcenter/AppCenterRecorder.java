@@ -16,7 +16,13 @@ import hudson.util.FormValidation;
 import hudson.util.Secret;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.task.UploadTask;
-import io.jenkins.plugins.appcenter.validator.*;
+import io.jenkins.plugins.appcenter.task.request.UploadRequest;
+import io.jenkins.plugins.appcenter.validator.ApiTokenValidator;
+import io.jenkins.plugins.appcenter.validator.AppNameValidator;
+import io.jenkins.plugins.appcenter.validator.DistributionGroupValidator;
+import io.jenkins.plugins.appcenter.validator.PathToAppValidator;
+import io.jenkins.plugins.appcenter.validator.UsernameValidator;
+import io.jenkins.plugins.appcenter.validator.Validator;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -27,6 +33,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
+import java.util.Collections;
 
 @SuppressWarnings("unused")
 public final class AppCenterRecorder extends Recorder implements SimpleBuildStep {
@@ -105,11 +112,15 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         final PrintStream logger = taskListener.getLogger();
 
         try {
-            final AppCenterServiceFactory appCenterServiceFactory = new AppCenterServiceFactory(
-                    getApiToken(), getOwnerName(), getAppName(), getDistributionGroup(), getPathToApp(), getBaseUrl()
+            final AppCenterServiceFactory appCenterServiceFactory = new AppCenterServiceFactory(getApiToken(), getBaseUrl());
+            final UploadRequest uploadRequest = new UploadRequest(
+                getOwnerName(),
+                getAppName(),
+                getPathToApp(),
+                Collections.singletonList(getDistributionGroup())
             );
 
-            return filePath.act(new UploadTask(filePath, taskListener, appCenterServiceFactory));
+            return filePath.act(new UploadTask(filePath, taskListener, appCenterServiceFactory, uploadRequest));
         } catch (AppCenterException e) {
             logger.println(e.toString());
             return false;
