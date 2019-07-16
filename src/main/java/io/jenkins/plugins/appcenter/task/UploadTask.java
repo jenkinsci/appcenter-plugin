@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class UploadTask extends AppCenterTask {
 
@@ -115,8 +116,8 @@ public final class UploadTask extends AppCenterTask {
 
         final String releaseNotes = "";
         final boolean mandatoryUpdate = false;
-        final List<DestinationId> destinations = request.destinationGroups
-            .stream()
+        final List<DestinationId> destinations = Stream.of(request.destinationGroups.split(","))
+            .map(String::trim)
             .map(name -> new DestinationId(name, null))
             .collect(Collectors.toList());
         final boolean notifyTesters = false;

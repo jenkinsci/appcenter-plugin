@@ -33,7 +33,6 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
-import java.util.Collections;
 
 @SuppressWarnings("unused")
 public final class AppCenterRecorder extends Recorder implements SimpleBuildStep {
@@ -48,7 +47,7 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     private final String appName;
 
     @Nonnull
-    private final String distributionGroup;
+    private final String distributionGroups;
 
     @Nonnull
     private final String pathToApp;
@@ -57,11 +56,11 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     private URL baseUrl;
 
     @DataBoundConstructor
-    public AppCenterRecorder(@Nullable String apiToken, @Nullable String ownerName, @Nullable String appName, @Nullable String distributionGroup, @Nullable String pathToApp) {
+    public AppCenterRecorder(@Nullable String apiToken, @Nullable String ownerName, @Nullable String appName, @Nullable String distributionGroups, @Nullable String pathToApp) {
         this.apiToken = Secret.fromString(apiToken);
         this.ownerName = Util.fixNull(ownerName);
         this.appName = Util.fixNull(appName);
-        this.distributionGroup = Util.fixNull(distributionGroup);
+        this.distributionGroups = Util.fixNull(distributionGroups);
         this.pathToApp = Util.fixNull(pathToApp);
     }
 
@@ -81,8 +80,8 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     }
 
     @Nonnull
-    public String getDistributionGroup() {
-        return distributionGroup;
+    public String getDistributionGroups() {
+        return distributionGroups;
     }
 
     @Nonnull
@@ -117,7 +116,7 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
                 getOwnerName(),
                 getAppName(),
                 getPathToApp(),
-                Collections.singletonList(getDistributionGroup())
+                getDistributionGroups()
             );
 
             return filePath.act(new UploadTask(filePath, taskListener, appCenterServiceFactory, uploadRequest));

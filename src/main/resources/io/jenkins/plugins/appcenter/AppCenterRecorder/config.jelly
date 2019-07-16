@@ -21,7 +21,7 @@
         <f:textbox/>
     </f:entry>
 
-    <f:entry title="${%Distribution Group}" field="distributionGroup"
+    <f:entry title="${%Distribution Groups}" field="distributionGroups"
              description="${%Comma separated list of distribution groups.}">
         <f:textbox/>
     </f:entry>
