@@ -22,14 +22,16 @@ public class AppCenterServiceFactory implements Serializable {
     private final Secret apiToken;
     private final String ownerName;
     private final String appName;
+    private final String distributionGroup;
     private final String pathToApp;
     private final String baseUrl;
 
     public AppCenterServiceFactory(@Nonnull Secret apiToken, @Nonnull String ownerName, @Nonnull String appName,
-                                   @Nonnull String pathToApp, @Nullable URL baseUrl) {
+                                   @Nonnull String distributionGroup, @Nonnull String pathToApp, @Nullable URL baseUrl) {
         this.apiToken = apiToken;
         this.ownerName = ownerName;
         this.appName = appName;
+        this.distributionGroup = distributionGroup;
         this.pathToApp = pathToApp;
         this.baseUrl = baseUrl != null ? baseUrl.toString() : APPCENTER_BASE_URL;
     }
@@ -101,6 +103,10 @@ public class AppCenterServiceFactory implements Serializable {
 
     public String getAppName() {
         return appName;
+    }
+
+    public String getDistributionGroup() {
+        return distributionGroup;
     }
 
     public String getPathToApp() {
