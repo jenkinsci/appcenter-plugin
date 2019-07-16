@@ -146,7 +146,6 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
                 return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_missingOwnerName());
             }
 
-            // TODO proper validator, every non-empty string should be valid?
             final Validator validator = new UsernameValidator();
 
             if (!validator.isValid(value)) {
