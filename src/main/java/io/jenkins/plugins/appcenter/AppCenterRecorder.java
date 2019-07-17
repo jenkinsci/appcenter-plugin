@@ -19,7 +19,7 @@ import io.jenkins.plugins.appcenter.task.UploadTask;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import io.jenkins.plugins.appcenter.validator.ApiTokenValidator;
 import io.jenkins.plugins.appcenter.validator.AppNameValidator;
-import io.jenkins.plugins.appcenter.validator.DistributionGroupValidator;
+import io.jenkins.plugins.appcenter.validator.DistributionGroupsValidator;
 import io.jenkins.plugins.appcenter.validator.PathToAppValidator;
 import io.jenkins.plugins.appcenter.validator.UsernameValidator;
 import io.jenkins.plugins.appcenter.validator.Validator;
@@ -186,7 +186,7 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
                 return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_missingDistributionGroup());
             }
 
-            final Validator validator = new DistributionGroupValidator();
+            final Validator validator = new DistributionGroupsValidator();
 
             if (!validator.isValid(value)) {
                 return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_invalidDistributionGroup());

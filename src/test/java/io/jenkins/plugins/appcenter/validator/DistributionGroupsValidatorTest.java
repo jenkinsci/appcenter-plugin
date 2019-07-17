@@ -5,13 +5,13 @@ import org.junit.Test;
 
 import static com.google.common.truth.Truth.assertThat;
 
-public class DistributionGroupValidatorTest {
+public class DistributionGroupsValidatorTest {
 
     private Validator validator;
 
     @Before
     public void setUp() {
-        validator = new DistributionGroupValidator();
+        validator = new DistributionGroupsValidator();
     }
 
     @Test
