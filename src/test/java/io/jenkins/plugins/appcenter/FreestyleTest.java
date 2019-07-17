@@ -40,7 +40,7 @@ public class FreestyleTest {
         freeStyleProject = jenkinsRule.createFreeStyleProject();
         freeStyleProject.getBuildersList().add(new TestBuilder() {
             public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
-                    throws InterruptedException, IOException {
+                throws InterruptedException, IOException {
                 Objects.requireNonNull(build.getWorkspace()).child("path/to/app.apk").write("little tiny robots", "UTF-8");
                 return true;
             }
@@ -83,12 +83,12 @@ public class FreestyleTest {
     public void should_SetBuildResultFailure_When_UploadApp_Returns_500() throws Exception {
         // Given
         mockWebServer.enqueue(new MockResponse().setResponseCode(201).setBody("{\n" +
-                "  \"upload_id\": \"string\",\n" +
-                "  \"upload_url\": \"" + mockWebServer.url("/").toString() + "\",\n" +
-                "  \"asset_id\": \"string\",\n" +
-                "  \"asset_domain\": \"string\",\n" +
-                "  \"asset_token\": \"string\"\n" +
-                "}"));
+            "  \"upload_id\": \"string\",\n" +
+            "  \"upload_url\": \"" + mockWebServer.url("/").toString() + "\",\n" +
+            "  \"asset_id\": \"string\",\n" +
+            "  \"asset_domain\": \"string\",\n" +
+            "  \"asset_token\": \"string\"\n" +
+            "}"));
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));
 
         final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
@@ -110,12 +110,12 @@ public class FreestyleTest {
     public void should_SetBuildResultFailure_When_ReleaseUploadEnd_Returns_400() throws Exception {
         // Given
         mockWebServer.enqueue(new MockResponse().setResponseCode(201).setBody("{\n" +
-                "  \"upload_id\": \"string\",\n" +
-                "  \"upload_url\": \"" + mockWebServer.url("/").toString() + "\",\n" +
-                "  \"asset_id\": \"string\",\n" +
-                "  \"asset_domain\": \"string\",\n" +
-                "  \"asset_token\": \"string\"\n" +
-                "}"));
+            "  \"upload_id\": \"string\",\n" +
+            "  \"upload_url\": \"" + mockWebServer.url("/").toString() + "\",\n" +
+            "  \"asset_id\": \"string\",\n" +
+            "  \"asset_domain\": \"string\",\n" +
+            "  \"asset_token\": \"string\"\n" +
+            "}"));
         mockWebServer.enqueue(new MockResponse().setResponseCode(200));
         mockWebServer.enqueue(new MockResponse().setResponseCode(400));
 
@@ -140,17 +140,17 @@ public class FreestyleTest {
     public void should_SetBuildResultFailure_When_ReleaseDetailsUpdate_Returns_400() throws Exception {
         // Given
         mockWebServer.enqueue(new MockResponse().setResponseCode(201).setBody("{\n" +
-                "  \"upload_id\": \"string\",\n" +
-                "  \"upload_url\": \"" + mockWebServer.url("/").toString() + "\",\n" +
-                "  \"asset_id\": \"string\",\n" +
-                "  \"asset_domain\": \"string\",\n" +
-                "  \"asset_token\": \"string\"\n" +
-                "}"));
+            "  \"upload_id\": \"string\",\n" +
+            "  \"upload_url\": \"" + mockWebServer.url("/").toString() + "\",\n" +
+            "  \"asset_id\": \"string\",\n" +
+            "  \"asset_domain\": \"string\",\n" +
+            "  \"asset_token\": \"string\"\n" +
+            "}"));
         mockWebServer.enqueue(new MockResponse().setResponseCode(200));
         mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
-                "  \"release_id\": 0,\n" +
-                "  \"release_url\": \"string\"\n" +
-                "}"));
+            "  \"release_id\": 0,\n" +
+            "  \"release_url\": \"string\"\n" +
+            "}"));
         mockWebServer.enqueue(new MockResponse().setResponseCode(400));
 
         final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
@@ -176,20 +176,20 @@ public class FreestyleTest {
     public void should_SetBuildResultSuccess_When_AppCenterAcceptsAllRequests() throws Exception {
         // Given
         mockWebServer.enqueue(new MockResponse().setResponseCode(201).setBody("{\n" +
-                "  \"upload_id\": \"string\",\n" +
-                "  \"upload_url\": \"" + mockWebServer.url("/").toString() + "\",\n" +
-                "  \"asset_id\": \"string\",\n" +
-                "  \"asset_domain\": \"string\",\n" +
-                "  \"asset_token\": \"string\"\n" +
-                "}"));
+            "  \"upload_id\": \"string\",\n" +
+            "  \"upload_url\": \"" + mockWebServer.url("/").toString() + "\",\n" +
+            "  \"asset_id\": \"string\",\n" +
+            "  \"asset_domain\": \"string\",\n" +
+            "  \"asset_token\": \"string\"\n" +
+            "}"));
         mockWebServer.enqueue(new MockResponse().setResponseCode(200));
         mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
-                "  \"release_id\": 0,\n" +
-                "  \"release_url\": \"string\"\n" +
-                "}"));
+            "  \"release_id\": 0,\n" +
+            "  \"release_url\": \"string\"\n" +
+            "}"));
         mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
-                "  \"release_notes\": \"string\"\n" +
-                "}"));
+            "  \"release_notes\": \"string\"\n" +
+            "}"));
 
         final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
         appCenterRecorder.setBaseUrl(mockWebServer.url("/").url());
