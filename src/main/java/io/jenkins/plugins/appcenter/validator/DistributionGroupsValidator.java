@@ -8,7 +8,7 @@ public final class DistributionGroupsValidator extends Validator {
     @Nonnull
     @Override
     protected Predicate<String> predicate() {
-        return value -> !value.trim().isEmpty();
+        return value -> !value.replace(",", "").trim().isEmpty();
     }
 
 }

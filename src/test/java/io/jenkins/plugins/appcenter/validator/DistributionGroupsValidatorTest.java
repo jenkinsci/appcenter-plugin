@@ -15,7 +15,7 @@ public class DistributionGroupsValidatorTest {
     }
 
     @Test
-    public void should_ReturnTrue_When_DistributionGroupContainsAlphanumericCharacters() {
+    public void should_ReturnTrue_When_DistributionGroupsContainsAlphanumericCharacters() {
         // Given
         final String value = "Collaborators";
 
@@ -27,7 +27,19 @@ public class DistributionGroupsValidatorTest {
     }
 
     @Test
-    public void should_ReturnTrue_When_DistributionGroupContainsComplexCharacters() {
+    public void should_ReturnTrue_When_DistributionGroupsContainsMultipleGroups() {
+        // Given
+        final String value = "Collaborators, internal,beta-testers ";
+
+        // When
+        final boolean result = validator.isValid(value);
+
+        // Then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void should_ReturnTrue_When_DistributionGroupsContainsComplexCharacters() {
         // Given
         final String value = "Internal test group 5 漢字 !";
 
@@ -39,9 +51,21 @@ public class DistributionGroupsValidatorTest {
     }
 
     @Test
-    public void should_ReturnFalse_When_DistributionGroupIsEmpty() {
+    public void should_ReturnFalse_When_DistributionsGroupIsEmpty() {
         // Given
         final String value = "  ";
+
+        // When
+        final boolean result = validator.isValid(value);
+
+        // Then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    public void should_ReturnFalse_When_DistributionsGroupContainsOnlySeparators() {
+        // Given
+        final String value = " ,,, ,,  ,,,    ,,,,   , , ,";
 
         // When
         final boolean result = validator.isValid(value);
