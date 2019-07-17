@@ -94,6 +94,10 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         return baseUrl;
     }
 
+    /**
+     * Only meant for testing as we need to override the default base url to send requests to our mock web server for
+     * tests.
+     */
     public void setBaseUrl(@Nullable URL baseUrl) {
         this.baseUrl = baseUrl;
     }
