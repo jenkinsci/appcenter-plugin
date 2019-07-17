@@ -35,7 +35,11 @@ stage('Publish') {
     APPCENTER_API_TOKEN = credentials('appcenter-api-token')
   }
   steps {
-    appCenter apiToken: APPCENTER_API_TOKEN, ownerName: 'owner-name', appName: 'app-name', pathToApp: 'path/to/app.apk'
+    appCenter apiToken: APPCENTER_API_TOKEN,
+            ownerName: 'owner-name',
+            appName: 'app-name',
+            pathToApp: 'path/to/app.apk',
+            distributionGroup: 'Collaborators'
   }
 }
 ```
