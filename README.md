@@ -39,7 +39,7 @@ stage('Publish') {
             ownerName: 'owner-name',
             appName: 'app-name',
             pathToApp: 'path/to/app.apk',
-            distributionGroup: 'Collaborators'
+            distributionGroups: 'Collaborators'
   }
 }
 ```

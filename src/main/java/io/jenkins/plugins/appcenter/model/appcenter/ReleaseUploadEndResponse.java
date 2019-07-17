@@ -1,4 +1,4 @@
-package io.jenkins.plugins.appcenter.remote;
+package io.jenkins.plugins.appcenter.model.appcenter;
 
 public final class ReleaseUploadEndResponse {
     public final int release_id;
@@ -12,8 +12,8 @@ public final class ReleaseUploadEndResponse {
     @Override
     public String toString() {
         return "ReleaseUploadEndResponse{" +
-                "release_id='" + release_id + '\'' +
-                ", release_url='" + release_url + '\'' +
-                '}';
+            "release_id='" + release_id + '\'' +
+            ", release_url='" + release_url + '\'' +
+            '}';
     }
 }

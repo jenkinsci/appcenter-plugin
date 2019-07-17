@@ -1,8 +1,8 @@
-package io.jenkins.plugins.appcenter.remote;
+package io.jenkins.plugins.appcenter.model.appcenter;
 
 import java.util.List;
 
-public class ReleaseDetailsUpdateRequest {
+public final class ReleaseDetailsUpdateRequest {
     public final String release_notes;
     public final boolean mandatory_update;
     public final List<DestinationId> destinations;
@@ -20,11 +20,11 @@ public class ReleaseDetailsUpdateRequest {
     @Override
     public String toString() {
         return "ReleaseDetailsUpdateRequest{" +
-                "release_notes='" + release_notes + '\'' +
-                ", mandatory_update=" + mandatory_update +
-                ", destinations=" + destinations +
-                ", build=" + build +
-                ", notify_testers=" + notify_testers +
-                '}';
+            "release_notes='" + release_notes + '\'' +
+            ", mandatory_update=" + mandatory_update +
+            ", destinations=" + destinations +
+            ", build=" + build +
+            ", notify_testers=" + notify_testers +
+            '}';
     }
 }

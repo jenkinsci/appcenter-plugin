@@ -1,6 +1,6 @@
-package io.jenkins.plugins.appcenter.remote;
+package io.jenkins.plugins.appcenter.model.appcenter;
 
-public class DestinationId {
+public final class DestinationId {
     public final String name;
     public final String id;
 
@@ -12,8 +12,8 @@ public class DestinationId {
     @Override
     public String toString() {
         return "DestinationId{" +
-                "name='" + name + '\'' +
-                ", id='" + id + '\'' +
-                '}';
+            "name='" + name + '\'' +
+            ", id='" + id + '\'' +
+            '}';
     }
 }

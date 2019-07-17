@@ -1,6 +1,6 @@
-package io.jenkins.plugins.appcenter.remote;
+package io.jenkins.plugins.appcenter.model.appcenter;
 
-public class ReleaseDetailsUpdateResponse {
+public final class ReleaseDetailsUpdateResponse {
     public final String release_notes;
 
     public ReleaseDetailsUpdateResponse(String releaseNotes) {
@@ -10,7 +10,7 @@ public class ReleaseDetailsUpdateResponse {
     @Override
     public String toString() {
         return "ReleaseDetailsUpdateResponse{" +
-                "release_notes='" + release_notes + '\'' +
-                '}';
+            "release_notes='" + release_notes + '\'' +
+            '}';
     }
 }

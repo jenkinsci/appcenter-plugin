@@ -1,4 +1,4 @@
-package io.jenkins.plugins.appcenter.remote;
+package io.jenkins.plugins.appcenter.model.appcenter;
 
 public final class ReleaseUploadBeginRequest {
     public final int release_id;
@@ -10,7 +10,7 @@ public final class ReleaseUploadBeginRequest {
     @Override
     public String toString() {
         return "ReleaseUploadBeginRequest{" +
-                "release_id='" + release_id + '\'' +
-                '}';
+            "release_id='" + release_id + '\'' +
+            '}';
     }
 }

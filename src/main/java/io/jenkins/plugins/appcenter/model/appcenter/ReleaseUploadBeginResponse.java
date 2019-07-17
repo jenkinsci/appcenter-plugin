@@ -1,4 +1,4 @@
-package io.jenkins.plugins.appcenter.remote;
+package io.jenkins.plugins.appcenter.model.appcenter;
 
 public final class ReleaseUploadBeginResponse {
     public final String upload_id;
@@ -18,11 +18,11 @@ public final class ReleaseUploadBeginResponse {
     @Override
     public String toString() {
         return "ReleaseUploadBeginResponse{" +
-                "upload_id='" + upload_id + '\'' +
-                ", upload_url='" + upload_url + '\'' +
-                ", asset_id='" + asset_id + '\'' +
-                ", asset_domain='" + asset_domain + '\'' +
-                ", asset_token='" + asset_token + '\'' +
-                '}';
+            "upload_id='" + upload_id + '\'' +
+            ", upload_url='" + upload_url + '\'' +
+            ", asset_id='" + asset_id + '\'' +
+            ", asset_domain='" + asset_domain + '\'' +
+            ", asset_token='" + asset_token + '\'' +
+            '}';
     }
 }

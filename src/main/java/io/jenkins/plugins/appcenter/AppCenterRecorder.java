@@ -14,9 +14,15 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.Secret;
-import io.jenkins.plugins.appcenter.remote.AppCenterServiceFactory;
+import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.task.UploadTask;
-import io.jenkins.plugins.appcenter.validator.*;
+import io.jenkins.plugins.appcenter.task.request.UploadRequest;
+import io.jenkins.plugins.appcenter.validator.ApiTokenValidator;
+import io.jenkins.plugins.appcenter.validator.AppNameValidator;
+import io.jenkins.plugins.appcenter.validator.DistributionGroupsValidator;
+import io.jenkins.plugins.appcenter.validator.PathToAppValidator;
+import io.jenkins.plugins.appcenter.validator.UsernameValidator;
+import io.jenkins.plugins.appcenter.validator.Validator;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -41,7 +47,7 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     private final String appName;
 
     @Nonnull
-    private final String distributionGroup;
+    private final String distributionGroups;
 
     @Nonnull
     private final String pathToApp;
@@ -50,11 +56,11 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     private URL baseUrl;
 
     @DataBoundConstructor
-    public AppCenterRecorder(@Nullable String apiToken, @Nullable String ownerName, @Nullable String appName, @Nullable String distributionGroup, @Nullable String pathToApp) {
+    public AppCenterRecorder(@Nullable String apiToken, @Nullable String ownerName, @Nullable String appName, @Nullable String distributionGroups, @Nullable String pathToApp) {
         this.apiToken = Secret.fromString(apiToken);
         this.ownerName = Util.fixNull(ownerName);
         this.appName = Util.fixNull(appName);
-        this.distributionGroup = Util.fixNull(distributionGroup);
+        this.distributionGroups = Util.fixNull(distributionGroups);
         this.pathToApp = Util.fixNull(pathToApp);
     }
 
@@ -74,8 +80,8 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     }
 
     @Nonnull
-    public String getDistributionGroup() {
-        return distributionGroup;
+    public String getDistributionGroups() {
+        return distributionGroups;
     }
 
     @Nonnull
@@ -88,6 +94,10 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         return baseUrl;
     }
 
+    /**
+     * Only meant for testing as we need to override the default base url to send requests to our mock web server for
+     * tests.
+     */
     public void setBaseUrl(@Nullable URL baseUrl) {
         this.baseUrl = baseUrl;
     }
@@ -105,11 +115,15 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         final PrintStream logger = taskListener.getLogger();
 
         try {
-            final AppCenterServiceFactory appCenterServiceFactory = new AppCenterServiceFactory(
-                    getApiToken(), getOwnerName(), getAppName(), getDistributionGroup(), getPathToApp(), getBaseUrl()
+            final AppCenterServiceFactory appCenterServiceFactory = new AppCenterServiceFactory(getApiToken(), getBaseUrl());
+            final UploadRequest uploadRequest = new UploadRequest(
+                getOwnerName(),
+                getAppName(),
+                getPathToApp(),
+                getDistributionGroups()
             );
 
-            return filePath.act(new UploadTask(filePath, taskListener, appCenterServiceFactory));
+            return filePath.act(new UploadTask(filePath, taskListener, appCenterServiceFactory, uploadRequest));
         } catch (AppCenterException e) {
             logger.println(e.toString());
             return false;
@@ -171,15 +185,15 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         }
 
         @SuppressWarnings("unused")
-        public FormValidation doCheckDistributionGroup(@QueryParameter String value) {
+        public FormValidation doCheckDistributionGroups(@QueryParameter String value) {
             if (value.isEmpty()) {
-                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_missingDistributionGroup());
+                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_missingDistributionGroups());
             }
 
-            final Validator validator = new DistributionGroupValidator();
+            final Validator validator = new DistributionGroupsValidator();
 
             if (!validator.isValid(value)) {
-                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_invalidDistributionGroup());
+                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_invalidDistributionGroups());
             }
 
             return FormValidation.ok();

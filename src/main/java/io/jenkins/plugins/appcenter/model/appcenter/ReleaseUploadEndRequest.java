@@ -1,6 +1,6 @@
-package io.jenkins.plugins.appcenter.remote;
+package io.jenkins.plugins.appcenter.model.appcenter;
 
-public class ReleaseUploadEndRequest {
+public final class ReleaseUploadEndRequest {
     public final Status status;
 
     public ReleaseUploadEndRequest(Status status) {
