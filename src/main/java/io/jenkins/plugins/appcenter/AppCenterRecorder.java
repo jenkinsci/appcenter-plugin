@@ -187,13 +187,13 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         @SuppressWarnings("unused")
         public FormValidation doCheckDistributionGroups(@QueryParameter String value) {
             if (value.isEmpty()) {
-                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_missingDistributionGroup());
+                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_missingDistributionGroups());
             }
 
             final Validator validator = new DistributionGroupsValidator();
 
             if (!validator.isValid(value)) {
-                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_invalidDistributionGroup());
+                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_invalidDistributionGroups());
             }
 
             return FormValidation.ok();
