@@ -181,7 +181,7 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         }
 
         @SuppressWarnings("unused")
-        public FormValidation doCheckDistributionGroup(@QueryParameter String value) {
+        public FormValidation doCheckDistributionGroups(@QueryParameter String value) {
             if (value.isEmpty()) {
                 return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_missingDistributionGroup());
             }
