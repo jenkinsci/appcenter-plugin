@@ -1,6 +1,7 @@
 tasks:
   - command: mvn hpi:run
+  - command: gp await-port 8080 && gp preview $(gp url 8080)/jenkins
 
 ports:
   - port: 8080
-    onOpen: gp preview $(gp url 8080)/jenkins
+    onOpen: ignore
