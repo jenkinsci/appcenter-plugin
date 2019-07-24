@@ -1,7 +1,6 @@
 package io.jenkins.plugins.appcenter.api;
 
 import hudson.ProxyConfiguration;
-import hudson.model.TaskListener;
 import hudson.util.Secret;
 import jenkins.model.Jenkins;
 import okhttp3.Authenticator;
@@ -15,7 +14,6 @@ import retrofit2.converter.moshi.MoshiConverterFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.PrintStream;
 import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -36,15 +34,12 @@ public final class AppCenterServiceFactory implements Serializable {
     private final String baseUrl;
 
     private final Optional<ProxyConfiguration> proxy;
-    private final TaskListener taskListener;
 
-    public AppCenterServiceFactory(@Nonnull Secret apiToken, @Nullable URL baseUrl, @Nonnull Jenkins jenkins, TaskListener taskListener) {
+    public AppCenterServiceFactory(@Nonnull Secret apiToken, @Nullable URL baseUrl, @Nonnull Jenkins jenkins) {
         this.apiToken = apiToken;
         this.baseUrl = baseUrl != null ? baseUrl.toString() : APPCENTER_BASE_URL;
 
         proxy = Optional.ofNullable(jenkins).map(j -> j.proxy);
-
-        this.taskListener = taskListener;
     }
 
     public AppCenterService createAppCenterService() {
@@ -87,7 +82,7 @@ public final class AppCenterServiceFactory implements Serializable {
         final OkHttpClient.Builder builder = createHttpClientBuilder();
 
         proxy.ifPresent(cfg -> setProxy(cfg, builder));
-        
+
         final OkHttpClient okHttpClient = builder.build();
 
         final Retrofit retrofit = new Retrofit.Builder()
@@ -115,10 +110,6 @@ public final class AppCenterServiceFactory implements Serializable {
     private void setProxy(
         final ProxyConfiguration cfg,
         final OkHttpClient.Builder builder) {
-
-        final PrintStream logger = taskListener.getLogger();
-        logger.println("Setting proxy.");
-        logger.println(cfg);
 
         builder
             .proxy(new Proxy(HTTP, new InetSocketAddress(cfg.name, cfg.port)));
