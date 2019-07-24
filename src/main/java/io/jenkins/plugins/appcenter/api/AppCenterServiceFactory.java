@@ -18,7 +18,6 @@ import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
-import java.util.Optional;
 
 import static com.google.common.base.Strings.nullToEmpty;
 import static java.net.Proxy.Type.HTTP;
@@ -33,13 +32,13 @@ public final class AppCenterServiceFactory implements Serializable {
     private final Secret apiToken;
     private final String baseUrl;
 
-    private final Optional<ProxyConfiguration> proxy;
+    private final ProxyConfiguration proxy;
 
-    public AppCenterServiceFactory(@Nonnull Secret apiToken, @Nullable URL baseUrl, @Nonnull Jenkins jenkins) {
+    public AppCenterServiceFactory(@Nonnull Secret apiToken, @Nullable URL baseUrl, @Nullable Jenkins jenkins) {
         this.apiToken = apiToken;
         this.baseUrl = baseUrl != null ? baseUrl.toString() : APPCENTER_BASE_URL;
 
-        proxy = Optional.ofNullable(jenkins).map(j -> j.proxy);
+        proxy = (jenkins != null) ? jenkins.proxy : null;
     }
 
     public AppCenterService createAppCenterService() {
@@ -63,7 +62,9 @@ public final class AppCenterServiceFactory implements Serializable {
             return chain.proceed(newRequest);
         });
 
-        proxy.ifPresent(cfg -> setProxy(cfg, builder));
+        if (proxy != null) {
+            setProxy(proxy, builder);
+        }
 
         final OkHttpClient okHttpClient = builder.build();
 
@@ -81,7 +82,9 @@ public final class AppCenterServiceFactory implements Serializable {
 
         final OkHttpClient.Builder builder = createHttpClientBuilder();
 
-        proxy.ifPresent(cfg -> setProxy(cfg, builder));
+        if (proxy != null) {
+            setProxy(proxy, builder);
+        }
 
         final OkHttpClient okHttpClient = builder.build();
 
