@@ -1,6 +1,6 @@
 tasks:
+  - command: gp await-port 8080 && gp preview $(gp url 8080)/jenkins && exit
   - command: mvn hpi:run
-  - command: gp await-port 8080 && gp preview $(gp url 8080)/jenkins
 
 ports:
   - port: 8080
