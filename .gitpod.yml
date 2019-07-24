@@ -1,0 +1,6 @@
+tasks:
+  - command: mvn hpi:run
+
+ports:
+  - port: 8080
+    onOpen: gp preview $(gp url 8080)/jenkins
