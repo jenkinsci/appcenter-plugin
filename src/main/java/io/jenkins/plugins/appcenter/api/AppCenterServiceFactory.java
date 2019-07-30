@@ -1,8 +1,8 @@
 package io.jenkins.plugins.appcenter.api;
 
 import hudson.ProxyConfiguration;
+import hudson.Util;
 import hudson.util.Secret;
-import jenkins.model.Jenkins;
 import okhttp3.Authenticator;
 import okhttp3.Credentials;
 import okhttp3.Headers;
@@ -19,7 +19,6 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
 
-import static com.google.common.base.Strings.nullToEmpty;
 import static java.net.Proxy.Type.HTTP;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
@@ -32,13 +31,12 @@ public final class AppCenterServiceFactory implements Serializable {
     private final Secret apiToken;
     private final String baseUrl;
 
-    private final ProxyConfiguration proxy;
+    private final ProxyConfiguration proxyConfiguration;
 
-    public AppCenterServiceFactory(@Nonnull Secret apiToken, @Nullable URL baseUrl, @Nullable Jenkins jenkins) {
+    public AppCenterServiceFactory(@Nonnull Secret apiToken, @Nullable URL baseUrl, @Nullable ProxyConfiguration proxyConfiguration) {
         this.apiToken = apiToken;
         this.baseUrl = baseUrl != null ? baseUrl.toString() : APPCENTER_BASE_URL;
-
-        proxy = (jenkins != null) ? jenkins.proxy : null;
+        this.proxyConfiguration = proxyConfiguration;
     }
 
     public AppCenterService createAppCenterService() {
@@ -62,8 +60,8 @@ public final class AppCenterServiceFactory implements Serializable {
             return chain.proceed(newRequest);
         });
 
-        if (proxy != null) {
-            setProxy(proxy, builder);
+        if (proxyConfiguration != null) {
+            setProxy(proxyConfiguration, builder);
         }
 
         final OkHttpClient okHttpClient = builder.build();
@@ -82,8 +80,8 @@ public final class AppCenterServiceFactory implements Serializable {
 
         final OkHttpClient.Builder builder = createHttpClientBuilder();
 
-        if (proxy != null) {
-            setProxy(proxy, builder);
+        if (proxyConfiguration != null) {
+            setProxy(proxyConfiguration, builder);
         }
 
         final OkHttpClient okHttpClient = builder.build();
@@ -111,13 +109,13 @@ public final class AppCenterServiceFactory implements Serializable {
     }
 
     private void setProxy(
-        final ProxyConfiguration cfg,
+        final ProxyConfiguration proxyConfiguration,
         final OkHttpClient.Builder builder) {
 
         builder
-            .proxy(new Proxy(HTTP, new InetSocketAddress(cfg.name, cfg.port)));
-        final String username = nullToEmpty(cfg.getUserName());
-        final String password = nullToEmpty(cfg.getPassword());
+            .proxy(new Proxy(HTTP, new InetSocketAddress(proxyConfiguration.name, proxyConfiguration.port)));
+        final String username = Util.fixNull(proxyConfiguration.getUserName());
+        final String password = Util.fixNull(proxyConfiguration.getPassword());
 
         if (isNotEmpty(username) && isNotEmpty(password)) {
             final String credentials = Credentials.basic(username, password);
