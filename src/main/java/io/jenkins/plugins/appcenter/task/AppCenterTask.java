@@ -22,16 +22,19 @@ abstract class AppCenterTask extends MasterToSlaveCallable<Boolean, AppCenterExc
     @Override
     public final Boolean call() throws AppCenterException {
         try {
-            createServices();
+            createAppCenterService();
             return execute();
         } catch (IOException | InterruptedException | ExecutionException e) {
             throw new AppCenterException(e);
         }
     }
 
-    private void createServices() {
+    private void createAppCenterService() throws AppCenterException {
         appCenterService = appCenterServiceFactory.createAppCenterService();
-        uploadService = appCenterServiceFactory.createUploadService();
+    }
+
+    void createUploadService(String host) {
+        uploadService = appCenterServiceFactory.createUploadService(host);
     }
 
     protected abstract Boolean execute() throws IOException, InterruptedException, AppCenterException, ExecutionException;
