@@ -1,7 +1,6 @@
 package io.jenkins.plugins.appcenter.api;
 
 import hudson.ProxyConfiguration;
-import hudson.Util;
 import hudson.util.Secret;
 import okhttp3.Authenticator;
 import okhttp3.Credentials;
@@ -20,7 +19,7 @@ import java.net.Proxy;
 import java.net.URL;
 
 import static java.net.Proxy.Type.HTTP;
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 public final class AppCenterServiceFactory implements Serializable {
 
@@ -112,12 +111,12 @@ public final class AppCenterServiceFactory implements Serializable {
         final ProxyConfiguration proxyConfiguration,
         final OkHttpClient.Builder builder) {
 
-        builder
-            .proxy(new Proxy(HTTP, new InetSocketAddress(proxyConfiguration.name, proxyConfiguration.port)));
-        final String username = Util.fixNull(proxyConfiguration.getUserName());
-        final String password = Util.fixNull(proxyConfiguration.getPassword());
+        builder.proxy(new Proxy(HTTP, new InetSocketAddress(proxyConfiguration.name, proxyConfiguration.port)));
 
-        if (isNotEmpty(username) && isNotEmpty(password)) {
+        final String username = proxyConfiguration.getUserName();
+        final String password = proxyConfiguration.getPassword();
+
+        if (isNotBlank(username) && isNotBlank(password)) {
             final String credentials = Credentials.basic(username, password);
 
             final Authenticator proxyAuthenticator = (route, response) -> response
