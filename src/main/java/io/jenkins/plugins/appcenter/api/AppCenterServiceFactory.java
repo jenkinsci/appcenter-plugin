@@ -29,7 +29,6 @@ public final class AppCenterServiceFactory implements Serializable {
 
     private final Secret apiToken;
     private final String baseUrl;
-
     private final ProxyConfiguration proxyConfiguration;
 
     public AppCenterServiceFactory(@Nonnull Secret apiToken, @Nullable URL baseUrl, @Nullable ProxyConfiguration proxyConfiguration) {
