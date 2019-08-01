@@ -58,7 +58,7 @@ public final class AppCenterServiceFactory implements Serializable {
         });
 
         if (proxyConfiguration != null) {
-            String appCenterHost = null;
+            String appCenterHost;
             try {
                 appCenterHost = new URL(APPCENTER_BASE_URL).getHost();
             } catch (MalformedURLException e) {
