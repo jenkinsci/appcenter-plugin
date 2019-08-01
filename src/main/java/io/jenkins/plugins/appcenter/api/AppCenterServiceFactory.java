@@ -1,6 +1,10 @@
 package io.jenkins.plugins.appcenter.api;
 
+import hudson.ProxyConfiguration;
 import hudson.util.Secret;
+import io.jenkins.plugins.appcenter.AppCenterException;
+import okhttp3.Authenticator;
+import okhttp3.Credentials;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -11,7 +15,10 @@ import retrofit2.converter.moshi.MoshiConverterFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.net.URL;
+
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 public final class AppCenterServiceFactory implements Serializable {
 
@@ -21,13 +28,15 @@ public final class AppCenterServiceFactory implements Serializable {
 
     private final Secret apiToken;
     private final String baseUrl;
+    private final ProxyConfiguration proxyConfiguration;
 
-    public AppCenterServiceFactory(@Nonnull Secret apiToken, @Nullable URL baseUrl) {
+    public AppCenterServiceFactory(@Nonnull Secret apiToken, @Nullable URL baseUrl, @Nullable ProxyConfiguration proxyConfiguration) {
         this.apiToken = apiToken;
         this.baseUrl = baseUrl != null ? baseUrl.toString() : APPCENTER_BASE_URL;
+        this.proxyConfiguration = proxyConfiguration;
     }
 
-    public AppCenterService createAppCenterService() {
+    public AppCenterService createAppCenterService() throws AppCenterException {
         final MoshiConverterFactory converterFactory = MoshiConverterFactory.create();
 
         final OkHttpClient.Builder builder = createHttpClientBuilder();
@@ -48,6 +57,17 @@ public final class AppCenterServiceFactory implements Serializable {
             return chain.proceed(newRequest);
         });
 
+        if (proxyConfiguration != null) {
+            String appCenterHost;
+            try {
+                appCenterHost = new URL(APPCENTER_BASE_URL).getHost();
+            } catch (MalformedURLException e) {
+                throw new AppCenterException(e);
+            }
+
+            setProxy(proxyConfiguration, appCenterHost, builder);
+        }
+
         final OkHttpClient okHttpClient = builder.build();
 
         final Retrofit retrofit = new Retrofit.Builder()
@@ -59,10 +79,14 @@ public final class AppCenterServiceFactory implements Serializable {
         return retrofit.create(AppCenterService.class);
     }
 
-    public UploadService createUploadService() {
+    public UploadService createUploadService(String host) {
         final MoshiConverterFactory converterFactory = MoshiConverterFactory.create();
 
         final OkHttpClient.Builder builder = createHttpClientBuilder();
+
+        if (proxyConfiguration != null) {
+            setProxy(proxyConfiguration, host, builder);
+        }
 
         final OkHttpClient okHttpClient = builder.build();
 
@@ -86,5 +110,28 @@ public final class AppCenterServiceFactory implements Serializable {
 
     public Secret getApiToken() {
         return apiToken;
+    }
+
+    private void setProxy(
+        final ProxyConfiguration proxyConfiguration,
+        final String host,
+        final OkHttpClient.Builder builder) {
+
+        builder.proxy(proxyConfiguration.createProxy(host));
+
+        final String username = proxyConfiguration.getUserName();
+        final String password = proxyConfiguration.getPassword();
+
+        if (isNotBlank(username) && isNotBlank(password)) {
+            final String credentials = Credentials.basic(username, password);
+
+            final Authenticator proxyAuthenticator = (route, response) -> response
+                .request()
+                .newBuilder()
+                .header("Proxy-Authorization", credentials)
+                .build();
+
+            builder.proxyAuthenticator(proxyAuthenticator);
+        }
     }
 }

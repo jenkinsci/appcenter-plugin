@@ -20,6 +20,8 @@ import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -81,6 +83,14 @@ public final class UploadTask extends AppCenterTask {
         final File file = new File(filePath.child(request.pathToApp).getRemote());
         final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         final MultipartBody.Part body = MultipartBody.Part.createFormData("ipa", file.getName(), requestFile);
+
+        String host = null;
+        try {
+            host = new URL(uploadUrl).getHost();
+        } catch (MalformedURLException e) {
+            logger.println(String.format("Unable to extract host name from URL %s for proxy configuration. Will try by ignoring no proxy host list.", uploadUrl));
+        }
+        createUploadService(host);
 
         return uploadService.uploadApp(uploadUrl, body)
             .whenComplete((responseBody, throwable) -> {

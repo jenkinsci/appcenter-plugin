@@ -23,6 +23,7 @@ import io.jenkins.plugins.appcenter.validator.DistributionGroupsValidator;
 import io.jenkins.plugins.appcenter.validator.PathToAppValidator;
 import io.jenkins.plugins.appcenter.validator.UsernameValidator;
 import io.jenkins.plugins.appcenter.validator.Validator;
+import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -115,7 +116,7 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         final PrintStream logger = taskListener.getLogger();
 
         try {
-            final AppCenterServiceFactory appCenterServiceFactory = new AppCenterServiceFactory(getApiToken(), getBaseUrl());
+            final AppCenterServiceFactory appCenterServiceFactory = new AppCenterServiceFactory(getApiToken(), getBaseUrl(), Jenkins.get().proxy);
             final UploadRequest uploadRequest = new UploadRequest(
                 getOwnerName(),
                 getAppName(),
