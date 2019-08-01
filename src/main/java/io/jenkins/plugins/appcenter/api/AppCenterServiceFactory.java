@@ -117,14 +117,7 @@ public final class AppCenterServiceFactory implements Serializable {
         final String host,
         final OkHttpClient.Builder builder) {
 
-        builder
-            .proxy(
-                ProxyConfiguration.createProxy(
-                    host,
-                    proxyConfiguration.name,
-                    proxyConfiguration.port,
-                    proxyConfiguration.noProxyHost)
-            );
+        builder.proxy(proxyConfiguration.createProxy(host));
 
         final String username = proxyConfiguration.getUserName();
         final String password = proxyConfiguration.getPassword();
