@@ -1,5 +1,6 @@
 package io.jenkins.plugins.appcenter.api;
 
+import com.google.common.net.HttpHeaders;
 import hudson.ProxyConfiguration;
 import hudson.util.Secret;
 import io.jenkins.plugins.appcenter.AppCenterException;
@@ -24,7 +25,7 @@ public final class AppCenterServiceFactory implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final String APPCENTER_BASE_URL = "https://api.appcenter.ms/";
+    public static final String APPCENTER_BASE_URL = "https://api.appcenter.ms/";
 
     private final Secret apiToken;
     private final String baseUrl;
@@ -128,7 +129,7 @@ public final class AppCenterServiceFactory implements Serializable {
             final Authenticator proxyAuthenticator = (route, response) -> response
                 .request()
                 .newBuilder()
-                .header("Proxy-Authorization", credentials)
+                .header(HttpHeaders.PROXY_AUTHORIZATION, credentials)
                 .build();
 
             builder.proxyAuthenticator(proxyAuthenticator);
