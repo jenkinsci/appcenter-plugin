@@ -10,7 +10,7 @@ public final class ReleaseUploadBeginResponse {
     public final String asset_domain;
     public final String asset_token;
 
-    ReleaseUploadBeginResponse(@Nonnull String uploadId, @Nonnull String uploadUrl, @Nonnull String assetId, @Nonnull String assetDomain, @Nonnull String assetToken) {
+    public ReleaseUploadBeginResponse(@Nonnull String uploadId, @Nonnull String uploadUrl, @Nonnull String assetId, @Nonnull String assetDomain, @Nonnull String assetToken) {
         this.upload_id = uploadId;
         this.upload_url = uploadUrl;
         this.asset_id = assetId;
