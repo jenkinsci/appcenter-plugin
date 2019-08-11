@@ -5,10 +5,13 @@ import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
+import hudson.model.Node;
 import hudson.model.Result;
+import hudson.slaves.RetentionStrategy;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
+import org.jenkinci.plugins.mock_slave.MockSlave;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -18,6 +21,7 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Objects;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -45,16 +49,15 @@ public class FreestyleTest {
                 return true;
             }
         });
+        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
+        appCenterRecorder.setBaseUrl(mockWebServer.url("/").url());
+        freeStyleProject.getPublishersList().add(appCenterRecorder);
     }
 
     @Test
     public void should_SetBuildResultFailure_When_ReleaseUploadBegin_Returns_500() throws Exception {
         // Given
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));
-
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").url());
-        freeStyleProject.getPublishersList().add(appCenterRecorder);
 
         // When
         final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
@@ -67,10 +70,6 @@ public class FreestyleTest {
     public void should_SetBuildResultFailure_When_ReleaseUploadBegin_Returns_400() throws Exception {
         // Given
         mockWebServer.enqueue(new MockResponse().setResponseCode(400));
-
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").url());
-        freeStyleProject.getPublishersList().add(appCenterRecorder);
 
         // When
         final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
@@ -90,10 +89,6 @@ public class FreestyleTest {
             "  \"asset_token\": \"string\"\n" +
             "}"));
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));
-
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").url());
-        freeStyleProject.getPublishersList().add(appCenterRecorder);
 
         // When
         final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
@@ -118,10 +113,6 @@ public class FreestyleTest {
             "}"));
         mockWebServer.enqueue(new MockResponse().setResponseCode(200));
         mockWebServer.enqueue(new MockResponse().setResponseCode(400));
-
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").url());
-        freeStyleProject.getPublishersList().add(appCenterRecorder);
 
         // When
         final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
@@ -152,10 +143,6 @@ public class FreestyleTest {
             "  \"release_url\": \"string\"\n" +
             "}"));
         mockWebServer.enqueue(new MockResponse().setResponseCode(400));
-
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").url());
-        freeStyleProject.getPublishersList().add(appCenterRecorder);
 
         // When
         final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
@@ -191,14 +178,41 @@ public class FreestyleTest {
             "  \"release_notes\": \"string\"\n" +
             "}"));
 
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").url());
-        freeStyleProject.getPublishersList().add(appCenterRecorder);
+        // When
+        final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
+
+        // Then
+        jenkinsRule.assertBuildStatus(Result.SUCCESS, freeStyleBuild);
+    }
+
+    @Test
+    public void should_SetBuildResultSuccess_When_RunOnANode() throws Exception {
+        // Given
+        mockWebServer.enqueue(new MockResponse().setResponseCode(201).setBody("{\n" +
+            "  \"upload_id\": \"string\",\n" +
+            "  \"upload_url\": \"" + mockWebServer.url("/").toString() + "\",\n" +
+            "  \"asset_id\": \"string\",\n" +
+            "  \"asset_domain\": \"string\",\n" +
+            "  \"asset_token\": \"string\"\n" +
+            "}"));
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200));
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
+            "  \"release_id\": 0,\n" +
+            "  \"release_url\": \"string\"\n" +
+            "}"));
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
+            "  \"release_notes\": \"string\"\n" +
+            "}"));
+
+        final Node slave = new MockSlave("test-slave", 1, Node.Mode.NORMAL, "", RetentionStrategy.Always.INSTANCE, Collections.emptyList());
+        jenkinsRule.jenkins.addNode(slave);
+        freeStyleProject.setAssignedNode(slave);
 
         // When
         final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
 
         // Then
         jenkinsRule.assertBuildStatus(Result.SUCCESS, freeStyleBuild);
+        assertThat(freeStyleBuild.getBuiltOn()).isEqualTo(slave);
     }
 }
