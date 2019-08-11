@@ -1,0 +1,66 @@
+package io.jenkins.plugins.appcenter.task.internal;
+
+import hudson.model.TaskListener;
+import io.jenkins.plugins.appcenter.AppCenterException;
+import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
+import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadBeginResponse;
+
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import java.io.PrintStream;
+import java.util.concurrent.CompletableFuture;
+
+import static io.jenkins.plugins.appcenter.task.internal.CreateUploadResourceTask.Request;
+
+public final class CreateUploadResourceTask implements AppCenterTask<Request, ReleaseUploadBeginResponse> {
+
+    @Nonnull
+    private final TaskListener taskListener;
+    @Nonnull
+    private final AppCenterServiceFactory factory;
+
+    @Inject
+    public CreateUploadResourceTask(@Nonnull final TaskListener taskListener,
+                                    @Nonnull final AppCenterServiceFactory factory) {
+        this.taskListener = taskListener;
+        this.factory = factory;
+    }
+
+    @Override
+    public CompletableFuture<ReleaseUploadBeginResponse> execute(Request request) {
+        final PrintStream logger = taskListener.getLogger();
+        logger.println("Creating an upload resource.");
+
+        final CompletableFuture<ReleaseUploadBeginResponse> future = new CompletableFuture<>();
+
+        // TODO: Pass in the release_id as an optional parameter from the UI. Don't use it if  not available
+        //  final ReleaseUploadBeginRequest releaseUploadBeginRequest = new ReleaseUploadBeginRequest(upload.getReleaseId());
+        //  using the overloaded releaseUploadBegin method.
+        factory.createAppCenterService()
+            .releaseUploadBegin(request.ownerName, request.appName)
+            .handle((releaseUploadBeginResponse, throwable) -> {
+                if (throwable != null) {
+                    return future.completeExceptionally(new AppCenterException("Create upload resource unsuccessful: ", throwable));
+                } else {
+                    logger.println("Create upload resource successful.");
+                    return future.complete(releaseUploadBeginResponse);
+                }
+            })
+            .join();
+
+        return future;
+    }
+
+    public static class Request {
+        @Nonnull
+        public final String ownerName;
+        @Nonnull
+        public final String appName;
+
+        public Request(@Nonnull final String ownerName,
+                       @Nonnull final String appName) {
+            this.ownerName = ownerName;
+            this.appName = appName;
+        }
+    }
+}
