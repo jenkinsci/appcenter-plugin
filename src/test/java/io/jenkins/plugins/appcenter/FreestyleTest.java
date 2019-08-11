@@ -49,16 +49,15 @@ public class FreestyleTest {
                 return true;
             }
         });
+        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
+        appCenterRecorder.setBaseUrl(mockWebServer.url("/").url());
+        freeStyleProject.getPublishersList().add(appCenterRecorder);
     }
 
     @Test
     public void should_SetBuildResultFailure_When_ReleaseUploadBegin_Returns_500() throws Exception {
         // Given
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));
-
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").url());
-        freeStyleProject.getPublishersList().add(appCenterRecorder);
 
         // When
         final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
@@ -71,10 +70,6 @@ public class FreestyleTest {
     public void should_SetBuildResultFailure_When_ReleaseUploadBegin_Returns_400() throws Exception {
         // Given
         mockWebServer.enqueue(new MockResponse().setResponseCode(400));
-
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").url());
-        freeStyleProject.getPublishersList().add(appCenterRecorder);
 
         // When
         final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
@@ -94,10 +89,6 @@ public class FreestyleTest {
             "  \"asset_token\": \"string\"\n" +
             "}"));
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));
-
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").url());
-        freeStyleProject.getPublishersList().add(appCenterRecorder);
 
         // When
         final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
@@ -122,10 +113,6 @@ public class FreestyleTest {
             "}"));
         mockWebServer.enqueue(new MockResponse().setResponseCode(200));
         mockWebServer.enqueue(new MockResponse().setResponseCode(400));
-
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").url());
-        freeStyleProject.getPublishersList().add(appCenterRecorder);
 
         // When
         final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
@@ -156,10 +143,6 @@ public class FreestyleTest {
             "  \"release_url\": \"string\"\n" +
             "}"));
         mockWebServer.enqueue(new MockResponse().setResponseCode(400));
-
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").url());
-        freeStyleProject.getPublishersList().add(appCenterRecorder);
 
         // When
         final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
@@ -195,10 +178,6 @@ public class FreestyleTest {
             "  \"release_notes\": \"string\"\n" +
             "}"));
 
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").url());
-        freeStyleProject.getPublishersList().add(appCenterRecorder);
-
         // When
         final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
 
@@ -227,11 +206,6 @@ public class FreestyleTest {
 
         final Node slave = new MockSlave("test-slave", 1, Node.Mode.NORMAL, "", RetentionStrategy.Always.INSTANCE, Collections.emptyList());
         jenkinsRule.jenkins.addNode(slave);
-
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").url());
-        freeStyleProject.getPublishersList().add(appCenterRecorder);
-
         freeStyleProject.setAssignedNode(slave);
 
         // When
