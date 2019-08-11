@@ -1,5 +1,6 @@
 package io.jenkins.plugins.appcenter.api;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.net.HttpHeaders;
 import hudson.ProxyConfiguration;
 import hudson.util.Secret;
@@ -39,7 +40,8 @@ public final class AppCenterServiceFactory implements Serializable {
         this(apiToken, APPCENTER_BASE_URL, proxyConfiguration);
     }
 
-    AppCenterServiceFactory(@Nonnull Secret apiToken, @Nonnull String baseUrl, @Nullable ProxyConfiguration proxyConfiguration) {
+    @VisibleForTesting
+    public AppCenterServiceFactory(@Nonnull Secret apiToken, @Nonnull String baseUrl, @Nullable ProxyConfiguration proxyConfiguration) {
         this.apiToken = apiToken;
         this.baseUrl = baseUrl;
         this.proxyConfiguration = proxyConfiguration;
