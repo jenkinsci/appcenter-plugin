@@ -8,6 +8,7 @@ import hudson.model.FreeStyleProject;
 import hudson.model.Node;
 import hudson.model.Result;
 import hudson.slaves.RetentionStrategy;
+import io.jenkins.plugins.appcenter.releasenotes.NoReleaseNotes;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -49,7 +50,7 @@ public class FreestyleTest {
                 return true;
             }
         });
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
+        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk", new NoReleaseNotes());
         appCenterRecorder.setBaseUrl(mockWebServer.url("/").url());
         freeStyleProject.getPublishersList().add(appCenterRecorder);
     }

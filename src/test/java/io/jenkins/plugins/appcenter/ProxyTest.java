@@ -9,6 +9,7 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Result;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
+import io.jenkins.plugins.appcenter.releasenotes.NoReleaseNotes;
 import okhttp3.Credentials;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -60,7 +61,7 @@ public class ProxyTest {
         // Given
         jenkinsRule.jenkins.proxy = null;
 
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
+        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk", new NoReleaseNotes());
         appCenterRecorder.setBaseUrl(mockWebServer.url("/").url()); // Notice this is *not* set to the proxy address
 
         enqueueRequests(mockWebServer);
@@ -80,7 +81,7 @@ public class ProxyTest {
         // Given
         jenkinsRule.jenkins.proxy = new ProxyConfiguration(proxyWebServer.getHostName(), proxyWebServer.getPort());
 
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
+        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk", new NoReleaseNotes());
         appCenterRecorder.setBaseUrl(mockWebServer.url("/").url()); // Notice this is *not* set to the proxy address
 
         enqueueRequests(proxyWebServer);
@@ -104,7 +105,7 @@ public class ProxyTest {
 
         jenkinsRule.jenkins.proxy = new ProxyConfiguration(proxyWebServer.getHostName(), proxyWebServer.getPort(), userName, password);
 
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
+        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk", new NoReleaseNotes());
         appCenterRecorder.setBaseUrl(mockWebServer.url("/").url()); // Notice this is *not* set to the proxy address
 
         // first request rejected and proxy authentication requested
@@ -131,7 +132,7 @@ public class ProxyTest {
 
         jenkinsRule.jenkins.proxy = new ProxyConfiguration(proxyWebServer.getHostName(), proxyWebServer.getPort(), null, null, noProxyHost);
 
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
+        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk", new NoReleaseNotes());
         appCenterRecorder.setBaseUrl(mockWebServer.url("/").url()); // Notice this is *not* set to the proxy address
 
         enqueueRequests(mockWebServer);
@@ -153,7 +154,7 @@ public class ProxyTest {
 
         jenkinsRule.jenkins.proxy = new ProxyConfiguration(proxyWebServer.getHostName(), proxyWebServer.getPort(), null, null, noProxyHost);
 
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
+        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk", new NoReleaseNotes());
         appCenterRecorder.setBaseUrl(mockWebServer.url("/").url()); // Notice this is *not* set to the proxy address
 
         enqueueRequests(mockWebServer, proxyWebServer);

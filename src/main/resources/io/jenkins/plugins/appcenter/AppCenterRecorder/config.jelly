@@ -1,5 +1,5 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
 
     <f:entry title="${%API Token}" field="apiToken"
              description="${%AppCenter API token.}">
@@ -24,6 +24,27 @@
     <f:entry title="${%Distribution Groups}" field="distributionGroups"
              description="${%Comma separated list of distribution groups.}">
         <f:textbox/>
+    </f:entry>
+
+    <f:entry title="${%Release Notes}">
+        <table width="100%">
+            <f:invisibleEntry>
+                <input type="hidden" name="id" value="${descriptor.getId(instance)}"/>
+            </f:invisibleEntry>
+            <j:set var="methods" value="${descriptor.getReleaseNotesMethodList()}"/>
+            <j:forEach var="method" items="${methods}" varStatus="loop">
+                <f:radioBlock name="releaseNotesMethod" value="${loop.index}" title="${method.getDisplayName()}"
+                              checked="${(instance == null &amp;&amp; loop.index == 0) || instance.getReleaseNotesMethod().descriptor==method}">
+                    <f:invisibleEntry>
+                        <input type="hidden" name="stapler-class" value="${method.clazz.name}"/>
+                    </f:invisibleEntry>
+                    <j:set var="instance"
+                           value="${instance.getReleaseNotesMethod().descriptor==method ? instance.getReleaseNotesMethod() : null}"/>
+                    <j:set var="descriptor" value="${method}"/>
+                    <st:include from="${descriptor}" page="${descriptor.configPage}" optional="true"/>
+                </f:radioBlock>
+            </j:forEach>
+        </table>
     </f:entry>
 
 </j:jelly>

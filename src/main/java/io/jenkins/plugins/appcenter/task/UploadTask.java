@@ -124,7 +124,7 @@ public final class UploadTask extends AppCenterTask {
         final PrintStream logger = taskListener.getLogger();
         logger.println("Distributing resource.");
 
-        final String releaseNotes = "";
+        final String releaseNotes = request.releaseNotes;
         final boolean mandatoryUpdate = false;
         final List<DestinationId> destinations = Stream.of(request.destinationGroups.split(","))
             .map(String::trim)

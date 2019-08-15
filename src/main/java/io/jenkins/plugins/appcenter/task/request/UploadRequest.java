@@ -10,11 +10,13 @@ public final class UploadRequest implements Serializable {
     public final String appName;
     public final String pathToApp;
     public final String destinationGroups;
+    public final String releaseNotes;
 
-    public UploadRequest(String ownerName, String appName, String pathToApp, String destinationGroups) {
+    public UploadRequest(String ownerName, String appName, String pathToApp, String destinationGroups, String releaseNotes) {
         this.ownerName = ownerName;
         this.appName = appName;
         this.pathToApp = pathToApp;
         this.destinationGroups = destinationGroups;
+        this.releaseNotes = releaseNotes;
     }
 }
