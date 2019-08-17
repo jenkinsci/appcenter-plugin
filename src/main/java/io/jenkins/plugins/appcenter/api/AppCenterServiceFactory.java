@@ -109,9 +109,7 @@ public final class AppCenterServiceFactory implements Serializable {
 
         return new OkHttpClient.Builder()
             .addInterceptor(logging)
-            .callTimeout(timeoutSeconds, TimeUnit.SECONDS)
             .connectTimeout(timeoutSeconds, TimeUnit.SECONDS)
-            .readTimeout(timeoutSeconds, TimeUnit.SECONDS)
             .writeTimeout(timeoutSeconds, TimeUnit.SECONDS);
     }
 
