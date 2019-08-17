@@ -18,12 +18,14 @@ import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 public final class AppCenterServiceFactory implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private static final int timeoutSeconds = 60;
 
     public static final String APPCENTER_BASE_URL = "https://api.appcenter.ms/";
 
@@ -106,7 +108,9 @@ public final class AppCenterServiceFactory implements Serializable {
         logging.setLevel(HttpLoggingInterceptor.Level.HEADERS);
 
         return new OkHttpClient.Builder()
-            .addInterceptor(logging);
+            .addInterceptor(logging)
+            .connectTimeout(timeoutSeconds, TimeUnit.SECONDS)
+            .writeTimeout(timeoutSeconds, TimeUnit.SECONDS);
     }
 
     public Secret getApiToken() {
