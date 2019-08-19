@@ -29,7 +29,7 @@ import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
-import org.apache.commons.collections.iterators.ArrayIterator;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -115,32 +115,18 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
 
     private boolean uploadToAppCenter(Run<?, ?> run, FilePath filePath, TaskListener taskListener) throws IOException, InterruptedException {
         final PrintStream logger = taskListener.getLogger();
+        final EnvVars vars = run.getEnvironment(taskListener);
 
         try {
-        	EnvVars vars = run.getEnvironment(taskListener);
-        	String pathParsed = vars.expand(getPathToApp());
-        	logger.println("Path is " + pathParsed);
-        	FilePath localFiles[] = filePath.list(pathParsed);
-        	if(localFiles.length == 0) {
-        		logger.println("No file found to upload: " + pathParsed);
-        		return false;
-        	}
-        	boolean result = true;
-        	ArrayIterator localFilesIterator = new ArrayIterator(localFiles);
-        	while(localFilesIterator.hasNext()) {
-        		FilePath localFile = (FilePath) localFilesIterator.next();
-        		logger.println(localFile.getRemote());
-        		final AppCenterServiceFactory appCenterServiceFactory = new AppCenterServiceFactory(getApiToken(), getBaseUrl(), Jenkins.get().proxy);
+            final AppCenterServiceFactory appCenterServiceFactory = new AppCenterServiceFactory(getApiToken(), getBaseUrl(), Jenkins.get().proxy);
             final UploadRequest uploadRequest = new UploadRequest(
                 getOwnerName(),
                 getAppName(),
-                localFile.getRemote(),
+                vars.expand(getPathToApp()),
                 getDistributionGroups()
-                );
-        		result &= filePath.act(new UploadTask(filePath, taskListener, appCenterServiceFactory, uploadRequest));
-        	}
+            );
 
-            return result;
+            return filePath.act(new UploadTask(filePath, taskListener, appCenterServiceFactory, uploadRequest));
         } catch (AppCenterException e) {
             logger.println(e.toString());
             return false;
