@@ -73,4 +73,16 @@ public class PathToAppValidatorTest {
         // Then
         assertThat(result).isTrue();
     }
+
+    @Test
+    public void should_ReturnWarning_When_PathStartsWithEnvVars() {
+        // Given
+        final String value = "${SOME_ENV_VAR}.apk";
+
+        // When
+        final boolean result = validator.isValid(value);
+
+        // Then
+        assertThat(result).isTrue();
+    }
 }
