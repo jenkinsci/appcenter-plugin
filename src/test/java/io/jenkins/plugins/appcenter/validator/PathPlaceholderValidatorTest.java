@@ -14,6 +14,18 @@ public class PathPlaceholderValidatorTest {
     }
 
     @Test
+    public void should_ReturnTrue_When_PathDoesNotStartsWithEnvVariable() {
+        // Given
+        final String value = "relative/path/to/${SOME_ENV_VAR}.ipa";
+
+        // When
+        final boolean result = validator.isValid(value);
+
+        // Then
+        assertThat(result).isTrue();
+    }
+
+    @Test
     public void should_ReturnFalse_When_PathStartsWithEnvVariable() {
         // Given
         final String value = "${SOME_ENV_VAR}.ipa";
