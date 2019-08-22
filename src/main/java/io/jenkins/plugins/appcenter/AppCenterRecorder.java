@@ -18,7 +18,13 @@ import hudson.util.Secret;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.task.UploadTask;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
-import io.jenkins.plugins.appcenter.validator.*;
+import io.jenkins.plugins.appcenter.validator.ApiTokenValidator;
+import io.jenkins.plugins.appcenter.validator.AppNameValidator;
+import io.jenkins.plugins.appcenter.validator.DistributionGroupsValidator;
+import io.jenkins.plugins.appcenter.validator.PathPlaceholderValidator;
+import io.jenkins.plugins.appcenter.validator.PathToAppValidator;
+import io.jenkins.plugins.appcenter.validator.UsernameValidator;
+import io.jenkins.plugins.appcenter.validator.Validator;
 import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
@@ -203,15 +209,15 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
                 return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_missingPathToApp());
             }
 
-            Validator validator = new PathToAppValidator();
+            final Validator pathToAppValidator = new PathToAppValidator();
 
-            if (!validator.isValid(value)) {
+            if (!pathToAppValidator.isValid(value)) {
                 return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_invalidPathToApp());
             }
 
-            validator = new PathPlaceholderValidator();
+            final Validator pathPlaceholderValidator = new PathPlaceholderValidator();
 
-            if (!validator.isValid(value)) {
+            if (!pathPlaceholderValidator.isValid(value)) {
                 return FormValidation.warning(Messages.AppCenterRecorder_DescriptorImpl_warnings_mustNotStartWithEnvVar());
             }
 
