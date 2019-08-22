@@ -45,8 +45,7 @@ public final class CreateUploadResourceTask implements AppCenterTask<Request, Re
                     logger.println("Create upload resource successful.");
                     return future.complete(releaseUploadBeginResponse);
                 }
-            })
-            .join();
+            });
 
         return future;
     }
