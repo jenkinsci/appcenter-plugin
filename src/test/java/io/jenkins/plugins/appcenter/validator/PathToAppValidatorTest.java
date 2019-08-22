@@ -61,4 +61,28 @@ public class PathToAppValidatorTest {
         // Then
         assertThat(result).isTrue();
     }
+
+    @Test
+    public void should_ReturnTrue_When_PathContainsEnvVars() {
+        // Given
+        final String value = "path/to/app-${BUILD_NUMBER}.apk";
+
+        // When
+        final boolean result = validator.isValid(value);
+
+        // Then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void should_ReturnWarning_When_PathStartsWithEnvVars() {
+        // Given
+        final String value = "${SOME_ENV_VAR}.apk";
+
+        // When
+        final boolean result = validator.isValid(value);
+
+        // Then
+        assertThat(result).isTrue();
+    }
 }
