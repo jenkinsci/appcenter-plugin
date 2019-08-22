@@ -1,5 +1,6 @@
 package io.jenkins.plugins.appcenter.task.internal;
 
+import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -15,5 +16,6 @@ public interface AppCenterTask<T, R> {
      * @param request T: Request
      * @return CompletableFuture: An expectation of a result of type R
      */
-    CompletableFuture<R> execute(T request);
+    @Nonnull
+    CompletableFuture<R> execute(@Nonnull T request);
 }

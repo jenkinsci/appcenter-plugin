@@ -26,8 +26,9 @@ public final class CreateUploadResourceTask implements AppCenterTask<Request, Re
         this.factory = factory;
     }
 
+    @Nonnull
     @Override
-    public CompletableFuture<ReleaseUploadBeginResponse> execute(Request request) {
+    public CompletableFuture<ReleaseUploadBeginResponse> execute(@Nonnull Request request) {
         final PrintStream logger = taskListener.getLogger();
         logger.println("Creating an upload resource.");
 

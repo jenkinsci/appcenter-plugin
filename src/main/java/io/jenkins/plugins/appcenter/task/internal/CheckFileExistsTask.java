@@ -20,8 +20,9 @@ public final class CheckFileExistsTask implements AppCenterTask<Request, Void> {
         this.filePath = filePath;
     }
 
+    @Nonnull
     @Override
-    public CompletableFuture<Void> execute(Request request) {
+    public CompletableFuture<Void> execute(@Nonnull Request request) {
         final CompletableFuture<Void> future = new CompletableFuture<>();
 
         final FilePath remotablePath = filePath.child(request.pathToApp);
