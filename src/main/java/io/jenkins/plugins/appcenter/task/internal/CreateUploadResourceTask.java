@@ -39,13 +39,13 @@ public final class CreateUploadResourceTask implements AppCenterTask<Request, Re
         //  using the overloaded releaseUploadBegin method.
         factory.createAppCenterService()
             .releaseUploadBegin(request.ownerName, request.appName)
-            .handle((releaseUploadBeginResponse, throwable) -> {
+            .whenComplete((releaseUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
-                    return future.completeExceptionally(new AppCenterException("Create upload resource unsuccessful: ", throwable));
-                } else {
-                    logger.println("Create upload resource successful.");
-                    return future.complete(releaseUploadBeginResponse);
+                    future.completeExceptionally(new AppCenterException("Create upload resource unsuccessful: ", throwable));
                 }
+
+                logger.println("Create upload resource successful.");
+                future.complete(releaseUploadBeginResponse);
             });
 
         return future;

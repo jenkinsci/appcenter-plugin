@@ -46,13 +46,13 @@ public final class UploadAppToResourceTask implements AppCenterTask<Request, Str
 
         factory.createUploadService(request.uploadUrl)
             .uploadApp(request.uploadUrl, body)
-            .handle((responseBody, throwable) -> {
+            .whenComplete((responseBody, throwable) -> {
                 if (throwable != null) {
-                    return future.completeExceptionally(new AppCenterException("Upload app to resource unsuccessful: ", throwable));
-                } else {
-                    logger.println("Upload app to resource successful.");
-                    return future.complete(request.uploadId);
+                    future.completeExceptionally(new AppCenterException("Upload app to resource unsuccessful: ", throwable));
                 }
+
+                logger.println("Upload app to resource successful.");
+                future.complete(request.uploadId);
             });
 
         return future;
