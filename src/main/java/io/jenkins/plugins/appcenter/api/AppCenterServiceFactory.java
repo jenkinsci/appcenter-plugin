@@ -76,10 +76,13 @@ public final class AppCenterServiceFactory implements Serializable {
         return retrofit.create(AppCenterService.class);
     }
 
-    public UploadService createUploadService(@Nonnull final HttpUrl httpUrl) {
+    public UploadService createUploadService(@Nonnull final String uploadUrl) {
+        final HttpUrl httpUploadUrl = HttpUrl.get(uploadUrl);
+        final HttpUrl baseUrl = HttpUrl.get(String.format("%1$s://%2$s/", httpUploadUrl.scheme(), httpUploadUrl.host()));
+
         final Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(baseUrl)
-            .client(createHttpClientBuilder(httpUrl).build())
+            .client(createHttpClientBuilder(baseUrl).build())
             .addConverterFactory(MoshiConverterFactory.create())
             .build();
 
