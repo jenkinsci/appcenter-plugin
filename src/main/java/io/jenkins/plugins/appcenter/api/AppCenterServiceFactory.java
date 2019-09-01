@@ -101,11 +101,6 @@ public final class AppCenterServiceFactory implements Serializable {
             .writeTimeout(timeoutSeconds, TimeUnit.SECONDS);
     }
 
-    // TODO: Remove me
-    public Secret getApiToken() {
-        return apiToken;
-    }
-
     private Proxy setProxy(@Nullable final ProxyConfiguration proxyConfiguration,
                            @Nonnull final String host) {
         if (proxyConfiguration != null) {
