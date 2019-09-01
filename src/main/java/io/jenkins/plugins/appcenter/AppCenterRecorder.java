@@ -35,7 +35,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.URL;
 
 @SuppressWarnings("unused")
 public final class AppCenterRecorder extends Recorder implements SimpleBuildStep {
@@ -54,9 +53,6 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
 
     @Nonnull
     private final String pathToApp;
-
-    @Nullable
-    private URL baseUrl;
 
     @DataBoundConstructor
     public AppCenterRecorder(@Nullable String apiToken, @Nullable String ownerName, @Nullable String appName, @Nullable String distributionGroups, @Nullable String pathToApp) {
@@ -92,19 +88,6 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         return pathToApp;
     }
 
-    @Nullable
-    public URL getBaseUrl() {
-        return baseUrl;
-    }
-
-    /**
-     * Only meant for testing as we need to override the default base url to send requests to our mock web server for
-     * tests.
-     */
-    public void setBaseUrl(@Nullable URL baseUrl) {
-        this.baseUrl = baseUrl;
-    }
-
     @Override
     public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath filePath, @Nonnull Launcher launcher, @Nonnull TaskListener taskListener) throws InterruptedException, IOException {
         if (uploadToAppCenter(run, filePath, taskListener)) {
@@ -119,7 +102,7 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         final EnvVars vars = run.getEnvironment(taskListener);
 
         try {
-            final AppCenterServiceFactory appCenterServiceFactory = new AppCenterServiceFactory(getApiToken(), getBaseUrl(), Jenkins.get().proxy);
+            final AppCenterServiceFactory appCenterServiceFactory = new AppCenterServiceFactory(getApiToken(), Jenkins.get().proxy);
             final UploadRequest uploadRequest = new UploadRequest(
                 getOwnerName(),
                 getAppName(),
