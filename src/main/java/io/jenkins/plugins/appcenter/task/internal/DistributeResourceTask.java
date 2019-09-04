@@ -8,6 +8,8 @@ import io.jenkins.plugins.appcenter.model.appcenter.ReleaseDetailsUpdateRequest;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseDetailsUpdateResponse;
 
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -16,6 +18,7 @@ import java.util.stream.Stream;
 
 import static io.jenkins.plugins.appcenter.task.internal.DistributeResourceTask.Request;
 
+@Singleton
 public final class DistributeResourceTask implements AppCenterTask<Request, ReleaseDetailsUpdateResponse> {
 
     @Nonnull
@@ -23,6 +26,7 @@ public final class DistributeResourceTask implements AppCenterTask<Request, Rele
     @Nonnull
     private final AppCenterServiceFactory factory;
 
+    @Inject
     public DistributeResourceTask(@Nonnull final TaskListener taskListener,
                                   @Nonnull final AppCenterServiceFactory factory) {
         this.taskListener = taskListener;

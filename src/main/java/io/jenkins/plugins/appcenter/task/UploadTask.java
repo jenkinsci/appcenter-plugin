@@ -1,9 +1,6 @@
 package io.jenkins.plugins.appcenter.task;
 
-import hudson.FilePath;
-import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
-import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.task.internal.CheckFileExistsTask;
 import io.jenkins.plugins.appcenter.task.internal.CommitUploadResourceTask;
 import io.jenkins.plugins.appcenter.task.internal.CreateUploadResourceTask;
@@ -12,28 +9,29 @@ import io.jenkins.plugins.appcenter.task.internal.UploadAppToResourceTask;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import jenkins.security.MasterToSlaveCallable;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+@Singleton
 public final class UploadTask extends MasterToSlaveCallable<Boolean, AppCenterException> {
-
-    private final UploadRequest request;
 
     private final CheckFileExistsTask checkFileExists;
     private final CreateUploadResourceTask createUploadResource;
     private final UploadAppToResourceTask uploadAppToResource;
     private final CommitUploadResourceTask commitUploadResource;
     private final DistributeResourceTask distributeResource;
+    private final UploadRequest request;
 
-    public UploadTask(final FilePath filePath, final TaskListener taskListener, final AppCenterServiceFactory factory, final UploadRequest request) {
+    @Inject
+    UploadTask(final CheckFileExistsTask checkFileExists, final CreateUploadResourceTask createUploadResource, final UploadAppToResourceTask uploadAppToResource, final CommitUploadResourceTask commitUploadResource, final DistributeResourceTask distributeResource, final UploadRequest request) {
+        this.checkFileExists = checkFileExists;
+        this.createUploadResource = createUploadResource;
+        this.uploadAppToResource = uploadAppToResource;
+        this.commitUploadResource = commitUploadResource;
+        this.distributeResource = distributeResource;
         this.request = request;
-
-        // TODO: Introduce proper DI
-        this.checkFileExists = new CheckFileExistsTask(filePath);
-        this.createUploadResource = new CreateUploadResourceTask(taskListener, factory);
-        this.uploadAppToResource = new UploadAppToResourceTask(taskListener, filePath, factory);
-        this.commitUploadResource = new CommitUploadResourceTask(taskListener, factory);
-        this.distributeResource = new DistributeResourceTask(taskListener, factory);
     }
 
     @Override

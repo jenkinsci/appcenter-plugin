@@ -5,11 +5,13 @@ import io.jenkins.plugins.appcenter.AppCenterException;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 import static io.jenkins.plugins.appcenter.task.internal.CheckFileExistsTask.Request;
 
+@Singleton
 public final class CheckFileExistsTask implements AppCenterTask<Request, Void> {
 
     @Nonnull

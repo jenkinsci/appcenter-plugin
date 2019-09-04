@@ -1,6 +1,5 @@
 package io.jenkins.plugins.appcenter;
 
-import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -15,9 +14,8 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.Secret;
-import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
+import io.jenkins.plugins.appcenter.di.DaggerAppCenterComponent;
 import io.jenkins.plugins.appcenter.task.UploadTask;
-import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import io.jenkins.plugins.appcenter.validator.ApiTokenValidator;
 import io.jenkins.plugins.appcenter.validator.AppNameValidator;
 import io.jenkins.plugins.appcenter.validator.DistributionGroupsValidator;
@@ -33,6 +31,7 @@ import org.kohsuke.stapler.QueryParameter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.io.IOException;
 import java.io.PrintStream;
 
@@ -53,6 +52,12 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
 
     @Nonnull
     private final String pathToApp;
+
+    @Inject
+    PrintStream logger;
+
+    @Inject
+    UploadTask uploadTask;
 
     @DataBoundConstructor
     public AppCenterRecorder(@Nullable String apiToken, @Nullable String ownerName, @Nullable String appName, @Nullable String distributionGroups, @Nullable String pathToApp) {
@@ -90,6 +95,11 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
 
     @Override
     public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath filePath, @Nonnull Launcher launcher, @Nonnull TaskListener taskListener) throws InterruptedException, IOException {
+        DaggerAppCenterComponent
+            .factory()
+            .create(this, Jenkins.get(), run, filePath, taskListener)
+            .inject();
+
         if (uploadToAppCenter(run, filePath, taskListener)) {
             run.setResult(Result.SUCCESS);
         } else {
@@ -98,19 +108,8 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     }
 
     private boolean uploadToAppCenter(Run<?, ?> run, FilePath filePath, TaskListener taskListener) throws IOException, InterruptedException {
-        final PrintStream logger = taskListener.getLogger();
-        final EnvVars vars = run.getEnvironment(taskListener);
-
         try {
-            final AppCenterServiceFactory appCenterServiceFactory = new AppCenterServiceFactory(getApiToken(), Jenkins.get().proxy);
-            final UploadRequest uploadRequest = new UploadRequest(
-                getOwnerName(),
-                getAppName(),
-                vars.expand(getPathToApp()),
-                getDistributionGroups()
-            );
-
-            return filePath.act(new UploadTask(filePath, taskListener, appCenterServiceFactory, uploadRequest));
+            return filePath.act(uploadTask);
         } catch (AppCenterException e) {
             logger.println(e.toString());
             return false;

@@ -7,11 +7,13 @@ import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadBeginResponse;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
 
 import static io.jenkins.plugins.appcenter.task.internal.CreateUploadResourceTask.Request;
 
+@Singleton
 public final class CreateUploadResourceTask implements AppCenterTask<Request, ReleaseUploadBeginResponse> {
 
     @Nonnull

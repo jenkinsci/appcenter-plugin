@@ -1,6 +1,5 @@
 package io.jenkins.plugins.appcenter.api;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.net.HttpHeaders;
 import hudson.ProxyConfiguration;
 import hudson.util.Secret;
@@ -16,15 +15,17 @@ import retrofit2.converter.moshi.MoshiConverterFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.Serializable;
 import java.net.Proxy;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
+@Singleton
 public final class AppCenterServiceFactory implements Serializable {
-
-    public static final String APPCENTER_BASE_URL = "https://api.appcenter.ms/";
 
     private static final long serialVersionUID = 1L;
     private static final int timeoutSeconds = 60;
@@ -36,21 +37,17 @@ public final class AppCenterServiceFactory implements Serializable {
     @Nullable
     private final ProxyConfiguration proxyConfiguration;
 
-    public AppCenterServiceFactory(@Nonnull Secret apiToken, @Nullable ProxyConfiguration proxyConfiguration) {
-        this(apiToken, APPCENTER_BASE_URL, proxyConfiguration);
-    }
-
-    @VisibleForTesting
-    public AppCenterServiceFactory(@Nonnull Secret apiToken, @Nonnull String baseUrl, @Nullable ProxyConfiguration proxyConfiguration) {
+    @Inject
+    public AppCenterServiceFactory(@Nonnull Secret apiToken, @Nonnull @Named("baseUrl") String baseUrl, @Nullable ProxyConfiguration proxyConfiguration) {
         this.apiToken = apiToken;
         this.baseUrl = baseUrl;
         this.proxyConfiguration = proxyConfiguration;
     }
 
     public AppCenterService createAppCenterService() {
-        final HttpUrl httpUrl = HttpUrl.get(APPCENTER_BASE_URL);
+        final HttpUrl baseHttpUrl = HttpUrl.get(baseUrl);
 
-        final OkHttpClient.Builder builder = createHttpClientBuilder(httpUrl)
+        final OkHttpClient.Builder builder = createHttpClientBuilder(baseHttpUrl)
             .addInterceptor(chain -> {
                 final Request request = chain.request();
 
@@ -68,7 +65,7 @@ public final class AppCenterServiceFactory implements Serializable {
             });
 
         final Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(baseUrl)
+            .baseUrl(baseHttpUrl)
             .client(builder.build())
             .addConverterFactory(MoshiConverterFactory.create())
             .build();

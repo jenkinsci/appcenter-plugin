@@ -8,9 +8,12 @@ import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadEndResponse;
 import io.jenkins.plugins.appcenter.model.appcenter.Status;
 
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
 
+@Singleton
 public final class CommitUploadResourceTask implements AppCenterTask<CommitUploadResourceTask.Request, ReleaseUploadEndResponse> {
 
     @Nonnull
@@ -18,6 +21,7 @@ public final class CommitUploadResourceTask implements AppCenterTask<CommitUploa
     @Nonnull
     private final AppCenterServiceFactory factory;
 
+    @Inject
     public CommitUploadResourceTask(@Nonnull final TaskListener taskListener,
                                     @Nonnull final AppCenterServiceFactory factory) {
         this.taskListener = taskListener;

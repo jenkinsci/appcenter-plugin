@@ -9,12 +9,15 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
 
 import static io.jenkins.plugins.appcenter.task.internal.UploadAppToResourceTask.Request;
 
+@Singleton
 public final class UploadAppToResourceTask implements AppCenterTask<Request, String> {
 
     @Nonnull
@@ -24,6 +27,7 @@ public final class UploadAppToResourceTask implements AppCenterTask<Request, Str
     @Nonnull
     private final AppCenterServiceFactory factory;
 
+    @Inject
     public UploadAppToResourceTask(@Nonnull final TaskListener taskListener,
                                    @Nonnull final FilePath filePath,
                                    @Nonnull final AppCenterServiceFactory factory) {
