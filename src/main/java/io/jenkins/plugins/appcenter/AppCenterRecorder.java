@@ -14,6 +14,7 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.Secret;
+import io.jenkins.plugins.appcenter.di.AppCenterComponent;
 import io.jenkins.plugins.appcenter.di.DaggerAppCenterComponent;
 import io.jenkins.plugins.appcenter.task.UploadTask;
 import io.jenkins.plugins.appcenter.validator.ApiTokenValidator;
@@ -31,7 +32,6 @@ import org.kohsuke.stapler.QueryParameter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 import java.io.IOException;
 import java.io.PrintStream;
 
@@ -53,11 +53,8 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     @Nonnull
     private final String pathToApp;
 
-    @Inject
-    PrintStream logger;
-
-    @Inject
-    UploadTask uploadTask;
+    @Nullable
+    private transient String baseUrl;
 
     @DataBoundConstructor
     public AppCenterRecorder(@Nullable String apiToken, @Nullable String ownerName, @Nullable String appName, @Nullable String distributionGroups, @Nullable String pathToApp) {
@@ -93,26 +90,33 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         return pathToApp;
     }
 
+    /**
+     * Do not use outside of testing.
+     *
+     * @param baseUrl String Sets a new base url
+     */
+    public void setBaseUrl(@Nullable String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
     @Override
     public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath filePath, @Nonnull Launcher launcher, @Nonnull TaskListener taskListener) throws InterruptedException, IOException {
-        DaggerAppCenterComponent
-            .factory()
-            .create(this, Jenkins.get(), run, filePath, taskListener)
-            .inject();
+        final AppCenterComponent component = DaggerAppCenterComponent.factory().create(this, Jenkins.get(), run, filePath, taskListener, baseUrl);
+        final PrintStream logger = component.logger();
+        final UploadTask uploadTask = component.uploadTask();
 
-        if (uploadToAppCenter(run, filePath, taskListener)) {
+        boolean result;
+        try {
+            result = filePath.act(uploadTask);
+        } catch (AppCenterException e) {
+            logger.println(e.toString());
+            result = false;
+        }
+
+        if (result) {
             run.setResult(Result.SUCCESS);
         } else {
             run.setResult(Result.FAILURE);
-        }
-    }
-
-    private boolean uploadToAppCenter(Run<?, ?> run, FilePath filePath, TaskListener taskListener) throws IOException, InterruptedException {
-        try {
-            return filePath.act(uploadTask);
-        } catch (AppCenterException e) {
-            logger.println(e.toString());
-            return false;
         }
     }
 

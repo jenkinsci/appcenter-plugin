@@ -6,15 +6,21 @@ import hudson.FilePath;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterRecorder;
+import io.jenkins.plugins.appcenter.task.UploadTask;
 import jenkins.model.Jenkins;
 
+import javax.annotation.Nullable;
+import javax.inject.Named;
 import javax.inject.Singleton;
+import java.io.PrintStream;
 
 @Singleton
-@Component(modules = {JenkinsModule.class, ApiModule.class, UploadModule.class})
+@Component(modules = {JenkinsModule.class, AuthModule.class, UploadModule.class})
 public interface AppCenterComponent {
 
-    AppCenterRecorder inject();
+    PrintStream logger();
+
+    UploadTask uploadTask();
 
     @Component.Factory
     interface Factory {
@@ -22,6 +28,7 @@ public interface AppCenterComponent {
                                   @BindsInstance Jenkins jenkins,
                                   @BindsInstance Run<?, ?> run,
                                   @BindsInstance FilePath filePath,
-                                  @BindsInstance TaskListener taskListener);
+                                  @BindsInstance TaskListener taskListener,
+                                  @BindsInstance @Nullable @Named("baseUrl") String baseUrl);
     }
 }
