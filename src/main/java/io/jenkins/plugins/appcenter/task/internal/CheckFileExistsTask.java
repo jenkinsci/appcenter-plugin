@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
 
 import static io.jenkins.plugins.appcenter.task.internal.CheckFileExistsTask.Request;
@@ -15,10 +16,13 @@ import static io.jenkins.plugins.appcenter.task.internal.CheckFileExistsTask.Req
 public final class CheckFileExistsTask implements AppCenterTask<Request, Void> {
 
     @Nonnull
+    private final PrintStream logger;
+    @Nonnull
     private final FilePath filePath;
 
     @Inject
-    CheckFileExistsTask(@Nonnull final FilePath filePath) {
+    CheckFileExistsTask(@Nonnull PrintStream logger, @Nonnull final FilePath filePath) {
+        this.logger = logger;
         this.filePath = filePath;
     }
 
@@ -30,9 +34,12 @@ public final class CheckFileExistsTask implements AppCenterTask<Request, Void> {
         final FilePath remotablePath = filePath.child(request.pathToApp);
         try {
             if (remotablePath.exists()) {
+                logger.println(String.format("File found: %s", request.pathToApp));
                 future.complete(null);
             } else {
-                future.completeExceptionally(new AppCenterException(String.format("File not found: %s", request.pathToApp)));
+                final AppCenterException exception = new AppCenterException(String.format("File not found: %s", request.pathToApp));
+                logger.println(exception.getMessage());
+                future.completeExceptionally(exception);
             }
         } catch (IOException | InterruptedException e) {
             future.completeExceptionally(e);

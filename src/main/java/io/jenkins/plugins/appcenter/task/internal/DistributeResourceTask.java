@@ -1,6 +1,5 @@
 package io.jenkins.plugins.appcenter.task.internal;
 
-import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.model.appcenter.DestinationId;
@@ -22,21 +21,20 @@ import static io.jenkins.plugins.appcenter.task.internal.DistributeResourceTask.
 public final class DistributeResourceTask implements AppCenterTask<Request, ReleaseDetailsUpdateResponse> {
 
     @Nonnull
-    private final TaskListener taskListener;
+    private final PrintStream logger;
     @Nonnull
     private final AppCenterServiceFactory factory;
 
     @Inject
-    DistributeResourceTask(@Nonnull final TaskListener taskListener,
+    DistributeResourceTask(@Nonnull final PrintStream logger,
                            @Nonnull final AppCenterServiceFactory factory) {
-        this.taskListener = taskListener;
+        this.logger = logger;
         this.factory = factory;
     }
 
     @Nonnull
     @Override
     public CompletableFuture<ReleaseDetailsUpdateResponse> execute(@Nonnull Request request) {
-        final PrintStream logger = taskListener.getLogger();
         logger.println("Distributing resource.");
 
         final CompletableFuture<ReleaseDetailsUpdateResponse> future = new CompletableFuture<>();
@@ -54,7 +52,9 @@ public final class DistributeResourceTask implements AppCenterTask<Request, Rele
             .releaseDetailsUpdate(request.ownerName, request.appName, request.releaseId, releaseDetailsUpdateRequest)
             .whenComplete((releaseUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
-                    future.completeExceptionally(new AppCenterException("Distributing resource unsuccessful: ", throwable));
+                    final AppCenterException exception = new AppCenterException("Distributing resource unsuccessful: ", throwable);
+                    logger.println(exception.getMessage());
+                    future.completeExceptionally(exception);
                 }
 
                 logger.println("Distributing resource successful.");

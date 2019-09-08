@@ -2,7 +2,6 @@ package io.jenkins.plugins.appcenter.task.internal;
 
 import hudson.FilePath;
 import hudson.ProxyConfiguration;
-import hudson.model.TaskListener;
 import hudson.util.Secret;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
@@ -33,9 +32,6 @@ public class UploadAppToResourceTaskTest {
     public MockWebServer mockWebServer = new MockWebServer();
 
     @Mock
-    TaskListener mockTaskListener;
-
-    @Mock
     FilePath mockFilePath;
 
     @Mock
@@ -48,11 +44,10 @@ public class UploadAppToResourceTaskTest {
 
     @Before
     public void setUp() {
-        given(mockTaskListener.getLogger()).willReturn(mockLogger);
         given(mockFilePath.child(anyString())).willReturn(mockFilePath);
         given(mockFilePath.getRemote()).willReturn("src/test/resources/xiola.apk");
         final AppCenterServiceFactory factory = new AppCenterServiceFactory(Secret.fromString("secret-token"), mockWebServer.url("/").toString(), mockProxyConfig);
-        task = new UploadAppToResourceTask(mockTaskListener, mockFilePath, factory);
+        task = new UploadAppToResourceTask(mockLogger, mockFilePath, factory);
     }
 
 

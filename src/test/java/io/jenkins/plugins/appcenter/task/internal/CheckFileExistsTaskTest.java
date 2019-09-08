@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.io.PrintStream;
 import java.util.concurrent.ExecutionException;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -20,6 +21,9 @@ import static org.mockito.BDDMockito.given;
 public class CheckFileExistsTaskTest {
 
     @Mock
+    PrintStream mockLogger;
+
+    @Mock
     FilePath mockFilePath;
 
     private CheckFileExistsTask task;
@@ -27,7 +31,7 @@ public class CheckFileExistsTaskTest {
 
     @Before
     public void setUp() {
-        task = new CheckFileExistsTask(mockFilePath);
+        task = new CheckFileExistsTask(mockLogger, mockFilePath);
     }
 
     @Test

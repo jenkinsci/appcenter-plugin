@@ -1,7 +1,6 @@
 package io.jenkins.plugins.appcenter.task.internal;
 
 import hudson.FilePath;
-import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import okhttp3.MediaType;
@@ -21,17 +20,17 @@ import static io.jenkins.plugins.appcenter.task.internal.UploadAppToResourceTask
 public final class UploadAppToResourceTask implements AppCenterTask<Request, String> {
 
     @Nonnull
-    private final TaskListener taskListener;
+    private final PrintStream logger;
     @Nonnull
     private final FilePath filePath;
     @Nonnull
     private final AppCenterServiceFactory factory;
 
     @Inject
-    UploadAppToResourceTask(@Nonnull final TaskListener taskListener,
+    UploadAppToResourceTask(@Nonnull final PrintStream logger,
                             @Nonnull final FilePath filePath,
                             @Nonnull final AppCenterServiceFactory factory) {
-        this.taskListener = taskListener;
+        this.logger = logger;
         this.filePath = filePath;
         this.factory = factory;
     }
@@ -39,7 +38,6 @@ public final class UploadAppToResourceTask implements AppCenterTask<Request, Str
     @Nonnull
     @Override
     public CompletableFuture<String> execute(@Nonnull Request request) {
-        final PrintStream logger = taskListener.getLogger();
         logger.println("Uploading app to resource.");
 
         final CompletableFuture<String> future = new CompletableFuture<>();
@@ -52,7 +50,9 @@ public final class UploadAppToResourceTask implements AppCenterTask<Request, Str
             .uploadApp(request.uploadUrl, body)
             .whenComplete((responseBody, throwable) -> {
                 if (throwable != null) {
-                    future.completeExceptionally(new AppCenterException("Upload app to resource unsuccessful: ", throwable));
+                    final AppCenterException exception = new AppCenterException("Upload app to resource unsuccessful: ", throwable);
+                    logger.println(exception.getMessage());
+                    future.completeExceptionally(exception);
                 }
 
                 logger.println("Upload app to resource successful.");

@@ -1,7 +1,6 @@
 package io.jenkins.plugins.appcenter.task.internal;
 
 import hudson.ProxyConfiguration;
-import hudson.model.TaskListener;
 import hudson.util.Secret;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
@@ -22,16 +21,12 @@ import java.util.concurrent.ExecutionException;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertThrows;
-import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DistributeResourceTaskTest {
 
     @Rule
     public MockWebServer mockWebServer = new MockWebServer();
-
-    @Mock
-    TaskListener mockTaskListener;
 
     @Mock
     PrintStream mockLogger;
@@ -43,9 +38,8 @@ public class DistributeResourceTaskTest {
 
     @Before
     public void setUp() {
-        given(mockTaskListener.getLogger()).willReturn(mockLogger);
         final AppCenterServiceFactory factory = new AppCenterServiceFactory(Secret.fromString("secret-token"), mockWebServer.url("/").toString(), mockProxyConfig);
-        task = new DistributeResourceTask(mockTaskListener, factory);
+        task = new DistributeResourceTask(mockLogger, factory);
     }
 
     @Test
