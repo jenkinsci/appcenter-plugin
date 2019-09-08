@@ -8,6 +8,7 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import jenkins.model.Jenkins;
 
+import javax.annotation.Nullable;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -16,6 +17,7 @@ import java.io.PrintStream;
 final class JenkinsModule {
 
     @Provides
+    @Nullable
     @Singleton
     static ProxyConfiguration provideProxyConfiguration(Jenkins jenkins) {
         return jenkins.proxy;
