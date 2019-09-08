@@ -6,6 +6,7 @@ import hudson.model.BuildListener;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Result;
+import io.jenkins.plugins.appcenter.api.MockWebServerUtil;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Before;
@@ -35,22 +36,7 @@ public class EnvInterpolationTest {
 
     @Before
     public void setUp() throws IOException {
-        mockWebServer.enqueue(new MockResponse().setResponseCode(201).setBody("{\n" +
-            "  \"upload_id\": \"string\",\n" +
-            "  \"upload_url\": \"" + mockWebServer.url("/").toString() + "\",\n" +
-            "  \"asset_id\": \"string\",\n" +
-            "  \"asset_domain\": \"string\",\n" +
-            "  \"asset_token\": \"string\"\n" +
-            "}"));
-        mockWebServer.enqueue(new MockResponse().setResponseCode(200));
-        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
-            "  \"release_id\": 0,\n" +
-            "  \"release_url\": \"string\"\n" +
-            "}"));
-        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
-            "  \"release_notes\": \"string\"\n" +
-            "}"));
-
+        MockWebServerUtil.success(mockWebServer);
         freeStyleProject = jenkinsRule.createFreeStyleProject();
         freeStyleProject.getBuildersList().add(new TestBuilder() {
             public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
