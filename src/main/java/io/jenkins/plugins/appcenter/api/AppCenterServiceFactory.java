@@ -27,6 +27,8 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 @Singleton
 public final class AppCenterServiceFactory implements Serializable {
 
+    private static final String APPCENTER_BASE_URL = "https://api.appcenter.ms/";
+
     private static final long serialVersionUID = 1L;
     private static final int timeoutSeconds = 60;
 
@@ -38,9 +40,9 @@ public final class AppCenterServiceFactory implements Serializable {
     private final ProxyConfiguration proxyConfiguration;
 
     @Inject
-    public AppCenterServiceFactory(@Nonnull Secret apiToken, @Nonnull @Named("baseUrl") String baseUrl, @Nullable ProxyConfiguration proxyConfiguration) {
+    public AppCenterServiceFactory(@Nonnull Secret apiToken, @Nullable @Named("baseUrl") String baseUrl, @Nullable ProxyConfiguration proxyConfiguration) {
         this.apiToken = apiToken;
-        this.baseUrl = baseUrl;
+        this.baseUrl = baseUrl != null ? baseUrl : APPCENTER_BASE_URL;
         this.proxyConfiguration = proxyConfiguration;
     }
 
