@@ -1,10 +1,17 @@
 package io.jenkins.plugins.appcenter;
 
 import hudson.Launcher;
-import hudson.model.*;
+import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
+import hudson.model.FreeStyleBuild;
+import hudson.model.FreeStyleProject;
+import hudson.model.Result;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
 import org.jvnet.hudson.test.BuildWatcher;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
@@ -58,7 +65,7 @@ public class EnvInterpolationTest {
     public void should_InterpolateEnv_InAppPath() throws Exception {
         // Given
         final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app-${BUILD_NUMBER}.apk");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").url()); // Notice this is *not* set to the proxy address
+        appCenterRecorder.setBaseUrl(mockWebServer.url("/").toString());
 
         freeStyleProject.getPublishersList().add(appCenterRecorder);
         freeStyleProject.updateNextBuildNumber(42);
@@ -75,7 +82,7 @@ public class EnvInterpolationTest {
     public void should_LeaveUnchangedWhenNotInEnv_InAppPath() throws Exception {
         // Given
         final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app-${NOTINENV}.apk");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").url()); // Notice this is *not* set to the proxy address
+        appCenterRecorder.setBaseUrl(mockWebServer.url("/").url().toString());
 
         freeStyleProject.getPublishersList().add(appCenterRecorder);
         freeStyleProject.updateNextBuildNumber(42);
