@@ -2,7 +2,7 @@ package io.jenkins.plugins.appcenter.di;
 
 import dagger.Module;
 import dagger.Provides;
-import hudson.model.Run;
+import hudson.EnvVars;
 import io.jenkins.plugins.appcenter.AppCenterRecorder;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 
@@ -13,11 +13,12 @@ final class UploadModule {
 
     @Provides
     @Singleton
-    static UploadRequest provideUploadRequest(AppCenterRecorder appCenterRecorder, Run<?, ?> run) {
+    static UploadRequest provideUploadRequest(AppCenterRecorder appCenterRecorder, EnvVars envVars) {
+        // TODO: Expand the environment variable for all parameters
         return new UploadRequest(
             appCenterRecorder.getOwnerName(),
             appCenterRecorder.getAppName(),
-            appCenterRecorder.getPathToApp(),
+            envVars.expand(appCenterRecorder.getPathToApp()),
             appCenterRecorder.getDistributionGroups()
         );
     }
