@@ -22,8 +22,8 @@ public final class CreateUploadResourceTask implements AppCenterTask<Request, Re
     private final AppCenterServiceFactory factory;
 
     @Inject
-    public CreateUploadResourceTask(@Nonnull final TaskListener taskListener,
-                                    @Nonnull final AppCenterServiceFactory factory) {
+    CreateUploadResourceTask(@Nonnull final TaskListener taskListener,
+                             @Nonnull final AppCenterServiceFactory factory) {
         this.taskListener = taskListener;
         this.factory = factory;
     }

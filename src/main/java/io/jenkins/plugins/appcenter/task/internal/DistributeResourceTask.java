@@ -27,8 +27,8 @@ public final class DistributeResourceTask implements AppCenterTask<Request, Rele
     private final AppCenterServiceFactory factory;
 
     @Inject
-    public DistributeResourceTask(@Nonnull final TaskListener taskListener,
-                                  @Nonnull final AppCenterServiceFactory factory) {
+    DistributeResourceTask(@Nonnull final TaskListener taskListener,
+                           @Nonnull final AppCenterServiceFactory factory) {
         this.taskListener = taskListener;
         this.factory = factory;
     }

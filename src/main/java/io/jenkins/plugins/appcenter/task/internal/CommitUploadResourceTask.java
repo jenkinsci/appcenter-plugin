@@ -22,8 +22,8 @@ public final class CommitUploadResourceTask implements AppCenterTask<CommitUploa
     private final AppCenterServiceFactory factory;
 
     @Inject
-    public CommitUploadResourceTask(@Nonnull final TaskListener taskListener,
-                                    @Nonnull final AppCenterServiceFactory factory) {
+    CommitUploadResourceTask(@Nonnull final TaskListener taskListener,
+                             @Nonnull final AppCenterServiceFactory factory) {
         this.taskListener = taskListener;
         this.factory = factory;
     }

@@ -18,7 +18,7 @@ public final class CheckFileExistsTask implements AppCenterTask<Request, Void> {
     private final FilePath filePath;
 
     @Inject
-    public CheckFileExistsTask(@Nonnull final FilePath filePath) {
+    CheckFileExistsTask(@Nonnull final FilePath filePath) {
         this.filePath = filePath;
     }
 

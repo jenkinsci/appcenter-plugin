@@ -28,9 +28,9 @@ public final class UploadAppToResourceTask implements AppCenterTask<Request, Str
     private final AppCenterServiceFactory factory;
 
     @Inject
-    public UploadAppToResourceTask(@Nonnull final TaskListener taskListener,
-                                   @Nonnull final FilePath filePath,
-                                   @Nonnull final AppCenterServiceFactory factory) {
+    UploadAppToResourceTask(@Nonnull final TaskListener taskListener,
+                            @Nonnull final FilePath filePath,
+                            @Nonnull final AppCenterServiceFactory factory) {
         this.taskListener = taskListener;
         this.filePath = filePath;
         this.factory = factory;
