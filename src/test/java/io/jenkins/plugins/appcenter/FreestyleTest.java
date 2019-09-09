@@ -50,7 +50,7 @@ public class FreestyleTest {
     @Test
     public void should_SetBuildResultFailure_When_UploadTaskFails() throws Exception {
         // Given
-        MockWebServerUtil.failure(mockWebServer);
+        MockWebServerUtil.enqueueFailure(mockWebServer);
 
         // When
         final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
@@ -62,7 +62,7 @@ public class FreestyleTest {
     @Test
     public void should_SetBuildResultSuccess_When_AppCenterAcceptsAllRequests() throws Exception {
         // Given
-        MockWebServerUtil.success(mockWebServer);
+        MockWebServerUtil.enqueueSuccess(mockWebServer);
 
         // When
         final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
@@ -74,7 +74,7 @@ public class FreestyleTest {
     @Test
     public void should_SetBuildResultSuccess_When_RunOnANode() throws Exception {
         // Given
-        MockWebServerUtil.success(mockWebServer);
+        MockWebServerUtil.enqueueSuccess(mockWebServer);
         final Node slave = new MockSlave("test-slave", 1, Node.Mode.NORMAL, "", RetentionStrategy.Always.INSTANCE, Collections.emptyList());
         jenkinsRule.jenkins.addNode(slave);
         freeStyleProject.setAssignedNode(slave);
