@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 import static io.jenkins.plugins.appcenter.task.internal.CheckFileExistsTask.Request;
 
 @Singleton
-public final class CheckFileExistsTask implements AppCenterTask<Request, Void> {
+public final class CheckFileExistsTask implements AppCenterTask<Request, Boolean> {
 
     private static final long serialVersionUID = 1L;
 
@@ -31,15 +31,15 @@ public final class CheckFileExistsTask implements AppCenterTask<Request, Void> {
 
     @Nonnull
     @Override
-    public CompletableFuture<Void> execute(@Nonnull Request request) {
+    public CompletableFuture<Boolean> execute(@Nonnull Request request) {
         final PrintStream logger = taskListener.getLogger();
-        final CompletableFuture<Void> future = new CompletableFuture<>();
+        final CompletableFuture<Boolean> future = new CompletableFuture<>();
 
         final FilePath remotablePath = filePath.child(request.pathToApp);
         try {
             if (remotablePath.exists()) {
                 logger.println(String.format("File found: %s", request.pathToApp));
-                future.complete(null);
+                future.complete(true);
             } else {
                 final AppCenterException exception = new AppCenterException(String.format("File not found: %s", request.pathToApp));
                 exception.printStackTrace(logger);

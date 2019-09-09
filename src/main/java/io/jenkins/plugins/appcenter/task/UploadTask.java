@@ -40,7 +40,7 @@ public final class UploadTask extends MasterToSlaveCallable<Boolean, AppCenterEx
 
         try {
             checkFileExists.execute(new CheckFileExistsTask.Request(request.pathToApp))
-                .thenCompose(aVoid -> createUploadResource.execute(new CreateUploadResourceTask.Request(request.ownerName, request.appName)))
+                .thenCompose(result -> createUploadResource.execute(new CreateUploadResourceTask.Request(request.ownerName, request.appName)))
                 .thenCompose(releaseUploadBeginResponse -> uploadAppToResource.execute(new UploadAppToResourceTask.Request(releaseUploadBeginResponse.upload_url, releaseUploadBeginResponse.upload_id, request.pathToApp)))
                 .thenCompose(uploadId -> commitUploadResource.execute(new CommitUploadResourceTask.Request(request.ownerName, request.appName, uploadId)))
                 .thenCompose(releaseUploadEndResponse -> distributeResource.execute(new DistributeResourceTask.Request(request.ownerName, request.appName, request.destinationGroups, releaseUploadEndResponse.release_id)))

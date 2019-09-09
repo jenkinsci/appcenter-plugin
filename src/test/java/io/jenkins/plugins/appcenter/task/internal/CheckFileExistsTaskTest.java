@@ -40,18 +40,18 @@ public class CheckFileExistsTaskTest {
     }
 
     @Test
-    public void should_ReturnNull_When_FileExists() throws Exception {
+    public void should_ReturnTrue_When_FileExists() throws Exception {
         // Given
         given(mockFilePath.child(anyString())).willReturn(mockFilePath);
         given(mockFilePath.exists()).willReturn(true);
         final CheckFileExistsTask.Request request = new CheckFileExistsTask.Request("path-to-app");
 
         // When
-        final Void result = task.execute(request).get();
+        final Boolean result = task.execute(request).get();
 
         // Then
         assertThat(result)
-            .isNull();
+            .isTrue();
     }
 
     @Test
