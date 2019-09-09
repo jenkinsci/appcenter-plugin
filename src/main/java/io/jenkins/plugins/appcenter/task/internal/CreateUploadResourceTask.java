@@ -16,6 +16,8 @@ import static io.jenkins.plugins.appcenter.task.internal.CreateUploadResourceTas
 @Singleton
 public final class CreateUploadResourceTask implements AppCenterTask<Request, ReleaseUploadBeginResponse> {
 
+    private static final long serialVersionUID = 1L;
+
     @Nonnull
     private final TaskListener taskListener;
     @Nonnull

@@ -16,6 +16,8 @@ import java.util.concurrent.CompletableFuture;
 @Singleton
 public final class CommitUploadResourceTask implements AppCenterTask<CommitUploadResourceTask.Request, ReleaseUploadEndResponse> {
 
+    private static final long serialVersionUID = 1L;
+
     @Nonnull
     private final TaskListener taskListener;
     @Nonnull

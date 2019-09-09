@@ -21,6 +21,8 @@ import static io.jenkins.plugins.appcenter.task.internal.DistributeResourceTask.
 @Singleton
 public final class DistributeResourceTask implements AppCenterTask<Request, ReleaseDetailsUpdateResponse> {
 
+    private static final long serialVersionUID = 1L;
+
     @Nonnull
     private final TaskListener taskListener;
     @Nonnull

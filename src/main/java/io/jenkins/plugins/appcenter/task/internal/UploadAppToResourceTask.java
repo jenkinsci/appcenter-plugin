@@ -20,6 +20,8 @@ import static io.jenkins.plugins.appcenter.task.internal.UploadAppToResourceTask
 @Singleton
 public final class UploadAppToResourceTask implements AppCenterTask<Request, String> {
 
+    private static final long serialVersionUID = 1L;
+
     @Nonnull
     private final TaskListener taskListener;
     @Nonnull

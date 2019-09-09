@@ -16,6 +16,8 @@ import static io.jenkins.plugins.appcenter.task.internal.CheckFileExistsTask.Req
 @Singleton
 public final class CheckFileExistsTask implements AppCenterTask<Request, Void> {
 
+    private static final long serialVersionUID = 1L;
+
     @Nonnull
     private final TaskListener taskListener;
     @Nonnull

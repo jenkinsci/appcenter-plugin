@@ -1,6 +1,7 @@
 package io.jenkins.plugins.appcenter.task.internal;
 
 import javax.annotation.Nonnull;
+import java.io.Serializable;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -9,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
  * @param <T> Request type
  * @param <R> Return type
  */
-public interface AppCenterTask<T, R> {
+public interface AppCenterTask<T, R> extends Serializable {
     /**
      * Execute a task given a request and returns a result as a CompletableFuture.
      *
