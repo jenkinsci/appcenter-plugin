@@ -40,7 +40,7 @@ public final class CheckFileExistsTask implements AppCenterTask<Request, Void> {
                 future.complete(null);
             } else {
                 final AppCenterException exception = new AppCenterException(String.format("File not found: %s", request.pathToApp));
-                logger.println(exception.getMessage());
+                exception.printStackTrace(logger);
                 future.completeExceptionally(exception);
             }
         } catch (IOException | InterruptedException e) {

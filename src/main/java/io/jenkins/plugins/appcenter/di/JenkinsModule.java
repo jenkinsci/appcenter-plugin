@@ -30,7 +30,7 @@ final class JenkinsModule {
         try {
             return run.getEnvironment(taskListener);
         } catch (IOException | InterruptedException e) {
-            logger.println(e);
+            e.printStackTrace(logger);
             throw new RuntimeException("Failed to get Environment Variables.");
         }
     }

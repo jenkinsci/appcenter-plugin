@@ -53,7 +53,7 @@ public final class UploadAppToResourceTask implements AppCenterTask<Request, Str
             .whenComplete((responseBody, throwable) -> {
                 if (throwable != null) {
                     final AppCenterException exception = new AppCenterException("Upload app to resource unsuccessful: ", throwable);
-                    logger.println(exception.getMessage());
+                    exception.printStackTrace(logger);
                     future.completeExceptionally(exception);
                 }
 

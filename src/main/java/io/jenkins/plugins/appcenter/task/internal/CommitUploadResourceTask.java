@@ -42,7 +42,7 @@ public final class CommitUploadResourceTask implements AppCenterTask<CommitUploa
             .whenComplete((releaseUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
                     final AppCenterException exception = new AppCenterException("Committing resource unsuccessful: ", throwable);
-                    logger.println(exception.getMessage());
+                    exception.printStackTrace(logger);
                     future.completeExceptionally(exception);
                 }
 

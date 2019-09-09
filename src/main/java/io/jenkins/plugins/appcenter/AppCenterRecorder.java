@@ -109,7 +109,7 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         try {
             result = filePath.act(uploadTask);
         } catch (InterruptedException | IOException | AppCenterException e) {
-            logger.println(e.toString());
+            e.printStackTrace(logger);
         }
 
         if (result) {
