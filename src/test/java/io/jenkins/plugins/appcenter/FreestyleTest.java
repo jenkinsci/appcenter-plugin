@@ -15,7 +15,6 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.BuildWatcher;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
 
@@ -26,9 +25,6 @@ import java.util.Objects;
 import static com.google.common.truth.Truth.assertThat;
 
 public class FreestyleTest {
-
-    @ClassRule
-    public static BuildWatcher buildWatcher = new BuildWatcher();
 
     @ClassRule
     public static JenkinsRule jenkinsRule = new JenkinsRule();

@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.BuildWatcher;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
 
@@ -20,9 +19,6 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class EnvInterpolationTest {
-
-    @ClassRule
-    public static BuildWatcher buildWatcher = new BuildWatcher();
 
     @ClassRule
     public static JenkinsRule jenkinsRule = new JenkinsRule();
