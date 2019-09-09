@@ -1,6 +1,7 @@
 package io.jenkins.plugins.appcenter.task.internal;
 
 import hudson.FilePath;
+import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 
 import javax.annotation.Nonnull;
@@ -16,19 +17,20 @@ import static io.jenkins.plugins.appcenter.task.internal.CheckFileExistsTask.Req
 public final class CheckFileExistsTask implements AppCenterTask<Request, Void> {
 
     @Nonnull
-    private final PrintStream logger;
+    private final TaskListener taskListener;
     @Nonnull
     private final FilePath filePath;
 
     @Inject
-    CheckFileExistsTask(@Nonnull PrintStream logger, @Nonnull final FilePath filePath) {
-        this.logger = logger;
+    CheckFileExistsTask(@Nonnull TaskListener taskListener, @Nonnull final FilePath filePath) {
+        this.taskListener = taskListener;
         this.filePath = filePath;
     }
 
     @Nonnull
     @Override
     public CompletableFuture<Void> execute(@Nonnull Request request) {
+        final PrintStream logger = taskListener.getLogger();
         final CompletableFuture<Void> future = new CompletableFuture<>();
 
         final FilePath remotablePath = filePath.child(request.pathToApp);

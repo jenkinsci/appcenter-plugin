@@ -1,5 +1,6 @@
 package io.jenkins.plugins.appcenter.task.internal;
 
+import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadBeginResponse;
@@ -16,20 +17,21 @@ import static io.jenkins.plugins.appcenter.task.internal.CreateUploadResourceTas
 public final class CreateUploadResourceTask implements AppCenterTask<Request, ReleaseUploadBeginResponse> {
 
     @Nonnull
-    private final PrintStream logger;
+    private final TaskListener taskListener;
     @Nonnull
     private final AppCenterServiceFactory factory;
 
     @Inject
-    CreateUploadResourceTask(@Nonnull final PrintStream logger,
+    CreateUploadResourceTask(@Nonnull final TaskListener taskListener,
                              @Nonnull final AppCenterServiceFactory factory) {
-        this.logger = logger;
+        this.taskListener = taskListener;
         this.factory = factory;
     }
 
     @Nonnull
     @Override
     public CompletableFuture<ReleaseUploadBeginResponse> execute(@Nonnull Request request) {
+        final PrintStream logger = taskListener.getLogger();
         logger.println("Creating an upload resource.");
 
         final CompletableFuture<ReleaseUploadBeginResponse> future = new CompletableFuture<>();

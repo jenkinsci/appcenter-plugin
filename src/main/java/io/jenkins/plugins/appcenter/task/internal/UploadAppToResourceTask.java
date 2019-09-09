@@ -1,6 +1,7 @@
 package io.jenkins.plugins.appcenter.task.internal;
 
 import hudson.FilePath;
+import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import okhttp3.MediaType;
@@ -20,17 +21,17 @@ import static io.jenkins.plugins.appcenter.task.internal.UploadAppToResourceTask
 public final class UploadAppToResourceTask implements AppCenterTask<Request, String> {
 
     @Nonnull
-    private final PrintStream logger;
+    private final TaskListener taskListener;
     @Nonnull
     private final FilePath filePath;
     @Nonnull
     private final AppCenterServiceFactory factory;
 
     @Inject
-    UploadAppToResourceTask(@Nonnull final PrintStream logger,
+    UploadAppToResourceTask(@Nonnull final TaskListener taskListener,
                             @Nonnull final FilePath filePath,
                             @Nonnull final AppCenterServiceFactory factory) {
-        this.logger = logger;
+        this.taskListener = taskListener;
         this.filePath = filePath;
         this.factory = factory;
     }
@@ -38,6 +39,7 @@ public final class UploadAppToResourceTask implements AppCenterTask<Request, Str
     @Nonnull
     @Override
     public CompletableFuture<String> execute(@Nonnull Request request) {
+        final PrintStream logger = taskListener.getLogger();
         logger.println("Uploading app to resource.");
 
         final CompletableFuture<String> future = new CompletableFuture<>();

@@ -1,6 +1,7 @@
 package io.jenkins.plugins.appcenter.task.internal;
 
 import hudson.FilePath;
+import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +22,9 @@ import static org.mockito.BDDMockito.given;
 public class CheckFileExistsTaskTest {
 
     @Mock
+    TaskListener mockTaskListener;
+
+    @Mock
     PrintStream mockLogger;
 
     @Mock
@@ -31,7 +35,8 @@ public class CheckFileExistsTaskTest {
 
     @Before
     public void setUp() {
-        task = new CheckFileExistsTask(mockLogger, mockFilePath);
+        given(mockTaskListener.getLogger()).willReturn(mockLogger);
+        task = new CheckFileExistsTask(mockTaskListener, mockFilePath);
     }
 
     @Test

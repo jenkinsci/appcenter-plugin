@@ -1,5 +1,6 @@
 package io.jenkins.plugins.appcenter.task.internal;
 
+import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadEndRequest;
@@ -16,20 +17,21 @@ import java.util.concurrent.CompletableFuture;
 public final class CommitUploadResourceTask implements AppCenterTask<CommitUploadResourceTask.Request, ReleaseUploadEndResponse> {
 
     @Nonnull
-    private final AppCenterServiceFactory factory;
+    private final TaskListener taskListener;
     @Nonnull
-    private final PrintStream logger;
+    private final AppCenterServiceFactory factory;
 
     @Inject
-    CommitUploadResourceTask(@Nonnull final PrintStream logger,
+    CommitUploadResourceTask(@Nonnull final TaskListener taskListener,
                              @Nonnull final AppCenterServiceFactory factory) {
-        this.logger = logger;
+        this.taskListener = taskListener;
         this.factory = factory;
     }
 
     @Nonnull
     @Override
     public CompletableFuture<ReleaseUploadEndResponse> execute(@Nonnull Request request) {
+        final PrintStream logger = taskListener.getLogger();
         logger.println("Committing resource.");
 
         final CompletableFuture<ReleaseUploadEndResponse> future = new CompletableFuture<>();

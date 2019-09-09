@@ -25,12 +25,6 @@ final class JenkinsModule {
 
     @Provides
     @Singleton
-    static PrintStream provideLogger(TaskListener taskListener) {
-        return taskListener.getLogger();
-    }
-
-    @Provides
-    @Singleton
     static EnvVars provideEnvVars(Run<?, ?> run, TaskListener taskListener, PrintStream logger) throws RuntimeException {
         try {
             return run.getEnvironment(taskListener);

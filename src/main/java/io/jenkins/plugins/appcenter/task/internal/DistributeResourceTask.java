@@ -1,5 +1,6 @@
 package io.jenkins.plugins.appcenter.task.internal;
 
+import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.model.appcenter.DestinationId;
@@ -21,20 +22,21 @@ import static io.jenkins.plugins.appcenter.task.internal.DistributeResourceTask.
 public final class DistributeResourceTask implements AppCenterTask<Request, ReleaseDetailsUpdateResponse> {
 
     @Nonnull
-    private final PrintStream logger;
+    private final TaskListener taskListener;
     @Nonnull
     private final AppCenterServiceFactory factory;
 
     @Inject
-    DistributeResourceTask(@Nonnull final PrintStream logger,
+    DistributeResourceTask(@Nonnull final TaskListener taskListener,
                            @Nonnull final AppCenterServiceFactory factory) {
-        this.logger = logger;
+        this.taskListener = taskListener;
         this.factory = factory;
     }
 
     @Nonnull
     @Override
     public CompletableFuture<ReleaseDetailsUpdateResponse> execute(@Nonnull Request request) {
+        final PrintStream logger = taskListener.getLogger();
         logger.println("Distributing resource.");
 
         final CompletableFuture<ReleaseDetailsUpdateResponse> future = new CompletableFuture<>();
