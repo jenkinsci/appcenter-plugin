@@ -1,6 +1,7 @@
 package io.jenkins.plugins.appcenter.model.appcenter;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
@@ -11,7 +12,7 @@ public final class ReleaseDetailsUpdateRequest {
     public final BuildInfo build;
     public final boolean notify_testers;
 
-    public ReleaseDetailsUpdateRequest(@Nonnull String releaseNotes, boolean mandatoryUpdate, @Nonnull List<DestinationId> destinations, @Nonnull BuildInfo build,
+    public ReleaseDetailsUpdateRequest(@Nonnull String releaseNotes, boolean mandatoryUpdate, @Nonnull List<DestinationId> destinations, @Nullable BuildInfo build,
                                        boolean notifyTesters) {
         this.release_notes = releaseNotes;
         this.mandatory_update = mandatoryUpdate;
@@ -40,7 +41,7 @@ public final class ReleaseDetailsUpdateRequest {
             notify_testers == that.notify_testers &&
             release_notes.equals(that.release_notes) &&
             destinations.equals(that.destinations) &&
-            build.equals(that.build);
+            Objects.equals(build, that.build);
     }
 
     @Override
