@@ -105,12 +105,11 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         final PrintStream logger = component.logger();
         final UploadTask uploadTask = component.uploadTask();
 
-        boolean result;
+        boolean result = false;
         try {
             result = filePath.act(uploadTask);
         } catch (AppCenterException e) {
             logger.println(e.toString());
-            result = false;
         }
 
         if (result) {
