@@ -12,13 +12,10 @@ import jenkins.model.Jenkins;
 import javax.annotation.Nullable;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.io.PrintStream;
 
 @Singleton
 @Component(modules = {JenkinsModule.class, AuthModule.class, UploadModule.class})
 public interface AppCenterComponent {
-
-    PrintStream logger();
 
     UploadTask uploadTask();
 
