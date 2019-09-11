@@ -1,6 +1,5 @@
 package io.jenkins.plugins.appcenter;
 
-import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -15,9 +14,9 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.Secret;
-import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
+import io.jenkins.plugins.appcenter.di.AppCenterComponent;
+import io.jenkins.plugins.appcenter.di.DaggerAppCenterComponent;
 import io.jenkins.plugins.appcenter.task.UploadTask;
-import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import io.jenkins.plugins.appcenter.validator.ApiTokenValidator;
 import io.jenkins.plugins.appcenter.validator.AppNameValidator;
 import io.jenkins.plugins.appcenter.validator.DistributionGroupsValidator;
@@ -35,7 +34,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.URL;
 
 @SuppressWarnings("unused")
 public final class AppCenterRecorder extends Recorder implements SimpleBuildStep {
@@ -56,7 +54,7 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     private final String pathToApp;
 
     @Nullable
-    private URL baseUrl;
+    private transient String baseUrl;
 
     @DataBoundConstructor
     public AppCenterRecorder(@Nullable String apiToken, @Nullable String ownerName, @Nullable String appName, @Nullable String distributionGroups, @Nullable String pathToApp) {
@@ -92,16 +90,12 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         return pathToApp;
     }
 
-    @Nullable
-    public URL getBaseUrl() {
-        return baseUrl;
-    }
-
     /**
-     * Only meant for testing as we need to override the default base url to send requests to our mock web server for
-     * tests.
+     * Do not use outside of testing.
+     *
+     * @param baseUrl String Sets a new base url
      */
-    public void setBaseUrl(@Nullable URL baseUrl) {
+    public void setBaseUrl(@Nullable String baseUrl) {
         this.baseUrl = baseUrl;
     }
 
@@ -115,21 +109,14 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     }
 
     private boolean uploadToAppCenter(Run<?, ?> run, FilePath filePath, TaskListener taskListener) throws IOException, InterruptedException {
+        final AppCenterComponent component = DaggerAppCenterComponent.factory().create(this, Jenkins.get(), run, filePath, taskListener, baseUrl);
+        final UploadTask uploadTask = component.uploadTask();
         final PrintStream logger = taskListener.getLogger();
-        final EnvVars vars = run.getEnvironment(taskListener);
 
         try {
-            final AppCenterServiceFactory appCenterServiceFactory = new AppCenterServiceFactory(getApiToken(), getBaseUrl(), Jenkins.get().proxy);
-            final UploadRequest uploadRequest = new UploadRequest(
-                getOwnerName(),
-                getAppName(),
-                vars.expand(getPathToApp()),
-                getDistributionGroups()
-            );
-
-            return filePath.act(new UploadTask(filePath, taskListener, appCenterServiceFactory, uploadRequest));
+            return filePath.act(uploadTask);
         } catch (AppCenterException e) {
-            logger.println(e.toString());
+            e.printStackTrace(logger);
             return false;
         }
     }
