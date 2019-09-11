@@ -121,10 +121,10 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         try {
             final AppCenterServiceFactory appCenterServiceFactory = new AppCenterServiceFactory(getApiToken(), getBaseUrl(), Jenkins.get().proxy);
             final UploadRequest uploadRequest = new UploadRequest(
-                getOwnerName(),
-                getAppName(),
+                vars.expand(getOwnerName()),
+                vars.expand(getAppName()),
                 vars.expand(getPathToApp()),
-                getDistributionGroups()
+                vars.expand(getDistributionGroups())
             );
 
             return filePath.act(new UploadTask(filePath, taskListener, appCenterServiceFactory, uploadRequest));
