@@ -100,22 +100,24 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     }
 
     @Override
-    public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath filePath, @Nonnull Launcher launcher, @Nonnull TaskListener taskListener) {
+    public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath filePath, @Nonnull Launcher launcher, @Nonnull TaskListener taskListener) throws InterruptedException, IOException {
+        if (uploadToAppCenter(run, filePath, taskListener)) {
+            run.setResult(Result.SUCCESS);
+        } else {
+            run.setResult(Result.FAILURE);
+        }
+    }
+
+    private boolean uploadToAppCenter(Run<?, ?> run, FilePath filePath, TaskListener taskListener) throws IOException, InterruptedException {
         final AppCenterComponent component = DaggerAppCenterComponent.factory().create(this, Jenkins.get(), run, filePath, taskListener, baseUrl);
         final UploadTask uploadTask = component.uploadTask();
         final PrintStream logger = taskListener.getLogger();
 
-        boolean result = false;
         try {
-            result = filePath.act(uploadTask);
-        } catch (InterruptedException | IOException | AppCenterException e) {
+            return filePath.act(uploadTask);
+        } catch (AppCenterException e) {
             e.printStackTrace(logger);
-        }
-
-        if (result) {
-            run.setResult(Result.SUCCESS);
-        } else {
-            run.setResult(Result.FAILURE);
+            return false;
         }
     }
 
