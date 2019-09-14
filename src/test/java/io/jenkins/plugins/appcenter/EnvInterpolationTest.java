@@ -8,6 +8,7 @@ import hudson.slaves.EnvironmentVariablesNodeProperty;
 import io.jenkins.plugins.appcenter.util.MockWebServerUtil;
 import io.jenkins.plugins.appcenter.util.TestUtil;
 import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -15,6 +16,8 @@ import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.IOException;
+
+import static com.google.common.truth.Truth.assertThat;
 
 public class EnvInterpolationTest {
 
@@ -62,6 +65,8 @@ public class EnvInterpolationTest {
 
         // Then
         jenkinsRule.assertBuildStatus(Result.SUCCESS, freeStyleBuild);
+        final RecordedRequest recordedRequest = mockWebServer.takeRequest();
+        assertThat(recordedRequest.getPath()).contains("janes-addiction");
     }
 
     @Test
@@ -74,5 +79,8 @@ public class EnvInterpolationTest {
 
         // Then
         jenkinsRule.assertBuildStatus(Result.SUCCESS, freeStyleBuild);
+        mockWebServer.takeRequest();
+        final RecordedRequest recordedRequest = mockWebServer.takeRequest();
+        assertThat(recordedRequest.getBody().readUtf8()).contains("xiola.apk");
     }
 }
