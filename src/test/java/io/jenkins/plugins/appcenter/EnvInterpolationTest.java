@@ -97,4 +97,21 @@ public class EnvInterpolationTest {
         final RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertThat(recordedRequest.getBody().readUtf8()).contains("xiola.apk");
     }
+
+    @Test
+    public void should_InterpolateEnv_InDestinationGroups() throws Exception {
+        // Given
+        MockWebServerUtil.enqueueSuccess(mockWebServer);
+
+        // When
+        final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
+
+        // Then
+        jenkinsRule.assertBuildStatus(Result.SUCCESS, freeStyleBuild);
+        mockWebServer.takeRequest();
+        mockWebServer.takeRequest();
+        mockWebServer.takeRequest();
+        final RecordedRequest recordedRequest = mockWebServer.takeRequest();
+        assertThat(recordedRequest.getBody().readUtf8()).contains("[{\"name\":\"casey\"},{\"name\":\"niccoli\"}]");
+    }
 }
