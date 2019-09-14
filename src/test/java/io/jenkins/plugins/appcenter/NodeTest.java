@@ -27,25 +27,27 @@ public class NodeTest {
     @Rule
     public MockWebServer mockWebServer = new MockWebServer();
 
+    private FreeStyleProject freeStyleProject;
+
     private Node slave;
 
     @Before
     public void setUp() throws Exception {
+        freeStyleProject = jenkinsRule.createFreeStyleProject();
+        freeStyleProject.getBuildersList().add(TestUtil.createFileForFreeStyle("three/days/xiola.apk"));
+
+        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "three/days/xiola.apk", "casey, niccoli");
+        appCenterRecorder.setBaseUrl(mockWebServer.url("/").toString());
+        freeStyleProject.getPublishersList().add(appCenterRecorder);
+
         slave = new MockSlave("test-slave", 1, Node.Mode.NORMAL, "", RetentionStrategy.Always.INSTANCE, Collections.emptyList());
         jenkinsRule.jenkins.addNode(slave);
+        freeStyleProject.setAssignedNode(slave);
     }
 
     @Test
     public void should_BuildFreeStyleProject_When_RunOnANode() throws Exception {
         // Given
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "three/days/xiola.apk", "casey, niccoli");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").toString());
-
-        final FreeStyleProject freeStyleProject = jenkinsRule.createFreeStyleProject();
-        freeStyleProject.getBuildersList().add(TestUtil.createFileForFreeStyle("three/days/xiola.apk"));
-        freeStyleProject.getPublishersList().add(appCenterRecorder);
-        freeStyleProject.setAssignedNode(slave);
-
         MockWebServerUtil.enqueueSuccess(mockWebServer);
 
         // When

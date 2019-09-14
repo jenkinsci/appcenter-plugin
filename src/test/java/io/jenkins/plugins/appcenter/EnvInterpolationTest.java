@@ -26,7 +26,6 @@ public class EnvInterpolationTest {
 
     @Before
     public void setUp() throws IOException {
-        MockWebServerUtil.enqueueSuccess(mockWebServer);
         freeStyleProject = jenkinsRule.createFreeStyleProject();
         freeStyleProject.getBuildersList().add(TestUtil.createFileForFreeStyle("path/to/app-42.apk"));
     }
@@ -34,11 +33,11 @@ public class EnvInterpolationTest {
     @Test
     public void should_InterpolateEnv_InAppPath() throws Exception {
         // Given
+        MockWebServerUtil.enqueueSuccess(mockWebServer);
         final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "path/to/app-${BUILD_NUMBER}.apk", "casey, niccoli");
-        ;
         appCenterRecorder.setBaseUrl(mockWebServer.url("/").toString());
-
         freeStyleProject.getPublishersList().add(appCenterRecorder);
+
         freeStyleProject.updateNextBuildNumber(42);
 
         // When
@@ -53,8 +52,8 @@ public class EnvInterpolationTest {
         // Given
         final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "path/to/app-${NOTINENV}.apk", "casey, niccoli");
         appCenterRecorder.setBaseUrl(mockWebServer.url("/").url().toString());
-
         freeStyleProject.getPublishersList().add(appCenterRecorder);
+
         freeStyleProject.updateNextBuildNumber(42);
 
         // When

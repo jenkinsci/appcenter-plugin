@@ -36,18 +36,17 @@ public class ProxyTest {
     public void setUp() throws IOException {
         freeStyleProject = jenkinsRule.createFreeStyleProject();
         freeStyleProject.getBuildersList().add(TestUtil.createFileForFreeStyle("three/days/xiola.apk"));
+
+        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "three/days/xiola.apk", "casey, niccoli");
+        appCenterRecorder.setBaseUrl(mockWebServer.url("/").toString()); // Notice this is *not* set to the proxy address
+        freeStyleProject.getPublishersList().add(appCenterRecorder);
     }
 
     @Test
     public void should_SendRequestsDirectly_When_NoProxyConfigurationFound() throws Exception {
         // Given
         jenkinsRule.jenkins.proxy = null;
-
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "three/days/xiola.apk", "casey, niccoli");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").toString()); // Notice this is *not* set to the proxy address
-
         MockWebServerUtil.enqueueSuccess(mockWebServer);
-        freeStyleProject.getPublishersList().add(appCenterRecorder);
 
         // When
         final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
@@ -62,12 +61,7 @@ public class ProxyTest {
     public void should_SendRequestsToProxy_When_ProxyConfigurationFound() throws Exception {
         // Given
         jenkinsRule.jenkins.proxy = new ProxyConfiguration(proxyWebServer.getHostName(), proxyWebServer.getPort());
-
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "three/days/xiola.apk", "casey, niccoli");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").toString()); // Notice this is *not* set to the proxy address
-
         MockWebServerUtil.enqueueSuccess(proxyWebServer);
-        freeStyleProject.getPublishersList().add(appCenterRecorder);
 
         // When
         final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
@@ -84,16 +78,10 @@ public class ProxyTest {
         // Given
         final String userName = "user";
         final String password = "password";
-
         jenkinsRule.jenkins.proxy = new ProxyConfiguration(proxyWebServer.getHostName(), proxyWebServer.getPort(), userName, password);
 
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "three/days/xiola.apk", "casey, niccoli");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").toString()); // Notice this is *not* set to the proxy address
-
-        // first request rejected and proxy authentication requested
-        MockWebServerUtil.enqueueProxyAuthRequired(proxyWebServer);
+        MockWebServerUtil.enqueueProxyAuthRequired(proxyWebServer); // first request rejected and proxy authentication requested
         MockWebServerUtil.enqueueSuccess(proxyWebServer);
-        freeStyleProject.getPublishersList().add(appCenterRecorder);
 
         // When
         final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
@@ -111,14 +99,9 @@ public class ProxyTest {
     public void should_SendAllRequestsDirectly_When_NoProxyHostConfigured() throws Exception {
         // Given
         final String noProxyHost = mockWebServer.url("/").url().getHost();
-
         jenkinsRule.jenkins.proxy = new ProxyConfiguration(proxyWebServer.getHostName(), proxyWebServer.getPort(), null, null, noProxyHost);
 
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "three/days/xiola.apk", "casey, niccoli");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").toString()); // Notice this is *not* set to the proxy address
-
         MockWebServerUtil.enqueueSuccess(mockWebServer);
-        freeStyleProject.getPublishersList().add(appCenterRecorder);
 
         // When
         final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
@@ -133,14 +116,9 @@ public class ProxyTest {
     public void should_SendUploadRequestsDirectly_When_NoProxyHostConfiguredForAppCenterAPI() throws Exception {
         // Given
         final String noProxyHost = mockWebServer.url("/").url().getHost();
-
         jenkinsRule.jenkins.proxy = new ProxyConfiguration(proxyWebServer.getHostName(), proxyWebServer.getPort(), null, null, noProxyHost);
 
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "three/days/xiola.apk", "casey, niccoli");
-        appCenterRecorder.setBaseUrl(mockWebServer.url("/").toString()); // Notice this is *not* set to the proxy address
-
         MockWebServerUtil.enqueueUploadViaProxy(mockWebServer, proxyWebServer);
-        freeStyleProject.getPublishersList().add(appCenterRecorder);
 
         // When
         final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
