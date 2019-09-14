@@ -44,7 +44,8 @@ public class EnvInterpolationTest {
     @Test
     public void should_InterpolateEnv_InAppPath() throws Exception {
         // Given
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app-${BUILD_NUMBER}.apk");
+        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "path/to/app-${BUILD_NUMBER}.apk", "casey, niccoli");
+        ;
         appCenterRecorder.setBaseUrl(mockWebServer.url("/").toString());
 
         freeStyleProject.getPublishersList().add(appCenterRecorder);
@@ -60,7 +61,7 @@ public class EnvInterpolationTest {
     @Test
     public void should_LeaveUnchangedWhenNotInEnv_InAppPath() throws Exception {
         // Given
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app-${NOTINENV}.apk");
+        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "path/to/app-${NOTINENV}.apk", "casey, niccoli");
         appCenterRecorder.setBaseUrl(mockWebServer.url("/").url().toString());
 
         freeStyleProject.getPublishersList().add(appCenterRecorder);

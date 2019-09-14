@@ -32,7 +32,7 @@ public class FreestyleTest {
     public void setUp() throws IOException {
         freeStyleProject = jenkinsRule.createFreeStyleProject();
         freeStyleProject.getBuildersList().add(new TestAppWriter());
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("token", "owner_name", "app_name", "Collaborators", "path/to/app.apk");
+        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "three/days/xiola.apk", "casey, niccoli");
         appCenterRecorder.setBaseUrl(mockWebServer.url("/").toString());
         freeStyleProject.getPublishersList().add(appCenterRecorder);
     }
@@ -64,7 +64,7 @@ public class FreestyleTest {
     private static class TestAppWriter extends TestBuilder {
         public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
             throws InterruptedException, IOException {
-            Objects.requireNonNull(build.getWorkspace()).child("path/to/app.apk").write("little tiny robots", "UTF-8");
+            Objects.requireNonNull(build.getWorkspace()).child("three/days/xiola.apk").write("all of us with wings", "UTF-8");
             return true;
         }
     }

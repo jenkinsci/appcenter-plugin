@@ -16,22 +16,21 @@ public class RoundTripTest {
     public void should_Configure_AppCenterRecorder_With_Required_Inputs() throws Exception {
         // Given
         final AppCenterRecorder appCenterRecorder = new AppCenterRecorder(
-            "api-token",
-            "owner-name",
-            "app-name",
-            "distribution-group",
-            "path/to/app.apk"
+            "at-this-moment-you-should-be-with-us",
+            "janes-addiction",
+            "ritual-de-lo-habitual",
+            "three/days/xiola.apk",
+            "casey, niccoli"
         );
 
         // When
         jenkinsRule.configRoundtrip(appCenterRecorder);
 
         // Then
-        assertThat(appCenterRecorder.getApiToken()).isEqualTo(Secret.fromString("api-token"));
-        assertThat(appCenterRecorder.getOwnerName()).isEqualTo("owner-name");
-        assertThat(appCenterRecorder.getAppName()).isEqualTo("app-name");
-        assertThat(appCenterRecorder.getDistributionGroups()).isEqualTo("distribution-group");
-        assertThat(appCenterRecorder.getPathToApp()).isEqualTo("path/to/app.apk");
+        assertThat(appCenterRecorder.getApiToken()).isEqualTo(Secret.fromString("at-this-moment-you-should-be-with-us"));
+        assertThat(appCenterRecorder.getOwnerName()).isEqualTo("janes-addiction");
+        assertThat(appCenterRecorder.getAppName()).isEqualTo("ritual-de-lo-habitual");
+        assertThat(appCenterRecorder.getPathToApp()).isEqualTo("three/days/xiola.apk");
+        assertThat(appCenterRecorder.getDistributionGroups()).isEqualTo("casey, niccoli");
     }
-
 }
