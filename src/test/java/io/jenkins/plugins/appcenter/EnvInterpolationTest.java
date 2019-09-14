@@ -1,22 +1,18 @@
 package io.jenkins.plugins.appcenter;
 
-import hudson.Launcher;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Result;
 import io.jenkins.plugins.appcenter.api.MockWebServerUtil;
+import io.jenkins.plugins.appcenter.util.TestUtil;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.TestBuilder;
 
 import java.io.IOException;
-import java.util.Objects;
 
 public class EnvInterpolationTest {
 
@@ -32,13 +28,7 @@ public class EnvInterpolationTest {
     public void setUp() throws IOException {
         MockWebServerUtil.enqueueSuccess(mockWebServer);
         freeStyleProject = jenkinsRule.createFreeStyleProject();
-        freeStyleProject.getBuildersList().add(new TestBuilder() {
-            public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
-                throws InterruptedException, IOException {
-                Objects.requireNonNull(build.getWorkspace()).child("path/to/app-42.apk").write("little tiny robots", "UTF-8");
-                return true;
-            }
-        });
+        freeStyleProject.getBuildersList().add(TestUtil.createFileForFreeStyle("path/to/app-42.apk"));
     }
 
     @Test
