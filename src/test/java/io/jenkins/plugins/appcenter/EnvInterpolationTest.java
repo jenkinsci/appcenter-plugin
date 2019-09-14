@@ -70,6 +70,20 @@ public class EnvInterpolationTest {
     }
 
     @Test
+    public void should_InterpolateEnv_InAppName() throws Exception {
+        // Given
+        MockWebServerUtil.enqueueSuccess(mockWebServer);
+
+        // When
+        final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
+
+        // Then
+        jenkinsRule.assertBuildStatus(Result.SUCCESS, freeStyleBuild);
+        final RecordedRequest recordedRequest = mockWebServer.takeRequest();
+        assertThat(recordedRequest.getPath()).contains("ritual-de-lo-habitual");
+    }
+
+    @Test
     public void should_InterpolateEnv_InAppPath() throws Exception {
         // Given
         MockWebServerUtil.enqueueSuccess(mockWebServer);
