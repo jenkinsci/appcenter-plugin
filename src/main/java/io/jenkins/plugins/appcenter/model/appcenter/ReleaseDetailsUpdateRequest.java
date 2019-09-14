@@ -1,6 +1,9 @@
 package io.jenkins.plugins.appcenter.model.appcenter;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 
 public final class ReleaseDetailsUpdateRequest {
     public final String release_notes;
@@ -9,7 +12,8 @@ public final class ReleaseDetailsUpdateRequest {
     public final BuildInfo build;
     public final boolean notify_testers;
 
-    public ReleaseDetailsUpdateRequest(String releaseNotes, boolean mandatoryUpdate, List<DestinationId> destinations, BuildInfo build, boolean notifyTesters) {
+    public ReleaseDetailsUpdateRequest(@Nonnull String releaseNotes, boolean mandatoryUpdate, @Nonnull List<DestinationId> destinations, @Nullable BuildInfo build,
+                                       boolean notifyTesters) {
         this.release_notes = releaseNotes;
         this.mandatory_update = mandatoryUpdate;
         this.destinations = destinations;
@@ -26,5 +30,22 @@ public final class ReleaseDetailsUpdateRequest {
             ", build=" + build +
             ", notify_testers=" + notify_testers +
             '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReleaseDetailsUpdateRequest that = (ReleaseDetailsUpdateRequest) o;
+        return mandatory_update == that.mandatory_update &&
+            notify_testers == that.notify_testers &&
+            release_notes.equals(that.release_notes) &&
+            destinations.equals(that.destinations) &&
+            Objects.equals(build, that.build);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(release_notes, mandatory_update, destinations, build, notify_testers);
     }
 }
