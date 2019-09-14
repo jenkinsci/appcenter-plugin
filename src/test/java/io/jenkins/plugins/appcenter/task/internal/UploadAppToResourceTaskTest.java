@@ -50,7 +50,7 @@ public class UploadAppToResourceTaskTest {
     public void setUp() {
         given(mockTaskListener.getLogger()).willReturn(mockLogger);
         given(mockFilePath.child(anyString())).willReturn(mockFilePath);
-        given(mockFilePath.getRemote()).willReturn("src/test/resources/three/days/xiola.apk"); // This has to return the correct path on the file system but not in the main source set
+        given(mockFilePath.getRemote()).willReturn("src/test/resources/three/days/xiola.apk"); // Note: We cannot create a file in the workspace in this test so need to point to an actual file
         final AppCenterServiceFactory factory = new AppCenterServiceFactory(Secret.fromString("secret-token"), mockWebServer.url("/").toString(), mockProxyConfig);
         task = new UploadAppToResourceTask(mockTaskListener, mockFilePath, factory);
     }
