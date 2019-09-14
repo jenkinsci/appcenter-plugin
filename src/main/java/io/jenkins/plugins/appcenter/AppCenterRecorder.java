@@ -48,21 +48,21 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     private final String appName;
 
     @Nonnull
-    private final String distributionGroups;
+    private final String pathToApp;
 
     @Nonnull
-    private final String pathToApp;
+    private final String distributionGroups;
 
     @Nullable
     private transient String baseUrl;
 
     @DataBoundConstructor
-    public AppCenterRecorder(@Nullable String apiToken, @Nullable String ownerName, @Nullable String appName, @Nullable String distributionGroups, @Nullable String pathToApp) {
+    public AppCenterRecorder(@Nullable String apiToken, @Nullable String ownerName, @Nullable String appName, @Nullable String pathToApp, @Nullable String distributionGroups) {
         this.apiToken = Secret.fromString(apiToken);
         this.ownerName = Util.fixNull(ownerName);
         this.appName = Util.fixNull(appName);
-        this.distributionGroups = Util.fixNull(distributionGroups);
         this.pathToApp = Util.fixNull(pathToApp);
+        this.distributionGroups = Util.fixNull(distributionGroups);
     }
 
     @Nonnull
@@ -81,13 +81,13 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     }
 
     @Nonnull
-    public String getDistributionGroups() {
-        return distributionGroups;
+    public String getPathToApp() {
+        return pathToApp;
     }
 
     @Nonnull
-    public String getPathToApp() {
-        return pathToApp;
+    public String getDistributionGroups() {
+        return distributionGroups;
     }
 
     /**
@@ -176,21 +176,6 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         }
 
         @SuppressWarnings("unused")
-        public FormValidation doCheckDistributionGroups(@QueryParameter String value) {
-            if (value.isEmpty()) {
-                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_missingDistributionGroups());
-            }
-
-            final Validator validator = new DistributionGroupsValidator();
-
-            if (!validator.isValid(value)) {
-                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_invalidDistributionGroups());
-            }
-
-            return FormValidation.ok();
-        }
-
-        @SuppressWarnings("unused")
         public FormValidation doCheckPathToApp(@QueryParameter String value) {
             if (value.isEmpty()) {
                 return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_missingPathToApp());
@@ -206,6 +191,21 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
 
             if (!pathPlaceholderValidator.isValid(value)) {
                 return FormValidation.warning(Messages.AppCenterRecorder_DescriptorImpl_warnings_mustNotStartWithEnvVar());
+            }
+
+            return FormValidation.ok();
+        }
+
+        @SuppressWarnings("unused")
+        public FormValidation doCheckDistributionGroups(@QueryParameter String value) {
+            if (value.isEmpty()) {
+                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_missingDistributionGroups());
+            }
+
+            final Validator validator = new DistributionGroupsValidator();
+
+            if (!validator.isValid(value)) {
+                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_invalidDistributionGroups());
             }
 
             return FormValidation.ok();

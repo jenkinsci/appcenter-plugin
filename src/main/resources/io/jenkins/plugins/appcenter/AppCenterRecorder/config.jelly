@@ -16,13 +16,13 @@
         <f:textbox/>
     </f:entry>
 
-    <f:entry title="${%Distribution Groups}" field="distributionGroups"
-             description="${%Comma separated list of distribution groups.}">
+    <f:entry title="${%Path To App}" field="pathToApp"
+             description="${%Relative path to app.}">
         <f:textbox/>
     </f:entry>
 
-    <f:entry title="${%Path To App}" field="pathToApp"
-             description="${%Relative path to app.}">
+    <f:entry title="${%Distribution Groups}" field="distributionGroups"
+             description="${%Comma separated list of distribution groups.}">
         <f:textbox/>
     </f:entry>
 
