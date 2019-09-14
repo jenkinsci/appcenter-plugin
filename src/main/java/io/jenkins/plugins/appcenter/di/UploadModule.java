@@ -14,12 +14,11 @@ final class UploadModule {
     @Provides
     @Singleton
     static UploadRequest provideUploadRequest(AppCenterRecorder appCenterRecorder, EnvVars envVars) {
-        // TODO: Expand the environment variable for all parameters
         return new UploadRequest(
-            appCenterRecorder.getOwnerName(),
-            appCenterRecorder.getAppName(),
+            envVars.expand(appCenterRecorder.getOwnerName()),
+            envVars.expand(appCenterRecorder.getAppName()),
             envVars.expand(appCenterRecorder.getPathToApp()),
-            appCenterRecorder.getDistributionGroups()
+            envVars.expand(appCenterRecorder.getDistributionGroups())
         );
     }
 }
