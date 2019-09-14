@@ -10,7 +10,7 @@ import static com.google.common.truth.Truth.assertThat;
 public class RoundTripTest {
 
     @ClassRule
-    public static JenkinsRule j = new JenkinsRule();
+    public static JenkinsRule jenkinsRule = new JenkinsRule();
 
     @Test
     public void should_Configure_AppCenterRecorder_With_Required_Inputs() throws Exception {
@@ -24,7 +24,7 @@ public class RoundTripTest {
         );
 
         // When
-        j.configRoundtrip(appCenterRecorder);
+        jenkinsRule.configRoundtrip(appCenterRecorder);
 
         // Then
         assertThat(appCenterRecorder.getApiToken()).isEqualTo(Secret.fromString("api-token"));
