@@ -5,7 +5,7 @@ import hudson.model.FreeStyleProject;
 import hudson.model.Node;
 import hudson.model.Result;
 import hudson.slaves.RetentionStrategy;
-import io.jenkins.plugins.appcenter.api.MockWebServerUtil;
+import io.jenkins.plugins.appcenter.util.MockWebServerUtil;
 import io.jenkins.plugins.appcenter.util.TestUtil;
 import okhttp3.mockwebserver.MockWebServer;
 import org.jenkinci.plugins.mock_slave.MockSlave;

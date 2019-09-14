@@ -1,4 +1,4 @@
-package io.jenkins.plugins.appcenter.api;
+package io.jenkins.plugins.appcenter.util;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;

@@ -3,7 +3,7 @@ package io.jenkins.plugins.appcenter;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Result;
-import io.jenkins.plugins.appcenter.api.MockWebServerUtil;
+import io.jenkins.plugins.appcenter.util.MockWebServerUtil;
 import io.jenkins.plugins.appcenter.util.TestUtil;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Before;
