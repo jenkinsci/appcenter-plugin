@@ -50,7 +50,7 @@ public class UploadAppToResourceTaskTest {
     public void setUp() {
         given(mockTaskListener.getLogger()).willReturn(mockLogger);
         given(mockFilePath.child(anyString())).willReturn(mockFilePath);
-        given(mockFilePath.getRemote()).willReturn("src/test/resources/xiola.apk");
+        given(mockFilePath.getRemote()).willReturn("src/test/resources/three/days/xiola.apk"); // Note: We cannot create a file in the workspace in this test so need to point to an actual file
         final AppCenterServiceFactory factory = new AppCenterServiceFactory(Secret.fromString("secret-token"), mockWebServer.url("/").toString(), mockProxyConfig);
         task = new UploadAppToResourceTask(mockTaskListener, mockFilePath, factory);
     }
@@ -59,7 +59,7 @@ public class UploadAppToResourceTaskTest {
     @Test
     public void should_ReturnUploadId_When_RequestIsSuccess() throws Exception {
         // Given
-        final UploadAppToResourceTask.Request request = new UploadAppToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "path/to/app.apk");
+        final UploadAppToResourceTask.Request request = new UploadAppToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "three/days/xiola.apk");
         mockWebServer.enqueue(new MockResponse().setResponseCode(200));
 
         // When
@@ -73,7 +73,7 @@ public class UploadAppToResourceTaskTest {
     @Test
     public void should_ReturnException_When_RequestIsUnSuccessful() throws Exception {
         // Given
-        final UploadAppToResourceTask.Request request = new UploadAppToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "path/to/app.apk");
+        final UploadAppToResourceTask.Request request = new UploadAppToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "three/days/xiola.apk");
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));
 
         // When
@@ -90,7 +90,7 @@ public class UploadAppToResourceTaskTest {
     @Test
     public void should_SendRequestToUploadUrl() throws Exception {
         // Given
-        final UploadAppToResourceTask.Request request = new UploadAppToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "path/to/app.apk");
+        final UploadAppToResourceTask.Request request = new UploadAppToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "three/days/xiola.apk");
         mockWebServer.enqueue(new MockResponse().setResponseCode(200));
         task.execute(request).get();
 
@@ -105,7 +105,7 @@ public class UploadAppToResourceTaskTest {
     @Test
     public void should_SendRequestAsPost() throws Exception {
         // Given
-        final UploadAppToResourceTask.Request request = new UploadAppToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "path/to/app.apk");
+        final UploadAppToResourceTask.Request request = new UploadAppToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "three/days/xiola.apk");
         mockWebServer.enqueue(new MockResponse().setResponseCode(200));
         task.execute(request).get();
 
