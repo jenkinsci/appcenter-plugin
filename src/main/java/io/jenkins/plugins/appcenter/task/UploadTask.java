@@ -43,7 +43,7 @@ public final class UploadTask extends MasterToSlaveCallable<Boolean, AppCenterEx
                 .thenCompose(result -> createUploadResource.execute(new CreateUploadResourceTask.Request(request.ownerName, request.appName)))
                 .thenCompose(releaseUploadBeginResponse -> uploadAppToResource.execute(new UploadAppToResourceTask.Request(releaseUploadBeginResponse.upload_url, releaseUploadBeginResponse.upload_id, request.pathToApp)))
                 .thenCompose(uploadId -> commitUploadResource.execute(new CommitUploadResourceTask.Request(request.ownerName, request.appName, uploadId)))
-                .thenCompose(releaseUploadEndResponse -> distributeResource.execute(new DistributeResourceTask.Request(request.ownerName, request.appName, request.destinationGroups, releaseUploadEndResponse.release_id)))
+                .thenCompose(releaseUploadEndResponse -> distributeResource.execute(new DistributeResourceTask.Request(request.ownerName, request.appName, request.destinationGroups, request.releaseNotes, releaseUploadEndResponse.release_id)))
                 .whenComplete((releaseDetailsUpdateResponse, throwable) -> {
                     if (throwable != null) {
                         future.complete(false);

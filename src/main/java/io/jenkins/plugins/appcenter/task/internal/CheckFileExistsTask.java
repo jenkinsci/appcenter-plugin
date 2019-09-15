@@ -54,7 +54,7 @@ public final class CheckFileExistsTask implements AppCenterTask<Request, Boolean
 
     public static class Request {
         @Nonnull
-        public final String pathToApp;
+        private final String pathToApp;
 
         public Request(@Nonnull final String pathToApp) {
             this.pathToApp = pathToApp;

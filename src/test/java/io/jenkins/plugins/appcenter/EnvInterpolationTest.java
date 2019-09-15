@@ -40,6 +40,7 @@ public class EnvInterpolationTest {
         envVars.put("APP_NAME", "ritual-de-lo-habitual");
         envVars.put("PATH_TO_APP", "three/days/xiola.apk");
         envVars.put("DISTRIBUTION_GROUPS", "casey, niccoli");
+        envVars.put("RELEASE_NOTES", "I miss you my dear Xiola");
 
         jenkinsRule.jenkins.getGlobalNodeProperties().add(prop);
 
@@ -50,6 +51,7 @@ public class EnvInterpolationTest {
             "${PATH_TO_APP}",
             "${DISTRIBUTION_GROUPS}"
         );
+        appCenterRecorder.setReleaseNotes("${RELEASE_NOTES}");
         appCenterRecorder.setBaseUrl(mockWebServer.url("/").toString());
 
         freeStyleProject.getPublishersList().add(appCenterRecorder);
@@ -113,5 +115,22 @@ public class EnvInterpolationTest {
         mockWebServer.takeRequest();
         final RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertThat(recordedRequest.getBody().readUtf8()).contains("[{\"name\":\"casey\"},{\"name\":\"niccoli\"}]");
+    }
+
+    @Test
+    public void should_InterpolateEnv_InReleaseNotes() throws Exception {
+        // Given
+        MockWebServerUtil.enqueueSuccess(mockWebServer);
+
+        // When
+        final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
+
+        // Then
+        jenkinsRule.assertBuildStatus(Result.SUCCESS, freeStyleBuild);
+        mockWebServer.takeRequest();
+        mockWebServer.takeRequest();
+        mockWebServer.takeRequest();
+        final RecordedRequest recordedRequest = mockWebServer.takeRequest();
+        assertThat(recordedRequest.getBody().readUtf8()).contains("\"release_notes\":\"I miss you my dear Xiola\"");
     }
 }

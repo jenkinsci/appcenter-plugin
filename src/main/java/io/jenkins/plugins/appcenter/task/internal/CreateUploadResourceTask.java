@@ -59,9 +59,9 @@ public final class CreateUploadResourceTask implements AppCenterTask<Request, Re
 
     public static class Request {
         @Nonnull
-        public final String ownerName;
+        private final String ownerName;
         @Nonnull
-        public final String appName;
+        private final String appName;
 
         public Request(@Nonnull final String ownerName,
                        @Nonnull final String appName) {
