@@ -28,6 +28,7 @@ import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
 import javax.annotation.Nonnull;
@@ -52,6 +53,9 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
 
     @Nonnull
     private final String distributionGroups;
+
+    @Nullable
+    private String releaseNotes;
 
     @Nullable
     private transient String baseUrl;
@@ -88,6 +92,16 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     @Nonnull
     public String getDistributionGroups() {
         return distributionGroups;
+    }
+
+    @Nonnull
+    public String getReleaseNotes() {
+        return Util.fixNull(releaseNotes);
+    }
+
+    @DataBoundSetter
+    public void setReleaseNotes(@Nullable String releaseNotes) {
+        this.releaseNotes = Util.fixEmpty(releaseNotes);
     }
 
     /**

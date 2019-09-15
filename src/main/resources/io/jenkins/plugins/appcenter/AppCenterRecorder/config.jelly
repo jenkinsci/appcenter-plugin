@@ -26,4 +26,9 @@
         <f:textbox/>
     </f:entry>
 
+    <f:entry title="${%Release Notes}" field="releaseNotes"
+             description="${%Optional, release notes in markdown format.}">
+        <f:textarea/>
+    </f:entry>
+
 </j:jelly>

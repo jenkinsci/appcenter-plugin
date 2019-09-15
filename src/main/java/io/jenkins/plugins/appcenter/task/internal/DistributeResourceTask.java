@@ -43,7 +43,7 @@ public final class DistributeResourceTask implements AppCenterTask<Request, Rele
 
         final CompletableFuture<ReleaseDetailsUpdateResponse> future = new CompletableFuture<>();
 
-        final String releaseNotes = "";
+        final String releaseNotes = request.releaseNotes;
         final boolean mandatoryUpdate = false;
         final List<DestinationId> destinations = Stream.of(request.destinationGroups.split(","))
             .map(String::trim)
@@ -75,15 +75,19 @@ public final class DistributeResourceTask implements AppCenterTask<Request, Rele
         private final String appName;
         @Nonnull
         private final String destinationGroups;
+        @Nonnull
+        private final String releaseNotes;
         private final int releaseId;
 
         public Request(@Nonnull final String ownerName,
                        @Nonnull final String appName,
                        @Nonnull final String destinationGroups,
+                       @Nonnull final String releaseNotes,
                        final int releaseId) {
             this.ownerName = ownerName;
             this.appName = appName;
             this.destinationGroups = destinationGroups;
+            this.releaseNotes = releaseNotes;
             this.releaseId = releaseId;
         }
     }
