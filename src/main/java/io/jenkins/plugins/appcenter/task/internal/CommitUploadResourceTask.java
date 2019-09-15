@@ -57,9 +57,9 @@ public final class CommitUploadResourceTask implements AppCenterTask<CommitUploa
 
     public static class Request {
         @Nonnull
-        public final String ownerName;
+        private final String ownerName;
         @Nonnull
-        public final String appName;
+        private final String appName;
         @Nonnull
         private final String uploadId;
 

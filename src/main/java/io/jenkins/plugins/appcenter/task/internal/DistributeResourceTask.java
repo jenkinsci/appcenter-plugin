@@ -70,9 +70,9 @@ public final class DistributeResourceTask implements AppCenterTask<Request, Rele
 
     public static class Request {
         @Nonnull
-        public final String ownerName;
+        private final String ownerName;
         @Nonnull
-        public final String appName;
+        private final String appName;
         @Nonnull
         private final String destinationGroups;
         private final int releaseId;
