@@ -70,7 +70,7 @@ public class CreateUploadResourceTaskTest {
     }
 
     @Test
-    public void should_ReturnException_When_RequestIsUnSuccessful() throws Exception {
+    public void should_ReturnException_When_RequestIsUnSuccessful() {
         // Given
         final CreateUploadResourceTask.Request request = new CreateUploadResourceTask.Request("owner-name", "app-name");
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));

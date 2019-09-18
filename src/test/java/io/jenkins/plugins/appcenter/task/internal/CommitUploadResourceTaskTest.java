@@ -67,7 +67,7 @@ public class CommitUploadResourceTaskTest {
     }
 
     @Test
-    public void should_ReturnException_When_RequestIsUnSuccessful() throws Exception {
+    public void should_ReturnException_When_RequestIsUnSuccessful() {
         // Given
         final CommitUploadResourceTask.Request request = new CommitUploadResourceTask.Request("owner-name", "app-name", "upload-id");
         mockWebServer.enqueue(new MockResponse().setResponseCode(400));

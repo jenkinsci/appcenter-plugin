@@ -71,7 +71,7 @@ public class UploadAppToResourceTaskTest {
     }
 
     @Test
-    public void should_ReturnException_When_RequestIsUnSuccessful() throws Exception {
+    public void should_ReturnException_When_RequestIsUnSuccessful() {
         // Given
         final UploadAppToResourceTask.Request request = new UploadAppToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "three/days/xiola.apk");
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));
