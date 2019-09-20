@@ -97,6 +97,7 @@ public final class AppCenterServiceFactory implements Serializable {
             .proxy(setProxy(proxyConfiguration, httpUrl.host()))
             .proxyAuthenticator(setProxyAuthenticator(proxyConfiguration))
             .connectTimeout(timeoutSeconds, TimeUnit.SECONDS)
+            .readTimeout(timeoutSeconds, TimeUnit.SECONDS)
             .writeTimeout(timeoutSeconds, TimeUnit.SECONDS);
     }
 
