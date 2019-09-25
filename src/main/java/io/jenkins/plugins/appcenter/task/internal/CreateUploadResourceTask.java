@@ -48,10 +48,10 @@ public final class CreateUploadResourceTask implements AppCenterTask<Request, Re
                     final AppCenterException exception = new AppCenterException("Create upload resource unsuccessful: ", throwable);
                     exception.printStackTrace(logger);
                     future.completeExceptionally(exception);
+                } else {
+                    logger.println("Create upload resource successful.");
+                    future.complete(releaseUploadBeginResponse);
                 }
-
-                logger.println("Create upload resource successful.");
-                future.complete(releaseUploadBeginResponse);
             });
 
         return future;

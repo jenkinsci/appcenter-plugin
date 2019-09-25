@@ -59,10 +59,10 @@ public final class DistributeResourceTask implements AppCenterTask<Request, Rele
                     final AppCenterException exception = new AppCenterException("Distributing resource unsuccessful: ", throwable);
                     exception.printStackTrace(logger);
                     future.completeExceptionally(exception);
+                } else {
+                    logger.println("Distributing resource successful.");
+                    future.complete(releaseUploadBeginResponse);
                 }
-
-                logger.println("Distributing resource successful.");
-                future.complete(releaseUploadBeginResponse);
             });
 
         return future;
