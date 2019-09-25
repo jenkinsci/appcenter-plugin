@@ -47,9 +47,9 @@ public final class UploadTask extends MasterToSlaveCallable<Boolean, AppCenterEx
                 .whenComplete((releaseDetailsUpdateResponse, throwable) -> {
                     if (throwable != null) {
                         future.complete(false);
+                    } else {
+                        future.complete(true);
                     }
-
-                    future.complete(true);
                 })
                 .get();
         } catch (InterruptedException | ExecutionException e) {

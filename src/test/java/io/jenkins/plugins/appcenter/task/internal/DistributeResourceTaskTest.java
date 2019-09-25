@@ -66,7 +66,7 @@ public class DistributeResourceTaskTest {
     }
 
     @Test
-    public void should_ReturnException_When_RequestIsUnSuccessful() throws Exception {
+    public void should_ReturnException_When_RequestIsUnSuccessful() {
         // Given
         final DistributeResourceTask.Request request = new DistributeResourceTask.Request("owner-name", "app-name", "group1, group2", "release-notes", 0);
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));

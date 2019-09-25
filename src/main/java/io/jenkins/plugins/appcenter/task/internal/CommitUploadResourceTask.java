@@ -46,10 +46,10 @@ public final class CommitUploadResourceTask implements AppCenterTask<CommitUploa
                     final AppCenterException exception = new AppCenterException("Committing resource unsuccessful: ", throwable);
                     exception.printStackTrace(logger);
                     future.completeExceptionally(exception);
+                } else {
+                    logger.println("Committing resource successful.");
+                    future.complete(releaseUploadBeginResponse);
                 }
-
-                logger.println("Committing resource successful.");
-                future.complete(releaseUploadBeginResponse);
             });
 
         return future;
