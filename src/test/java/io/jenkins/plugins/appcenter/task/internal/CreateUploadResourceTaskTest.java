@@ -70,6 +70,27 @@ public class CreateUploadResourceTaskTest {
     }
 
     @Test
+    public void should_ReturnResponse_When_RequestIsSuccessful_NonAsciiCharactersInFileName() throws Exception {
+        // Given
+        final CreateUploadResourceTask.Request request = new CreateUploadResourceTask.Request("owner-name", "åþþ ñåmë");
+        final ReleaseUploadBeginResponse expected = new ReleaseUploadBeginResponse("string", "string", "string", "string", "string");
+        mockWebServer.enqueue(new MockResponse().setResponseCode(201).setBody("{\n" +
+            "  \"upload_id\": \"string\",\n" +
+            "  \"upload_url\": \"string\",\n" +
+            "  \"asset_id\": \"string\",\n" +
+            "  \"asset_domain\": \"string\",\n" +
+            "  \"asset_token\": \"string\"\n" +
+            "}"));
+
+        // When
+        final ReleaseUploadBeginResponse actual = task.execute(request).get();
+
+        // Then
+        assertThat(actual)
+            .isEqualTo(expected);
+    }
+
+    @Test
     public void should_ReturnException_When_RequestIsUnSuccessful() {
         // Given
         final CreateUploadResourceTask.Request request = new CreateUploadResourceTask.Request("owner-name", "app-name");
