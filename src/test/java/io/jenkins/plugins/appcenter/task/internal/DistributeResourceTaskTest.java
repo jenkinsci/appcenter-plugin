@@ -51,7 +51,7 @@ public class DistributeResourceTaskTest {
     @Test
     public void should_ReturnResponse_When_RequestIsSuccessful() throws Exception {
         // Given
-        final DistributeResourceTask.Request request = new DistributeResourceTask.Request("owner-name", "app-name", "group1, group2", "release-notes", 0);
+        final DistributeResourceTask.Request request = new DistributeResourceTask.Request("owner-name", "app-name", "group1, group2", "release-notes", false, 0);
         final ReleaseDetailsUpdateResponse expected = new ReleaseDetailsUpdateResponse("string");
         mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
             "  \"release_notes\": \"string\"\n" +
@@ -68,7 +68,7 @@ public class DistributeResourceTaskTest {
     @Test
     public void should_ReturnException_When_RequestIsUnSuccessful() {
         // Given
-        final DistributeResourceTask.Request request = new DistributeResourceTask.Request("owner-name", "app-name", "group1, group2", "release-notes", 0);
+        final DistributeResourceTask.Request request = new DistributeResourceTask.Request("owner-name", "app-name", "group1, group2", "release-notes", false, 0);
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));
 
         // When
