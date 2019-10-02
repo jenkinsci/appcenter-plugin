@@ -5,7 +5,7 @@ plugin.
 
 ## Roadmap
 
-This plugin is currently in Alpha and looking for contributors. To begin with it will aim to support the upload 
+This plugin is currently in Alpha and looking for contributors. To begin with it will aim to support the upload
 functionality of AppCenter. When the APIs for AppCenter become stable this plugin will be eligible to be moved out of
 Alpha.
 
@@ -18,7 +18,7 @@ Upcoming functionality:
 
 If you would like to contribute it would be massively helpful if you followed these steps:
 
-1. Create an issue first in the [Jenkins issue tracker](https://issues.jenkins-ci.org). 
+1. Create an issue first in the [Jenkins issue tracker](https://issues.jenkins-ci.org).
     * Use the component `appcenter-plugin`.
 2. Create a branch from `master` referencing your issue id.
 3. Commit, commit, commit.
@@ -26,7 +26,7 @@ If you would like to contribute it would be massively helpful if you followed th
 
 ## Usage Instructions
 
-Up to date syntax for this plugin can always be found in the Jenkins Pipeline Syntax Generator. However in its 
+Up to date syntax for this plugin can always be found in the Jenkins Pipeline Syntax Generator. However in its
 simplest form you can upload an artefact to AppCenter like this:
 
 ```Groovy
@@ -39,10 +39,11 @@ stage('Publish') {
             ownerName: 'janes-addiction',
             appName: 'ritual-de-lo-habitual',
             pathToApp: 'three/days/xiola.apk',
-            distributionGroups: 'casey, niccoli'
+            distributionGroups: 'casey, niccoli',
+            notifyTesters: true
   }
 }
 ```
 
-It may sound obvious but ensure the file you are trying to upload is available on the node that you are running the 
+It may sound obvious but ensure the file you are trying to upload is available on the node that you are running the
 plugin from.
