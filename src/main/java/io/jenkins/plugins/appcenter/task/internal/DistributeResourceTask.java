@@ -77,7 +77,7 @@ public final class DistributeResourceTask implements AppCenterTask<Request, Rele
         private final String destinationGroups;
         @Nonnull
         private final String releaseNotes;
-        @Nonnull
+
         private final boolean notifyTesters;
         private final int releaseId;
 
@@ -85,7 +85,7 @@ public final class DistributeResourceTask implements AppCenterTask<Request, Rele
                        @Nonnull final String appName,
                        @Nonnull final String destinationGroups,
                        @Nonnull final String releaseNotes,
-                       @Nonnull final boolean notifyTesters,
+                       final boolean notifyTesters,
                        final int releaseId) {
             this.ownerName = ownerName;
             this.appName = appName;
