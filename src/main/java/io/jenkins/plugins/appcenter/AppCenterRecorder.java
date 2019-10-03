@@ -58,15 +58,19 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     private String releaseNotes;
 
     @Nullable
+    private final boolean notifyTesters;
+
+    @Nullable
     private transient String baseUrl;
 
     @DataBoundConstructor
-    public AppCenterRecorder(@Nullable String apiToken, @Nullable String ownerName, @Nullable String appName, @Nullable String pathToApp, @Nullable String distributionGroups) {
+    public AppCenterRecorder(@Nullable String apiToken, @Nullable String ownerName, @Nullable String appName, @Nullable String pathToApp, @Nullable String distributionGroups, @Nullable boolean notifyTesters) {
         this.apiToken = Secret.fromString(apiToken);
         this.ownerName = Util.fixNull(ownerName);
         this.appName = Util.fixNull(appName);
         this.pathToApp = Util.fixNull(pathToApp);
         this.distributionGroups = Util.fixNull(distributionGroups);
+        this.notifyTesters = Util.fixNull(notifyTesters);
     }
 
     @Nonnull
@@ -97,6 +101,11 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     @Nonnull
     public String getReleaseNotes() {
         return Util.fixNull(releaseNotes);
+    }
+
+    @Nonnull
+    public boolean getNotifyTesters() {
+        return notifyTesters;
     }
 
     @DataBoundSetter
