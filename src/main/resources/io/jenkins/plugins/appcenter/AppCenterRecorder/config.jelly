@@ -31,4 +31,9 @@
         <f:textarea/>
     </f:entry>
 
+    <f:entry title="${%Notify Testers}" field="notifyTesters"
+             description="${%Optional, defaults to true}">
+        <f:checkbox name="notifyTesters" default="true"/>
+    </f:entry>
+
 </j:jelly>
