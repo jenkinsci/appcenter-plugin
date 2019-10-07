@@ -20,7 +20,7 @@ final class UploadModule {
             envVars.expand(appCenterRecorder.getPathToApp()),
             envVars.expand(appCenterRecorder.getDistributionGroups()),
             envVars.expand(appCenterRecorder.getReleaseNotes()),
-            Boolean.parseBoolean(envVars.expand(appCenterRecorder.getNotifyTesters()))
+            appCenterRecorder.getNotifyTesters()
         );
     }
 }
