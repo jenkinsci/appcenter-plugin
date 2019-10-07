@@ -53,7 +53,7 @@ public final class UploadTask extends MasterToSlaveCallable<Boolean, AppCenterEx
                 })
                 .get();
         } catch (InterruptedException | ExecutionException e) {
-            throw new AppCenterException("Upload to AppCenter failed.");
+            throw new AppCenterException("Upload to AppCenter failed.", e);
         }
 
         return future.join();
