@@ -8,6 +8,7 @@ import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseDetailsUpdateResponse;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,7 +52,7 @@ public class DistributeResourceTaskTest {
     @Test
     public void should_ReturnResponse_When_RequestIsSuccessful() throws Exception {
         // Given
-        final DistributeResourceTask.Request request = new DistributeResourceTask.Request("owner-name", "app-name", "group1, group2", "release-notes", 0);
+        final DistributeResourceTask.Request request = new DistributeResourceTask.Request("owner-name", "app-name", "group1, group2", "release-notes", true, 0);
         final ReleaseDetailsUpdateResponse expected = new ReleaseDetailsUpdateResponse("string");
         mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
             "  \"release_notes\": \"string\"\n" +
@@ -66,9 +67,47 @@ public class DistributeResourceTaskTest {
     }
 
     @Test
+    public void should_NotifyTesters_When_Configured() throws Exception {
+        // Given
+        final DistributeResourceTask.Request request = new DistributeResourceTask.Request("owner-name", "app-name", "group1, group2", "release-notes", true, 0);
+        final ReleaseDetailsUpdateResponse expected = new ReleaseDetailsUpdateResponse("string");
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
+            "  \"release_notes\": \"string\"\n" +
+            "}"));
+
+        final ReleaseDetailsUpdateResponse actual = task.execute(request).get();
+
+        // When
+        final RecordedRequest recordedRequest = mockWebServer.takeRequest();
+
+        // Then
+        assertThat(recordedRequest.getUtf8Body())
+            .contains("\"notify_testers\":true");
+    }
+
+    @Test
+    public void should_NotNotifyTesters_When_NotConfigured() throws Exception {
+        // Given
+        final DistributeResourceTask.Request request = new DistributeResourceTask.Request("owner-name", "app-name", "group1, group2", "release-notes", false, 0);
+        final ReleaseDetailsUpdateResponse expected = new ReleaseDetailsUpdateResponse("string");
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
+            "  \"release_notes\": \"string\"\n" +
+            "}"));
+
+        final ReleaseDetailsUpdateResponse actual = task.execute(request).get();
+
+        // When
+        final RecordedRequest recordedRequest = mockWebServer.takeRequest();
+
+        // Then
+        assertThat(recordedRequest.getUtf8Body())
+            .contains("\"notify_testers\":false");
+    }
+
+    @Test
     public void should_ReturnException_When_RequestIsUnSuccessful() {
         // Given
-        final DistributeResourceTask.Request request = new DistributeResourceTask.Request("owner-name", "app-name", "group1, group2", "release-notes", 0);
+        final DistributeResourceTask.Request request = new DistributeResourceTask.Request("owner-name", "app-name", "group1, group2", "release-notes", true, 0);
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));
 
         // When

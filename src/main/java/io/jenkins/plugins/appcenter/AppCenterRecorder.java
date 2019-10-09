@@ -57,6 +57,8 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     @Nullable
     private String releaseNotes;
 
+    private boolean notifyTesters = true;
+
     @Nullable
     private transient String baseUrl;
 
@@ -99,9 +101,18 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         return Util.fixNull(releaseNotes);
     }
 
+    public boolean getNotifyTesters() {
+        return notifyTesters;
+    }
+
     @DataBoundSetter
     public void setReleaseNotes(@Nullable String releaseNotes) {
         this.releaseNotes = Util.fixEmpty(releaseNotes);
+    }
+
+    @DataBoundSetter
+    public void setNotifyTesters(boolean notifyTesters) {
+        this.notifyTesters = notifyTesters;
     }
 
     /**

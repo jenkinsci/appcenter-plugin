@@ -49,7 +49,7 @@ public final class DistributeResourceTask implements AppCenterTask<Request, Rele
             .map(String::trim)
             .map(name -> new DestinationId(name, null))
             .collect(Collectors.toList());
-        final boolean notifyTesters = false;
+        final boolean notifyTesters = request.notifyTesters;
         final ReleaseDetailsUpdateRequest releaseDetailsUpdateRequest = new ReleaseDetailsUpdateRequest(releaseNotes, mandatoryUpdate, destinations, null, notifyTesters);
 
         factory.createAppCenterService()
@@ -77,17 +77,21 @@ public final class DistributeResourceTask implements AppCenterTask<Request, Rele
         private final String destinationGroups;
         @Nonnull
         private final String releaseNotes;
+
+        private final boolean notifyTesters;
         private final int releaseId;
 
         public Request(@Nonnull final String ownerName,
                        @Nonnull final String appName,
                        @Nonnull final String destinationGroups,
                        @Nonnull final String releaseNotes,
+                       final boolean notifyTesters,
                        final int releaseId) {
             this.ownerName = ownerName;
             this.appName = appName;
             this.destinationGroups = destinationGroups;
             this.releaseNotes = releaseNotes;
+            this.notifyTesters = notifyTesters;
             this.releaseId = releaseId;
         }
     }
