@@ -12,6 +12,7 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
 
@@ -46,22 +47,29 @@ public final class UploadAppToResourceTask implements AppCenterTask<Request, Str
 
         final CompletableFuture<String> future = new CompletableFuture<>();
 
-        final File file = new File(filePath.child(request.pathToApp).getRemote());
-        final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        final MultipartBody.Part body = MultipartBody.Part.createFormData("ipa", file.getName(), requestFile);
+        try {
+            final FilePath[] remoteFiles = filePath.list(request.pathToApp);
+            final File file = new File(remoteFiles[0].getRemote());
 
-        factory.createUploadService(request.uploadUrl)
-            .uploadApp(request.uploadUrl, body)
-            .whenComplete((responseBody, throwable) -> {
-                if (throwable != null) {
-                    final AppCenterException exception = new AppCenterException("Upload app to resource unsuccessful: ", throwable);
-                    exception.printStackTrace(logger);
-                    future.completeExceptionally(exception);
-                } else {
-                    logger.println("Upload app to resource successful.");
-                    future.complete(request.uploadId);
-                }
-            });
+            final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+            final MultipartBody.Part body = MultipartBody.Part.createFormData("ipa", file.getName(), requestFile);
+
+            factory.createUploadService(request.uploadUrl)
+                .uploadApp(request.uploadUrl, body)
+                .whenComplete((responseBody, throwable) -> {
+                    if (throwable != null) {
+                        final AppCenterException exception = new AppCenterException("Upload app to resource unsuccessful: ", throwable);
+                        exception.printStackTrace(logger);
+                        future.completeExceptionally(exception);
+                    } else {
+                        logger.println("Upload app to resource successful.");
+                        future.complete(request.uploadId);
+                    }
+                });
+
+        } catch (InterruptedException | IOException e) {
+            future.completeExceptionally(e);
+        }
 
         return future;
     }
