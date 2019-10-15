@@ -42,6 +42,8 @@ Below is a list of the features that this plugin supports:
 5. Distribution Groups: Enter the distribution group that this app should be available to.
 6. Release Notes: Optional notes that you can add to your build in App Center. 
 
+![alt img](https://github.com/abelberhane/appcenter-plugin/blob/master/src/images/AppCenterScreenshot.png?raw=true)
+
 ## Usage Instructions
 
 Up to date syntax for this plugin can always be found in the Jenkins Pipeline Syntax Generator. However in its 
