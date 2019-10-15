@@ -43,7 +43,7 @@ public class CheckFileExistsTaskTest {
     public void should_ReturnTrue_When_FileExists() throws Exception {
         // Given
         given(mockFilePath.child(anyString())).willReturn(mockFilePath);
-        given(mockFilePath.exists()).willReturn(true);
+        given(mockFilePath.list(anyString())).willReturn(new FilePath[] { mockFilePath });
         final CheckFileExistsTask.Request request = new CheckFileExistsTask.Request("path-to-app");
 
         // When
@@ -58,7 +58,7 @@ public class CheckFileExistsTaskTest {
     public void should_ThrowExecutionException_When_FileDoesNotExists() throws Exception {
         // Given
         given(mockFilePath.child(anyString())).willReturn(mockFilePath);
-        given(mockFilePath.exists()).willReturn(false);
+        given(mockFilePath.list(anyString())).willReturn(new FilePath[0]);
         final CheckFileExistsTask.Request request = new CheckFileExistsTask.Request("path-to-app");
 
         // When
@@ -67,6 +67,6 @@ public class CheckFileExistsTaskTest {
         // Then
         final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
         assertThat(exception).hasCauseThat().isInstanceOf(AppCenterException.class);
-        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo("File not found: path-to-app");
+        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo("No file(s) found: path-to-app");
     }
 }

@@ -39,7 +39,7 @@ public final class CheckFileExistsTask implements AppCenterTask<Request, Boolean
 
             FilePath[] remoteFiles = filePath.list(request.pathToApp);
 
-            if (remoteFiles.length != 0) {
+            if (remoteFiles != null && remoteFiles.length != 0) {
                 logger.println(String.format("File found: %s", remoteFiles[0]));
                 future.complete(true);
             } else {
