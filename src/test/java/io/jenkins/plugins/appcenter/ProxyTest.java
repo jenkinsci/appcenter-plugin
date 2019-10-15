@@ -35,9 +35,10 @@ public class ProxyTest {
     @Before
     public void setUp() throws IOException {
         freeStyleProject = jenkinsRule.createFreeStyleProject();
-        freeStyleProject.getBuildersList().add(TestUtil.createFileForFreeStyle("three/days/xiola.apk"));
+        freeStyleProject.getBuildersList().add(TestUtil.createFileForFreeStyle("three/days/xiola.ipa"));
+        freeStyleProject.getBuildersList().add(TestUtil.createFileForFreeStyle("three/days/symbols.dsym"));
 
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "three/days/xiola.apk", "casey, niccoli");
+        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "three/days/xiola.ipa", "three/days/symbols.dsym", "casey, niccoli");
         appCenterRecorder.setBaseUrl(mockWebServer.url("/").toString()); // Notice this is *not* set to the proxy address
         freeStyleProject.getPublishersList().add(appCenterRecorder);
     }
@@ -54,7 +55,7 @@ public class ProxyTest {
         // Then
         jenkinsRule.assertBuildStatus(Result.SUCCESS, freeStyleBuild);
         assertThat(proxyWebServer.getRequestCount()).isEqualTo(0);
-        assertThat(mockWebServer.getRequestCount()).isEqualTo(4);
+        assertThat(mockWebServer.getRequestCount()).isEqualTo(7);
     }
 
     @Test
@@ -68,7 +69,7 @@ public class ProxyTest {
 
         // Then
         jenkinsRule.assertBuildStatus(Result.SUCCESS, freeStyleBuild);
-        assertThat(proxyWebServer.getRequestCount()).isEqualTo(4);
+        assertThat(proxyWebServer.getRequestCount()).isEqualTo(7);
         assertThat(mockWebServer.getRequestCount()).isEqualTo(0);
     }
 
@@ -88,7 +89,7 @@ public class ProxyTest {
 
         // Then
         jenkinsRule.assertBuildStatus(Result.SUCCESS, freeStyleBuild);
-        assertThat(proxyWebServer.getRequestCount()).isEqualTo(5);
+        assertThat(proxyWebServer.getRequestCount()).isEqualTo(8);
         assertThat(mockWebServer.getRequestCount()).isEqualTo(0);
         // proxy auth is performed on second request
         assertThat(proxyWebServer.takeRequest().getHeader(HttpHeaders.PROXY_AUTHORIZATION)).isNull();
@@ -109,7 +110,7 @@ public class ProxyTest {
         // Then
         jenkinsRule.assertBuildStatus(Result.SUCCESS, freeStyleBuild);
         assertThat(proxyWebServer.getRequestCount()).isEqualTo(0);
-        assertThat(mockWebServer.getRequestCount()).isEqualTo(4);
+        assertThat(mockWebServer.getRequestCount()).isEqualTo(7);
     }
 
     @Test
@@ -125,7 +126,7 @@ public class ProxyTest {
 
         // Then
         jenkinsRule.assertBuildStatus(Result.SUCCESS, freeStyleBuild);
-        assertThat(proxyWebServer.getRequestCount()).isEqualTo(1);
-        assertThat(mockWebServer.getRequestCount()).isEqualTo(3);
+        assertThat(proxyWebServer.getRequestCount()).isEqualTo(2);
+        assertThat(mockWebServer.getRequestCount()).isEqualTo(5);
     }
 }

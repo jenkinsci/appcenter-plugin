@@ -18,6 +18,7 @@ final class UploadModule {
             envVars.expand(appCenterRecorder.getOwnerName()),
             envVars.expand(appCenterRecorder.getAppName()),
             envVars.expand(appCenterRecorder.getPathToApp()),
+            envVars.expand(appCenterRecorder.getPathToDebugSymbols()),
             envVars.expand(appCenterRecorder.getDistributionGroups()),
             envVars.expand(appCenterRecorder.getReleaseNotes()),
             appCenterRecorder.getNotifyTesters()

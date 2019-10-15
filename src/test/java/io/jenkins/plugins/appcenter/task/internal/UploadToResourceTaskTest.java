@@ -27,7 +27,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UploadAppToResourceTaskTest {
+public class UploadToResourceTaskTest {
 
     @Rule
     public MockWebServer mockWebServer = new MockWebServer();
@@ -44,22 +44,22 @@ public class UploadAppToResourceTaskTest {
     @Mock
     ProxyConfiguration mockProxyConfig;
 
-    private UploadAppToResourceTask task;
+    private UploadToResourceTask task;
 
     @Before
     public void setUp() {
         given(mockTaskListener.getLogger()).willReturn(mockLogger);
         given(mockFilePath.child(anyString())).willReturn(mockFilePath);
-        given(mockFilePath.getRemote()).willReturn("src/test/resources/three/days/xiola.apk"); // Note: We cannot create a file in the workspace in this test so need to point to an actual file
+        given(mockFilePath.getRemote()).willReturn("src/test/resources/three/days/xiola.ipa"); // Note: We cannot create a file in the workspace in this test so need to point to an actual file
         final AppCenterServiceFactory factory = new AppCenterServiceFactory(Secret.fromString("secret-token"), mockWebServer.url("/").toString(), mockProxyConfig);
-        task = new UploadAppToResourceTask(mockTaskListener, mockFilePath, factory);
+        task = new UploadToResourceTask(mockTaskListener, mockFilePath, factory);
     }
 
 
     @Test
     public void should_ReturnUploadId_When_RequestIsSuccess() throws Exception {
         // Given
-        final UploadAppToResourceTask.Request request = new UploadAppToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "three/days/xiola.apk");
+        final UploadToResourceTask.Request request = new UploadToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "three/days/xiola.ipa");
         mockWebServer.enqueue(new MockResponse().setResponseCode(200));
 
         // When
@@ -73,7 +73,7 @@ public class UploadAppToResourceTaskTest {
     @Test
     public void should_ReturnException_When_RequestIsUnSuccessful() {
         // Given
-        final UploadAppToResourceTask.Request request = new UploadAppToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "three/days/xiola.apk");
+        final UploadToResourceTask.Request request = new UploadToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "three/days/xiola.ipa");
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));
 
         // When
@@ -90,7 +90,7 @@ public class UploadAppToResourceTaskTest {
     @Test
     public void should_SendRequestToUploadUrl() throws Exception {
         // Given
-        final UploadAppToResourceTask.Request request = new UploadAppToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "three/days/xiola.apk");
+        final UploadToResourceTask.Request request = new UploadToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "three/days/xiola.ipa");
         mockWebServer.enqueue(new MockResponse().setResponseCode(200));
         task.execute(request).get();
 
@@ -105,7 +105,7 @@ public class UploadAppToResourceTaskTest {
     @Test
     public void should_SendRequestAsPost() throws Exception {
         // Given
-        final UploadAppToResourceTask.Request request = new UploadAppToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "three/days/xiola.apk");
+        final UploadToResourceTask.Request request = new UploadToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "three/days/xiola.ipa");
         mockWebServer.enqueue(new MockResponse().setResponseCode(200));
         task.execute(request).get();
 

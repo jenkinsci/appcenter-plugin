@@ -3,10 +3,10 @@ package io.jenkins.plugins.appcenter.model.appcenter;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public final class ReleaseUploadEndRequest {
+public final class UploadEndRequest {
     public final Status status;
 
-    public ReleaseUploadEndRequest(@Nonnull Status status) {
+    public UploadEndRequest(@Nonnull Status status) {
         this.status = status;
     }
 
@@ -21,7 +21,7 @@ public final class ReleaseUploadEndRequest {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ReleaseUploadEndRequest that = (ReleaseUploadEndRequest) o;
+        UploadEndRequest that = (UploadEndRequest) o;
         return status == that.status;
     }
 

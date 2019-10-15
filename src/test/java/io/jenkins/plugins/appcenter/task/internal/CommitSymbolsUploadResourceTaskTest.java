@@ -6,6 +6,7 @@ import hudson.util.Secret;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadEndResponse;
+import io.jenkins.plugins.appcenter.model.appcenter.SymbolsUploadEndResponse;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Before;
@@ -25,7 +26,7 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CommitUploadResourceTaskTest {
+public class CommitSymbolsUploadResourceTaskTest {
 
     @Rule
     public MockWebServer mockWebServer = new MockWebServer();
@@ -39,27 +40,26 @@ public class CommitUploadResourceTaskTest {
     @Mock
     ProxyConfiguration mockProxyConfig;
 
-    private CommitUploadResourceTask task;
+    private CommitSymbolsUploadResourceTask task;
 
     @Before
     public void setUp() {
         given(mockTaskListener.getLogger()).willReturn(mockLogger);
         final AppCenterServiceFactory factory = new AppCenterServiceFactory(Secret.fromString("secret-token"), mockWebServer.url("/").toString(), mockProxyConfig);
-        task = new CommitUploadResourceTask(mockTaskListener, factory);
+        task = new CommitSymbolsUploadResourceTask(mockTaskListener, factory);
     }
 
     @Test
     public void should_ReturnResponse_When_RequestIsSuccessful() throws Exception {
         // Given
-        final CommitUploadResourceTask.Request request = new CommitUploadResourceTask.Request("owner-name", "app-name", "upload-id");
-        final ReleaseUploadEndResponse expected = new ReleaseUploadEndResponse(0, "string");
+        final CommitSymbolsUploadResourceTask.Request request = new CommitSymbolsUploadResourceTask.Request("owner-name", "app-name", "upload-id");
+        final SymbolsUploadEndResponse expected = new SymbolsUploadEndResponse("string");
         mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
-            "  \"release_id\": 0,\n" +
-            "  \"release_url\": \"string\"\n" +
+            "  \"symbol_upload_id\": \"string\"\n" +
             "}"));
 
         // When
-        final ReleaseUploadEndResponse actual = task.execute(request).get();
+        final SymbolsUploadEndResponse actual = task.execute(request).get();
 
         // Then
         assertThat(actual)

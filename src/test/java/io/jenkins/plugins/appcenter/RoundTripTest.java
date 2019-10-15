@@ -19,8 +19,8 @@ public class RoundTripTest {
             "at-this-moment-you-should-be-with-us",
             "janes-addiction",
             "ritual-de-lo-habitual",
-            "three/days/xiola.apk",
-            "casey, niccoli"
+            "three/days/xiola.ipa",
+            "three/days/symbols.dsym", "casey, niccoli"
         );
 
         // When
@@ -30,7 +30,8 @@ public class RoundTripTest {
         assertThat(appCenterRecorder.getApiToken()).isEqualTo(Secret.fromString("at-this-moment-you-should-be-with-us"));
         assertThat(appCenterRecorder.getOwnerName()).isEqualTo("janes-addiction");
         assertThat(appCenterRecorder.getAppName()).isEqualTo("ritual-de-lo-habitual");
-        assertThat(appCenterRecorder.getPathToApp()).isEqualTo("three/days/xiola.apk");
+        assertThat(appCenterRecorder.getPathToApp()).isEqualTo("three/days/xiola.ipa");
+        assertThat(appCenterRecorder.getPathToDebugSymbols()).isEqualTo("three/days/symbols.dsym");
         assertThat(appCenterRecorder.getDistributionGroups()).isEqualTo("casey, niccoli");
     }
 }

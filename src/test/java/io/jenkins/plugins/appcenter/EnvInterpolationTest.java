@@ -32,13 +32,15 @@ public class EnvInterpolationTest {
     @Before
     public void setUp() throws IOException {
         freeStyleProject = jenkinsRule.createFreeStyleProject();
-        freeStyleProject.getBuildersList().add(TestUtil.createFileForFreeStyle("three/days/xiola.apk"));
+        freeStyleProject.getBuildersList().add(TestUtil.createFileForFreeStyle("three/days/xiola.ipa"));
+        freeStyleProject.getBuildersList().add(TestUtil.createFileForFreeStyle("three/days/symbols.dsym"));
 
         final EnvironmentVariablesNodeProperty prop = new EnvironmentVariablesNodeProperty();
         final EnvVars envVars = prop.getEnvVars();
         envVars.put("OWNER_NAME", "janes-addiction");
         envVars.put("APP_NAME", "ritual-de-lo-habitual");
-        envVars.put("PATH_TO_APP", "three/days/xiola.apk");
+        envVars.put("PATH_TO_APP", "three/days/xiola.ipa");
+        envVars.put("PATH_TO_DEBUG_SYMBOLS", "three/days/symbols.dsym");
         envVars.put("DISTRIBUTION_GROUPS", "casey, niccoli");
         envVars.put("RELEASE_NOTES", "I miss you my dear Xiola");
 
@@ -49,6 +51,7 @@ public class EnvInterpolationTest {
             "${OWNER_NAME}",
             "${APP_NAME}",
             "${PATH_TO_APP}",
+            "${PATH_TO_DEBUG_SYMBOLS}",
             "${DISTRIBUTION_GROUPS}"
         );
         appCenterRecorder.setReleaseNotes("${RELEASE_NOTES}");
@@ -97,7 +100,27 @@ public class EnvInterpolationTest {
         jenkinsRule.assertBuildStatus(Result.SUCCESS, freeStyleBuild);
         mockWebServer.takeRequest();
         final RecordedRequest recordedRequest = mockWebServer.takeRequest();
-        assertThat(recordedRequest.getBody().readUtf8()).contains("xiola.apk");
+        assertThat(recordedRequest.getBody().readUtf8()).contains("xiola.ipa");
+    }
+
+    @Test
+    public void should_InterpolateEnv_SymbolsPath() throws Exception {
+        // Given
+        MockWebServerUtil.enqueueSuccess(mockWebServer);
+
+        // When
+        final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
+
+        // Then
+        jenkinsRule.assertBuildStatus(Result.SUCCESS, freeStyleBuild);
+        mockWebServer.takeRequest();
+        mockWebServer.takeRequest();
+        mockWebServer.takeRequest();
+        mockWebServer.takeRequest();
+        // app upload finished, this is the first symbols request
+        mockWebServer.takeRequest();
+        final RecordedRequest symbolsFileRequest = mockWebServer.takeRequest();
+        assertThat(symbolsFileRequest.getBody().readUtf8()).contains("symbols.dsym");
     }
 
     @Test

@@ -15,22 +15,20 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
 
-import static io.jenkins.plugins.appcenter.task.internal.UploadAppToResourceTask.Request;
-
 @Singleton
-public final class UploadAppToResourceTask implements AppCenterTask<Request, String> {
+public final class UploadToResourceTask  implements AppCenterTask<UploadToResourceTask.Request, String> {
 
     private static final long serialVersionUID = 1L;
 
     @Nonnull
-    private final TaskListener taskListener;
+    protected final TaskListener taskListener;
     @Nonnull
-    private final FilePath filePath;
+    protected final FilePath filePath;
     @Nonnull
-    private final AppCenterServiceFactory factory;
+    protected final AppCenterServiceFactory factory;
 
     @Inject
-    UploadAppToResourceTask(@Nonnull final TaskListener taskListener,
+    UploadToResourceTask(@Nonnull final TaskListener taskListener,
                             @Nonnull final FilePath filePath,
                             @Nonnull final AppCenterServiceFactory factory) {
         this.taskListener = taskListener;

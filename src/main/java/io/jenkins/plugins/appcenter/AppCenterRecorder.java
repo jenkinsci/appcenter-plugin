@@ -17,13 +17,7 @@ import hudson.util.Secret;
 import io.jenkins.plugins.appcenter.di.AppCenterComponent;
 import io.jenkins.plugins.appcenter.di.DaggerAppCenterComponent;
 import io.jenkins.plugins.appcenter.task.UploadTask;
-import io.jenkins.plugins.appcenter.validator.ApiTokenValidator;
-import io.jenkins.plugins.appcenter.validator.AppNameValidator;
-import io.jenkins.plugins.appcenter.validator.DistributionGroupsValidator;
-import io.jenkins.plugins.appcenter.validator.PathPlaceholderValidator;
-import io.jenkins.plugins.appcenter.validator.PathToAppValidator;
-import io.jenkins.plugins.appcenter.validator.UsernameValidator;
-import io.jenkins.plugins.appcenter.validator.Validator;
+import io.jenkins.plugins.appcenter.validator.*;
 import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
@@ -51,6 +45,9 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     @Nonnull
     private final String pathToApp;
 
+    @Nullable
+    private final String pathToDebugSymbols;
+
     @Nonnull
     private final String distributionGroups;
 
@@ -63,11 +60,12 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     private transient String baseUrl;
 
     @DataBoundConstructor
-    public AppCenterRecorder(@Nullable String apiToken, @Nullable String ownerName, @Nullable String appName, @Nullable String pathToApp, @Nullable String distributionGroups) {
+    public AppCenterRecorder(@Nullable String apiToken, @Nullable String ownerName, @Nullable String appName, @Nullable String pathToApp, @Nullable String pathToDebugSymbols, @Nullable String distributionGroups) {
         this.apiToken = Secret.fromString(apiToken);
         this.ownerName = Util.fixNull(ownerName);
         this.appName = Util.fixNull(appName);
         this.pathToApp = Util.fixNull(pathToApp);
+        this.pathToDebugSymbols = Util.fixNull(pathToDebugSymbols);
         this.distributionGroups = Util.fixNull(distributionGroups);
     }
 
@@ -90,6 +88,9 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     public String getPathToApp() {
         return pathToApp;
     }
+
+    @Nonnull
+    public String getPathToDebugSymbols() { return Util.fixNull(pathToDebugSymbols); }
 
     @Nonnull
     public String getDistributionGroups() {
@@ -217,6 +218,12 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
             if (!pathPlaceholderValidator.isValid(value)) {
                 return FormValidation.warning(Messages.AppCenterRecorder_DescriptorImpl_warnings_mustNotStartWithEnvVar());
             }
+
+            return FormValidation.ok();
+        }
+
+        public FormValidation doCheckPathToDebugSymbols(@QueryParameter String value) {
+            final Validator pathToSymbolsValidator = new PathToSymbolsValidator();
 
             return FormValidation.ok();
         }
