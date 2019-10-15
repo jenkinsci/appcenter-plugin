@@ -1,6 +1,6 @@
 # AppCenter Plugin
 
-Jenkins plugin to upload artefacts to [AppCenter](https://appcenter.ms). A replacement for the [HockeyApp](https://plugins.jenkins.io/hockeyapp)
+Jenkins plugin to upload artifacts to [AppCenter](https://appcenter.ms). A replacement for the [HockeyApp](https://plugins.jenkins.io/hockeyapp)
 plugin.
 
 ## Roadmap
@@ -11,8 +11,7 @@ Alpha.
 
 Upcoming functionality:
 
-1. Specify release notes.
-2. More unit tests.
+1. More unit tests.
 
 ## Contributing
 
@@ -24,10 +23,29 @@ If you would like to contribute it would be massively helpful if you followed th
 3. Commit, commit, commit.
 4. Push your changes and file a PR.
 
+## Plugin Features
+
+Below is a list of the features that this plugin supports:
+
+1. Upload a build specificaly to a Distribution Group.
+2. Upload an App Build for a specific environment.
+3. Upload a build to a specific Owner Name.
+4. Upload release notes with a specific upload.
+5. Notify testers once a build has been uploaded.
+
+## Plugin Fields
+
+API Token:
+Owner Name:
+App Name:
+Path To App:
+Distribution Groups:
+Release Notes:
+
 ## Usage Instructions
 
 Up to date syntax for this plugin can always be found in the Jenkins Pipeline Syntax Generator. However in its 
-simplest form you can upload an artefact to AppCenter like this:
+simplest form you can upload an artifact to AppCenter like this:
 
 ```Groovy
 stage('Publish') {
