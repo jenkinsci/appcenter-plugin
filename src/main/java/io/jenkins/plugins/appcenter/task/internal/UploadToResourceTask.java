@@ -2,21 +2,16 @@ package io.jenkins.plugins.appcenter.task.internal;
 
 import hudson.FilePath;
 import hudson.model.TaskListener;
-import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
+import retrofit2.HttpException;
 
 import javax.annotation.Nonnull;
-import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
-import java.util.concurrent.CompletableFuture;
 
 @Singleton
-public final class UploadToResourceTask  implements AppCenterTask<UploadToResourceTask.Request, String> {
+public abstract class UploadToResourceTask  implements AppCenterTask<UploadToResourceTask.Request, String> {
 
     private static final long serialVersionUID = 1L;
 
@@ -27,7 +22,6 @@ public final class UploadToResourceTask  implements AppCenterTask<UploadToResour
     @Nonnull
     protected final AppCenterServiceFactory factory;
 
-    @Inject
     UploadToResourceTask(@Nonnull final TaskListener taskListener,
                             @Nonnull final FilePath filePath,
                             @Nonnull final AppCenterServiceFactory factory) {
@@ -36,41 +30,25 @@ public final class UploadToResourceTask  implements AppCenterTask<UploadToResour
         this.factory = factory;
     }
 
-    @Nonnull
-    @Override
-    public CompletableFuture<String> execute(@Nonnull Request request) {
-        final PrintStream logger = taskListener.getLogger();
-        logger.println("Uploading app to resource.");
+    protected void tryLoggingErrorBody(PrintStream logger, Throwable throwable) {
+        HttpException httpException = (HttpException) throwable;
 
-        final CompletableFuture<String> future = new CompletableFuture<>();
+        try {
+            logger.println(httpException.response().errorBody().string());
+            logger.println(httpException.response().message());
 
-        final File file = new File(filePath.child(request.pathToApp).getRemote());
-        final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        final MultipartBody.Part body = MultipartBody.Part.createFormData("ipa", file.getName(), requestFile);
-
-        factory.createUploadService(request.uploadUrl)
-            .uploadApp(request.uploadUrl, body)
-            .whenComplete((responseBody, throwable) -> {
-                if (throwable != null) {
-                    final AppCenterException exception = new AppCenterException("Upload app to resource unsuccessful: ", throwable);
-                    exception.printStackTrace(logger);
-                    future.completeExceptionally(exception);
-                } else {
-                    logger.println("Upload app to resource successful.");
-                    future.complete(request.uploadId);
-                }
-            });
-
-        return future;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static class Request {
         @Nonnull
-        private final String uploadUrl;
+        protected final String uploadUrl;
         @Nonnull
-        private final String uploadId;
+        protected final String uploadId;
         @Nonnull
-        private final String pathToApp;
+        protected final String pathToApp;
 
         public Request(@Nonnull final String uploadUrl,
                        @Nonnull final String uploadId,

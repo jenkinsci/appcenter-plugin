@@ -20,7 +20,7 @@ public class RoundTripTest {
             "janes-addiction",
             "ritual-de-lo-habitual",
             "three/days/xiola.ipa",
-            "three/days/symbols.dsym", "casey, niccoli"
+            "three/days/symbols.zip", "casey, niccoli"
         );
 
         // When
@@ -31,7 +31,7 @@ public class RoundTripTest {
         assertThat(appCenterRecorder.getOwnerName()).isEqualTo("janes-addiction");
         assertThat(appCenterRecorder.getAppName()).isEqualTo("ritual-de-lo-habitual");
         assertThat(appCenterRecorder.getPathToApp()).isEqualTo("three/days/xiola.ipa");
-        assertThat(appCenterRecorder.getPathToDebugSymbols()).isEqualTo("three/days/symbols.dsym");
+        assertThat(appCenterRecorder.getPathToDebugSymbols()).isEqualTo("three/days/symbols.zip");
         assertThat(appCenterRecorder.getDistributionGroups()).isEqualTo("casey, niccoli");
     }
 }

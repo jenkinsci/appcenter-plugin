@@ -1,15 +1,10 @@
 package io.jenkins.plugins.appcenter.task.internal;
 
 import hudson.model.TaskListener;
-import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
-import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadBeginResponse;
 
 import javax.annotation.Nonnull;
-import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.PrintStream;
-import java.util.concurrent.CompletableFuture;
 
 import static io.jenkins.plugins.appcenter.task.internal.CreateUploadResourceTask.Request;
 

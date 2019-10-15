@@ -52,7 +52,7 @@ public class UploadToResourceTaskTest {
         given(mockFilePath.child(anyString())).willReturn(mockFilePath);
         given(mockFilePath.getRemote()).willReturn("src/test/resources/three/days/xiola.ipa"); // Note: We cannot create a file in the workspace in this test so need to point to an actual file
         final AppCenterServiceFactory factory = new AppCenterServiceFactory(Secret.fromString("secret-token"), mockWebServer.url("/").toString(), mockProxyConfig);
-        task = new UploadToResourceTask(mockTaskListener, mockFilePath, factory);
+        task = new UploadReleaseToResourceTask(mockTaskListener, mockFilePath, factory);
     }
 
 
@@ -82,7 +82,7 @@ public class UploadToResourceTaskTest {
         // Then
         final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
         assertThat(exception).hasCauseThat().isInstanceOf(AppCenterException.class);
-        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo("Upload app to resource unsuccessful: ");
+        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo("Uploading file unsuccessful: ");
         assertThat(exception).hasCauseThat().hasCauseThat().isInstanceOf(HttpException.class);
         assertThat(exception).hasCauseThat().hasCauseThat().hasMessageThat().isEqualTo("HTTP 500 Server Error");
     }

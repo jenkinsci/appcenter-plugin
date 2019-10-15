@@ -27,10 +27,10 @@ public class FreestyleTest {
     @Before
     public void setUp() throws IOException {
         freeStyleProject = jenkinsRule.createFreeStyleProject();
-        freeStyleProject.getBuildersList().add(TestUtil.createFileForFreeStyle("three/days/xiola.ipa"));
-        freeStyleProject.getBuildersList().add(TestUtil.createFileForFreeStyle("three/days/symbols.dsym"));
+        freeStyleProject.getBuildersList().add(TestUtil.createFileForFreeStyle("three/days/xiola.ipa", "I am the app file"));
+        freeStyleProject.getBuildersList().add(TestUtil.createFileForFreeStyle("three/days/symbols.zip", "I am the symbols file"));
 
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "three/days/xiola.ipa", "three/days/symbols.dsym", "casey, niccoli");
+        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "three/days/xiola.ipa", "three/days/symbols.zip", "casey, niccoli");
         appCenterRecorder.setBaseUrl(mockWebServer.url("/").toString());
         freeStyleProject.getPublishersList().add(appCenterRecorder);
     }

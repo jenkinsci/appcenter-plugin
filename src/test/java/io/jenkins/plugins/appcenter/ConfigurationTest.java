@@ -22,7 +22,7 @@ public class ConfigurationTest {
     @Test
     public void should_Configure_RequiredParameters_ViaWebForm() throws Exception {
         // Given
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "three/days/xiola.ipa", "thee/days/symbols.dsym", "casey, niccoli");
+        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "three/days/xiola.ipa", "thee/days/symbols.zip", "casey, niccoli");
         freeStyleProject.getPublishersList().add(appCenterRecorder);
 
         final HtmlForm htmlForm = jenkinsRule.createWebClient().getPage(freeStyleProject, "configure").getFormByName("config");
@@ -38,7 +38,7 @@ public class ConfigurationTest {
     @Test
     public void should_Configure_OptionalReleaseNotes_ViaWebForm() throws Exception {
         // Given
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "three/days/xiola.ipa", "three/days/symbols.dsym", "casey, niccoli");
+        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "three/days/xiola.ipa", "three/days/symbols.zip", "casey, niccoli");
         appCenterRecorder.setReleaseNotes("I miss you my dear Xiola");
         freeStyleProject.getPublishersList().add(appCenterRecorder);
 
@@ -55,7 +55,7 @@ public class ConfigurationTest {
     @Test
     public void should_Configure_OptionalNotifyTesters_ViaWebForm() throws Exception {
         // Given
-        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "three/days/xiola.ipa", "three/days/symbols.dsym", "casey, niccoli");
+        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "three/days/xiola.ipa", "three/days/symbols.zip", "casey, niccoli");
         appCenterRecorder.setNotifyTesters(false);
         freeStyleProject.getPublishersList().add(appCenterRecorder);
 

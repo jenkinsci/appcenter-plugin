@@ -32,15 +32,15 @@ public class EnvInterpolationTest {
     @Before
     public void setUp() throws IOException {
         freeStyleProject = jenkinsRule.createFreeStyleProject();
-        freeStyleProject.getBuildersList().add(TestUtil.createFileForFreeStyle("three/days/xiola.ipa"));
-        freeStyleProject.getBuildersList().add(TestUtil.createFileForFreeStyle("three/days/symbols.dsym"));
+        freeStyleProject.getBuildersList().add(TestUtil.createFileForFreeStyle("three/days/xiola.ipa", "I am the app file"));
+        freeStyleProject.getBuildersList().add(TestUtil.createFileForFreeStyle("three/days/symbols.zip", "I am the symbols file"));
 
         final EnvironmentVariablesNodeProperty prop = new EnvironmentVariablesNodeProperty();
         final EnvVars envVars = prop.getEnvVars();
         envVars.put("OWNER_NAME", "janes-addiction");
         envVars.put("APP_NAME", "ritual-de-lo-habitual");
         envVars.put("PATH_TO_APP", "three/days/xiola.ipa");
-        envVars.put("PATH_TO_DEBUG_SYMBOLS", "three/days/symbols.dsym");
+        envVars.put("PATH_TO_DEBUG_SYMBOLS", "three/days/symbols.zip");
         envVars.put("DISTRIBUTION_GROUPS", "casey, niccoli");
         envVars.put("RELEASE_NOTES", "I miss you my dear Xiola");
 
@@ -120,7 +120,7 @@ public class EnvInterpolationTest {
         // app upload finished, this is the first symbols request
         mockWebServer.takeRequest();
         final RecordedRequest symbolsFileRequest = mockWebServer.takeRequest();
-        assertThat(symbolsFileRequest.getBody().readUtf8()).contains("symbols.dsym");
+        assertThat(symbolsFileRequest.getBody().readUtf8()).contains("I am the symbols file");
     }
 
     @Test

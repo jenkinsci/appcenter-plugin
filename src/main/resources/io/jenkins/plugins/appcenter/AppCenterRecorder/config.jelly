@@ -22,7 +22,7 @@
     </f:entry>
 
     <f:entry title="${%Path To Debug Symbols}" field="pathToDebugSymbols"
-             description="${%Optional relative path to debug symbols.}">
+             description="${%Optional relative path to debug symbols. Must be a zip file.}">
         <f:textbox/>
     </f:entry>
 

@@ -3,9 +3,7 @@ package io.jenkins.plugins.appcenter.task.internal;
 import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
-import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadEndResponse;
-import io.jenkins.plugins.appcenter.model.appcenter.Status;
-import io.jenkins.plugins.appcenter.model.appcenter.UploadEndRequest;
+import io.jenkins.plugins.appcenter.model.appcenter.*;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -26,13 +24,14 @@ public final class CommitReleaseUploadResourceTask extends CommitUploadResourceT
         logger.println("Committing resource.");
 
         final CompletableFuture<ReleaseUploadEndResponse> future = new CompletableFuture<>();
-        final UploadEndRequest releaseUploadEndRequest = new UploadEndRequest(Status.COMMITTED);
+        final UploadEndRequest releaseUploadEndRequest = new UploadEndRequest(Status.committed);
 
         factory.createAppCenterService()
             .releaseUploadEnd(request.ownerName, request.appName, request.uploadId, releaseUploadEndRequest)
             .whenComplete((releaseUploadEndResponse, throwable) -> {
                 if (throwable != null) {
                     final AppCenterException exception = new AppCenterException("Committing resource unsuccessful: ", throwable);
+                    logger.println(throwable.getMessage());
                     exception.printStackTrace(logger);
                     future.completeExceptionally(exception);
                 } else {

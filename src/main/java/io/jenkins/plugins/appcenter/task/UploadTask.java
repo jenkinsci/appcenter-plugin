@@ -15,24 +15,25 @@ public final class UploadTask extends MasterToSlaveCallable<Boolean, AppCenterEx
 
     private final CheckFileExistsTask checkFileExists;
 
-    private final UploadToResourceTask uploadAppToResource;
-
     private final CreateReleaseUploadResourceTask createReleaseUploadResource;
+    private final UploadReleaseToResourceTask uploadReleaseToResource;
     private final CommitReleaseUploadResourceTask commitReleaseUploadResource;
 
     private final CreateSymbolsUploadResourceTask createSymbolsUploadResource;
+    private final UploadSymbolsToResourceTask uploadSymbolsToResource;
     private final CommitSymbolsUploadResourceTask commitSymbolsUploadResource;
 
     private final DistributeResourceTask distributeResource;
     private final UploadRequest request;
 
     @Inject
-    UploadTask(final CheckFileExistsTask checkFileExists, final CreateReleaseUploadResourceTask createReleaseUploadResource, final UploadToResourceTask uploadAppToResource, final CommitReleaseUploadResourceTask commitReleaseUploadResource, CreateSymbolsUploadResourceTask createSymbolsUploadResource, CommitSymbolsUploadResourceTask commitSymbolsUploadResource, final DistributeResourceTask distributeResource, final UploadRequest request) {
+    UploadTask(final CheckFileExistsTask checkFileExists, final CreateReleaseUploadResourceTask createReleaseUploadResource, final UploadReleaseToResourceTask uploadReleaseToResource, final CommitReleaseUploadResourceTask commitReleaseUploadResource, CreateSymbolsUploadResourceTask createSymbolsUploadResource, UploadSymbolsToResourceTask uploadSymbolsToResource, CommitSymbolsUploadResourceTask commitSymbolsUploadResource, final DistributeResourceTask distributeResource, final UploadRequest request) {
         this.checkFileExists = checkFileExists;
         this.createReleaseUploadResource = createReleaseUploadResource;
-        this.uploadAppToResource = uploadAppToResource;
+        this.uploadReleaseToResource = uploadReleaseToResource;
         this.commitReleaseUploadResource = commitReleaseUploadResource;
         this.createSymbolsUploadResource = createSymbolsUploadResource;
+        this.uploadSymbolsToResource = uploadSymbolsToResource;
         this.commitSymbolsUploadResource = commitSymbolsUploadResource;
         this.distributeResource = distributeResource;
         this.request = request;
@@ -54,7 +55,7 @@ public final class UploadTask extends MasterToSlaveCallable<Boolean, AppCenterEx
     private void uploadRelease(CompletableFuture<Boolean> future) throws ExecutionException, InterruptedException {
         checkFileExists.execute(new CheckFileExistsTask.Request(request.pathToApp))
             .thenCompose(result -> createReleaseUploadResource.execute(new CreateReleaseUploadResourceTask.Request(request.ownerName, request.appName)))
-            .thenCompose(releaseUploadBeginResponse -> uploadAppToResource.execute(new UploadToResourceTask.Request(releaseUploadBeginResponse.upload_url, releaseUploadBeginResponse.upload_id, request.pathToApp)))
+            .thenCompose(releaseUploadBeginResponse -> uploadReleaseToResource.execute(new UploadToResourceTask.Request(releaseUploadBeginResponse.upload_url, releaseUploadBeginResponse.upload_id, request.pathToApp)))
             .thenCompose(uploadId -> commitReleaseUploadResource.execute(new CommitUploadResourceTask.Request(request.ownerName, request.appName, uploadId)))
             .thenCompose(releaseUploadEndResponse -> distributeResource.execute(new DistributeResourceTask.Request(request.ownerName, request.appName, request.destinationGroups, request.releaseNotes, request.notifyTesters, releaseUploadEndResponse.release_id)))
             .whenComplete((releaseDetailsUpdateResponse, throwable) -> continueUploadingSymbolsIfAppUploaded(future, throwable))
@@ -68,9 +69,7 @@ public final class UploadTask extends MasterToSlaveCallable<Boolean, AppCenterEx
             return;
         }
 
-        // TODO: only apple supported for debug symbol upload for now
-        // redundant check for now, but if more than apple will be supported, the check for an ipa ending can be removed
-        if(!request.pathToApp.endsWith(".ipa") || request.pathToDebugSymbols.equals("")) {
+        if(request.pathToDebugSymbols.equals("") || !request.pathToDebugSymbols.endsWith(".zip")) {
             future.complete(true);
             return;
         }
@@ -87,7 +86,7 @@ public final class UploadTask extends MasterToSlaveCallable<Boolean, AppCenterEx
     private void uploadSymbols(CompletableFuture<Boolean> future) throws ExecutionException, InterruptedException {
         checkFileExists.execute(new CheckFileExistsTask.Request(request.pathToDebugSymbols))
             .thenCompose(result -> createSymbolsUploadResource.execute(new CreateSymbolsUploadResourceTask.Request(request.ownerName, request.appName)))
-            .thenCompose(symbolsUploadBeginResponse -> uploadAppToResource.execute(new UploadToResourceTask.Request(symbolsUploadBeginResponse.upload_url, symbolsUploadBeginResponse.symbol_upload_id, request.pathToDebugSymbols)))
+            .thenCompose(symbolsUploadBeginResponse -> uploadSymbolsToResource.execute(new UploadToResourceTask.Request(symbolsUploadBeginResponse.upload_url, symbolsUploadBeginResponse.symbol_upload_id, request.pathToDebugSymbols)))
             .thenCompose(uploadId -> commitSymbolsUploadResource.execute(new CommitUploadResourceTask.Request(request.ownerName, request.appName, uploadId)))
             .whenComplete((symbolsUploadEndResponse, throwable) -> {
                 // as the symbols upload is optional, we just complete here with a success

@@ -4,7 +4,6 @@ import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 
 import javax.annotation.Nonnull;
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton

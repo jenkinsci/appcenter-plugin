@@ -3,7 +3,6 @@ package io.jenkins.plugins.appcenter.task.internal;
 import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
-import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadEndResponse;
 import io.jenkins.plugins.appcenter.model.appcenter.Status;
 import io.jenkins.plugins.appcenter.model.appcenter.SymbolsUploadEndResponse;
 import io.jenkins.plugins.appcenter.model.appcenter.UploadEndRequest;
@@ -24,10 +23,10 @@ public final class CommitSymbolsUploadResourceTask extends CommitUploadResourceT
     @Override
     public CompletableFuture<SymbolsUploadEndResponse> execute(@Nonnull Request request) {
         final PrintStream logger = taskListener.getLogger();
-        logger.println("Committing resource.");
+        logger.println("Committing symbols.");
 
         final CompletableFuture<SymbolsUploadEndResponse> future = new CompletableFuture<>();
-        final UploadEndRequest releaseUploadEndRequest = new UploadEndRequest(Status.COMMITTED);
+        final UploadEndRequest releaseUploadEndRequest = new UploadEndRequest(Status.committed);
 
         factory.createAppCenterService()
             .symbolsUploadEnd(request.ownerName, request.appName, request.uploadId, releaseUploadEndRequest)
