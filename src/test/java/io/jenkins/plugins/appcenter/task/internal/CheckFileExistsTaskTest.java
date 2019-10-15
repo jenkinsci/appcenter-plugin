@@ -42,7 +42,6 @@ public class CheckFileExistsTaskTest {
     @Test
     public void should_ReturnTrue_When_FileExists() throws Exception {
         // Given
-        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
         given(mockFilePath.list(anyString())).willReturn(new FilePath[] { mockFilePath });
         final CheckFileExistsTask.Request request = new CheckFileExistsTask.Request("path-to-app");
 
@@ -57,7 +56,6 @@ public class CheckFileExistsTaskTest {
     @Test
     public void should_ThrowExecutionException_When_FileDoesNotExists() throws Exception {
         // Given
-        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
         given(mockFilePath.list(anyString())).willReturn(new FilePath[0]);
         final CheckFileExistsTask.Request request = new CheckFileExistsTask.Request("path-to-app");
 
