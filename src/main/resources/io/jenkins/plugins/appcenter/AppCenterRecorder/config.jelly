@@ -17,7 +17,7 @@
     </f:entry>
 
     <f:entry title="${%Path To App}" field="pathToApp"
-             description="${%Relative path to app.}">
+             description="${%Relative path to app. Placeholders can be used like /your/path/app-*.apk} (the first file found will be used).">
         <f:textbox/>
     </f:entry>
 
