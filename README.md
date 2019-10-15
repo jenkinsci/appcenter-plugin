@@ -35,12 +35,12 @@ Below is a list of the features that this plugin supports:
 
 ## Plugin Fields
 
-API Token:
-Owner Name:
-App Name:
-Path To App:
-Distribution Groups:
-Release Notes:
+1. API Token: Add the AppCenter API Token. For now under this lives under HockeyApp, click on your icon at the top right corner, followed by Account Settings. Then click on API Tokens on the left part of your screen. Here you will create an API Token that you will need to enter in the plugin field.
+2. Owner Name: Name of the owner of the organization. Make sure to leave an _ for spaces. 
+3. App Name: Enter either your app's name or a variable for your app's name.
+4. Path To App: Enter the path of where your ipa/apk is held on the jenkins box. 
+5. Distribution Groups: Enter the distribution group that this app should be available to.
+6. Release Notes: Optional notes that you can add to your build in App Center. 
 
 ## Usage Instructions
 
