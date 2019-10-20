@@ -225,6 +225,10 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         public FormValidation doCheckPathToDebugSymbols(@QueryParameter String value) {
             final Validator pathToSymbolsValidator = new PathToSymbolsValidator();
 
+            if(!pathToSymbolsValidator.isValid(value)) {
+                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_invalidPathToSymbols());
+            }
+
             return FormValidation.ok();
         }
 
