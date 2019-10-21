@@ -9,11 +9,6 @@ This plugin is currently in Alpha and looking for contributors. To begin with it
 functionality of AppCenter. When the APIs for AppCenter become stable this plugin will be eligible to be moved out of
 Alpha.
 
-Upcoming functionality:
-
-1. Specify release notes.
-2. More unit tests.
-
 ## Contributing
 
 If you would like to contribute it would be massively helpful if you followed these steps:
@@ -46,3 +41,7 @@ stage('Publish') {
 
 It may sound obvious but ensure the file you are trying to upload is available on the node that you are running the 
 plugin from.
+
+## Changelog
+
+See [release page](https://github.com/jenkinsci/appcenter-plugin/releases).
