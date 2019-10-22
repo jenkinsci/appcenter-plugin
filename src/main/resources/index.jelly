@@ -1,4 +1,4 @@
 <?jelly escape-by-default='true'?>
 <div>
-    TODO
+    This plugin allows you to upload new versions of your Android (.apk), iOS (.ipa), and MacOS (.app) applications to AppCenter.
 </div>
