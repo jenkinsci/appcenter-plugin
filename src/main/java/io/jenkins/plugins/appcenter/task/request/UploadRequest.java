@@ -25,7 +25,7 @@ public final class UploadRequest implements Serializable {
     public final String uploadUrl;
     @Nullable
     public final String uploadId;
-    @Nullable
+
     public final int releaseId;
 
     private UploadRequest(Builder builder) {

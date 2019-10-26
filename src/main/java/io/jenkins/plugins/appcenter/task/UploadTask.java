@@ -22,7 +22,7 @@ public final class UploadTask extends MasterToSlaveCallable<Boolean, AppCenterEx
     private final UploadAppToResourceTask uploadAppToResource;
     private final CommitUploadResourceTask commitUploadResource;
     private final DistributeResourceTask distributeResource;
-    private final UploadRequest request;
+    private final UploadRequest originalRequest;
 
     @Inject
     UploadTask(final CheckFileExistsTask checkFileExists, final CreateUploadResourceTask createUploadResource, final UploadAppToResourceTask uploadAppToResource, final CommitUploadResourceTask commitUploadResource, final DistributeResourceTask distributeResource, final UploadRequest request) {
@@ -31,7 +31,7 @@ public final class UploadTask extends MasterToSlaveCallable<Boolean, AppCenterEx
         this.uploadAppToResource = uploadAppToResource;
         this.commitUploadResource = commitUploadResource;
         this.distributeResource = distributeResource;
-        this.request = request;
+        this.originalRequest = request;
     }
 
     @Override
@@ -39,12 +39,12 @@ public final class UploadTask extends MasterToSlaveCallable<Boolean, AppCenterEx
         final CompletableFuture<Boolean> future = new CompletableFuture<>();
 
         try {
-            checkFileExists.execute(new CheckFileExistsTask.Request(request.pathToApp))
-                .thenCompose(result -> createUploadResource.execute(new CreateUploadResourceTask.Request(request.ownerName, request.appName)))
-                .thenCompose(releaseUploadBeginResponse -> uploadAppToResource.execute(new UploadAppToResourceTask.Request(releaseUploadBeginResponse.upload_url, releaseUploadBeginResponse.upload_id, request.pathToApp)))
-                .thenCompose(uploadId -> commitUploadResource.execute(new CommitUploadResourceTask.Request(request.ownerName, request.appName, uploadId)))
-                .thenCompose(releaseUploadEndResponse -> distributeResource.execute(new DistributeResourceTask.Request(request.ownerName, request.appName, request.destinationGroups, request.releaseNotes, request.notifyTesters, releaseUploadEndResponse.release_id)))
-                .whenComplete((releaseDetailsUpdateResponse, throwable) -> {
+            checkFileExists.execute(originalRequest)
+                .thenCompose(createUploadResource::execute)
+                .thenCompose(uploadAppToResource::execute)
+                .thenCompose(commitUploadResource::execute)
+                .thenCompose(distributeResource::execute)
+                .whenComplete((uploadRequest, throwable) -> {
                     if (throwable != null) {
                         future.complete(false);
                     } else {

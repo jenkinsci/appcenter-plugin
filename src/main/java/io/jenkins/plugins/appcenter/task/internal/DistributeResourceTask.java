@@ -6,7 +6,7 @@ import io.jenkins.plugins.appcenter.AppCenterLogger;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.model.appcenter.DestinationId;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseDetailsUpdateRequest;
-import io.jenkins.plugins.appcenter.model.appcenter.ReleaseDetailsUpdateResponse;
+import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -17,10 +17,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static io.jenkins.plugins.appcenter.task.internal.DistributeResourceTask.Request;
-
 @Singleton
-public final class DistributeResourceTask implements AppCenterTask<Request, ReleaseDetailsUpdateResponse>, AppCenterLogger {
+public final class DistributeResourceTask implements AppCenterTask<UploadRequest>, AppCenterLogger {
 
     private static final long serialVersionUID = 1L;
 
@@ -38,10 +36,10 @@ public final class DistributeResourceTask implements AppCenterTask<Request, Rele
 
     @Nonnull
     @Override
-    public CompletableFuture<ReleaseDetailsUpdateResponse> execute(@Nonnull Request request) {
+    public CompletableFuture<UploadRequest> execute(@Nonnull UploadRequest request) {
         log("Distributing resource.");
 
-        final CompletableFuture<ReleaseDetailsUpdateResponse> future = new CompletableFuture<>();
+        final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
 
         final String releaseNotes = request.releaseNotes;
         final boolean mandatoryUpdate = false;
@@ -60,7 +58,7 @@ public final class DistributeResourceTask implements AppCenterTask<Request, Rele
                     future.completeExceptionally(exception);
                 } else {
                     log("Distributing resource successful.");
-                    future.complete(releaseUploadBeginResponse);
+                    future.complete(request);
                 }
             });
 
@@ -70,33 +68,5 @@ public final class DistributeResourceTask implements AppCenterTask<Request, Rele
     @Override
     public PrintStream getLogger() {
         return taskListener.getLogger();
-    }
-
-    public static class Request {
-        @Nonnull
-        private final String ownerName;
-        @Nonnull
-        private final String appName;
-        @Nonnull
-        private final String destinationGroups;
-        @Nonnull
-        private final String releaseNotes;
-
-        private final boolean notifyTesters;
-        private final int releaseId;
-
-        public Request(@Nonnull final String ownerName,
-                       @Nonnull final String appName,
-                       @Nonnull final String destinationGroups,
-                       @Nonnull final String releaseNotes,
-                       final boolean notifyTesters,
-                       final int releaseId) {
-            this.ownerName = ownerName;
-            this.appName = appName;
-            this.destinationGroups = destinationGroups;
-            this.releaseNotes = releaseNotes;
-            this.notifyTesters = notifyTesters;
-            this.releaseId = releaseId;
-        }
     }
 }
