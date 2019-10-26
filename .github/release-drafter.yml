@@ -1,0 +1,5 @@
+# from  https://github.com/jenkinsci/.github/blob/master/.github/release-drafter.yml
+_extends: .github
+name-template: AppCenter Plugin $NEXT_PATCH_VERSION
+tag-template: appcenter-$NEXT_PATCH_VERSION
+version-template: $MAJOR.$MINOR.$PATCH
