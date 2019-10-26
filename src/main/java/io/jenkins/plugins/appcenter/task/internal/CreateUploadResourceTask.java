@@ -2,6 +2,7 @@ package io.jenkins.plugins.appcenter.task.internal;
 
 import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
+import io.jenkins.plugins.appcenter.AppCenterLogger;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadBeginResponse;
 
@@ -14,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import static io.jenkins.plugins.appcenter.task.internal.CreateUploadResourceTask.Request;
 
 @Singleton
-public final class CreateUploadResourceTask implements AppCenterTask<Request, ReleaseUploadBeginResponse> {
+public final class CreateUploadResourceTask implements AppCenterTask<Request, ReleaseUploadBeginResponse>, AppCenterLogger {
 
     private static final long serialVersionUID = 1L;
 
@@ -33,8 +34,7 @@ public final class CreateUploadResourceTask implements AppCenterTask<Request, Re
     @Nonnull
     @Override
     public CompletableFuture<ReleaseUploadBeginResponse> execute(@Nonnull Request request) {
-        final PrintStream logger = taskListener.getLogger();
-        logger.println("Creating an upload resource.");
+        log("Creating an upload resource.");
 
         final CompletableFuture<ReleaseUploadBeginResponse> future = new CompletableFuture<>();
 
@@ -45,16 +45,20 @@ public final class CreateUploadResourceTask implements AppCenterTask<Request, Re
             .releaseUploadBegin(request.ownerName, request.appName)
             .whenComplete((releaseUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
-                    final AppCenterException exception = new AppCenterException("Create upload resource unsuccessful: ", throwable);
-                    exception.printStackTrace(logger);
+                    final AppCenterException exception = logFailure("Create upload resource unsuccessful: ", throwable);
                     future.completeExceptionally(exception);
                 } else {
-                    logger.println("Create upload resource successful.");
+                    log("Create upload resource successful.");
                     future.complete(releaseUploadBeginResponse);
                 }
             });
 
         return future;
+    }
+
+    @Override
+    public PrintStream getLogger() {
+        return taskListener.getLogger();
     }
 
     public static class Request {

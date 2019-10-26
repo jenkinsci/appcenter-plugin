@@ -2,6 +2,7 @@ package io.jenkins.plugins.appcenter.task.internal;
 
 import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
+import io.jenkins.plugins.appcenter.AppCenterLogger;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadEndRequest;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadEndResponse;
@@ -14,7 +15,7 @@ import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
 
 @Singleton
-public final class CommitUploadResourceTask implements AppCenterTask<CommitUploadResourceTask.Request, ReleaseUploadEndResponse> {
+public final class CommitUploadResourceTask implements AppCenterTask<CommitUploadResourceTask.Request, ReleaseUploadEndResponse>, AppCenterLogger {
 
     private static final long serialVersionUID = 1L;
 
@@ -33,8 +34,7 @@ public final class CommitUploadResourceTask implements AppCenterTask<CommitUploa
     @Nonnull
     @Override
     public CompletableFuture<ReleaseUploadEndResponse> execute(@Nonnull Request request) {
-        final PrintStream logger = taskListener.getLogger();
-        logger.println("Committing resource.");
+        log("Committing resource.");
 
         final CompletableFuture<ReleaseUploadEndResponse> future = new CompletableFuture<>();
         final ReleaseUploadEndRequest releaseUploadEndRequest = new ReleaseUploadEndRequest(Status.committed);
@@ -43,16 +43,20 @@ public final class CommitUploadResourceTask implements AppCenterTask<CommitUploa
             .releaseUploadEnd(request.ownerName, request.appName, request.uploadId, releaseUploadEndRequest)
             .whenComplete((releaseUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
-                    final AppCenterException exception = new AppCenterException("Committing resource unsuccessful: ", throwable);
-                    exception.printStackTrace(logger);
+                    final AppCenterException exception = logFailure("Committing resource unsuccessful: ", throwable);
                     future.completeExceptionally(exception);
                 } else {
-                    logger.println("Committing resource successful.");
+                    log("Committing resource successful.");
                     future.complete(releaseUploadBeginResponse);
                 }
             });
 
         return future;
+    }
+
+    @Override
+    public PrintStream getLogger() {
+        return taskListener.getLogger();
     }
 
     public static class Request {
