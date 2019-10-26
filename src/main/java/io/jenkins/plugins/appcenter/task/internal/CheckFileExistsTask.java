@@ -36,16 +36,19 @@ public final class CheckFileExistsTask implements AppCenterTask<Request, Boolean
         final CompletableFuture<Boolean> future = new CompletableFuture<>();
 
         try {
-
-            FilePath[] remoteFiles = filePath.list(request.pathToApp);
-
-            if (remoteFiles != null && remoteFiles.length != 0) {
-                logger.println(String.format("File found: %s", remoteFiles[0]));
-                future.complete(true);
-            } else {
-                final AppCenterException exception = new AppCenterException(String.format("No file(s) found: %s", request.pathToApp));
+            final FilePath[] listOfMatchingFilePaths = filePath.list(request.pathToApp);
+            final int numberOfMatchingFiles = listOfMatchingFilePaths.length;
+            if (numberOfMatchingFiles > 1) {
+                final AppCenterException exception = new AppCenterException(String.format("Multiple files found matching pattern: %s", request.pathToApp));
                 exception.printStackTrace(logger);
                 future.completeExceptionally(exception);
+            } else if (numberOfMatchingFiles < 1) {
+                final AppCenterException exception = new AppCenterException(String.format("No file found matching pattern: %s", request.pathToApp));
+                exception.printStackTrace(logger);
+                future.completeExceptionally(exception);
+            } else {
+                logger.println(String.format("File found matching pattern: %s", request.pathToApp));
+                future.complete(true);
             }
         } catch (IOException | InterruptedException e) {
             future.completeExceptionally(e);
