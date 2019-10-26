@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.io.File;
 import java.io.PrintStream;
 import java.util.concurrent.ExecutionException;
 
@@ -42,9 +43,10 @@ public class CheckFileExistsTaskTest {
     @Test
     public void should_ReturnTrue_When_FileExists() throws Exception {
         // Given
-        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
-        given(mockFilePath.exists()).willReturn(true);
-        final CheckFileExistsTask.Request request = new CheckFileExistsTask.Request("path-to-app");
+        final String pathToApp = "path/to/*.apk";
+        final FilePath[] files = {new FilePath(new File(pathToApp))};
+        given(mockFilePath.list(anyString())).willReturn(files);
+        final CheckFileExistsTask.Request request = new CheckFileExistsTask.Request(pathToApp);
 
         // When
         final Boolean result = task.execute(request).get();
@@ -57,9 +59,10 @@ public class CheckFileExistsTaskTest {
     @Test
     public void should_ThrowExecutionException_When_FileDoesNotExists() throws Exception {
         // Given
-        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
-        given(mockFilePath.exists()).willReturn(false);
-        final CheckFileExistsTask.Request request = new CheckFileExistsTask.Request("path-to-app");
+        final String pathToApp = "path/to/*.apk";
+        final FilePath[] files = {};
+        given(mockFilePath.list(anyString())).willReturn(files);
+        final CheckFileExistsTask.Request request = new CheckFileExistsTask.Request(pathToApp);
 
         // When
         final ThrowingRunnable throwingRunnable = () -> task.execute(request).get();
@@ -67,6 +70,23 @@ public class CheckFileExistsTaskTest {
         // Then
         final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
         assertThat(exception).hasCauseThat().isInstanceOf(AppCenterException.class);
-        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo("File not found: path-to-app");
+        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo(String.format("No file found matching pattern: %s", pathToApp));
+    }
+
+    @Test
+    public void should_ThrowExecutionException_When_MultipleFilesExists() throws Exception {
+        // Given
+        final String pathToApp = "path/to/*.apk";
+        final FilePath[] files = {new FilePath(new File("path/to/app.apk")), new FilePath(new File("path/to/sample.apk"))};
+        given(mockFilePath.list(anyString())).willReturn(files);
+        final CheckFileExistsTask.Request request = new CheckFileExistsTask.Request(pathToApp);
+
+        // When
+        final ThrowingRunnable throwingRunnable = () -> task.execute(request).get();
+
+        // Then
+        final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
+        assertThat(exception).hasCauseThat().isInstanceOf(AppCenterException.class);
+        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo(String.format("Multiple files found matching pattern: %s", pathToApp));
     }
 }

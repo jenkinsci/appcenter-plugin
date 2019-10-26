@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import retrofit2.HttpException;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.concurrent.ExecutionException;
 
@@ -47,14 +48,13 @@ public class UploadAppToResourceTaskTest {
     private UploadAppToResourceTask task;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException, InterruptedException {
         given(mockTaskListener.getLogger()).willReturn(mockLogger);
-        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
+        given(mockFilePath.list(anyString())).willReturn(new FilePath[] { mockFilePath });
         given(mockFilePath.getRemote()).willReturn("src/test/resources/three/days/xiola.apk"); // Note: We cannot create a file in the workspace in this test so need to point to an actual file
         final AppCenterServiceFactory factory = new AppCenterServiceFactory(Secret.fromString("secret-token"), mockWebServer.url("/").toString(), mockProxyConfig);
         task = new UploadAppToResourceTask(mockTaskListener, mockFilePath, factory);
     }
-
 
     @Test
     public void should_ReturnUploadId_When_RequestIsSuccess() throws Exception {
