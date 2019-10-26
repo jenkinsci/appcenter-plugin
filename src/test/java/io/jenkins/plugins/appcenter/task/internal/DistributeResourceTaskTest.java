@@ -89,7 +89,7 @@ public class DistributeResourceTaskTest {
         final RecordedRequest recordedRequest = mockWebServer.takeRequest();
 
         // Then
-        assertThat(recordedRequest.getUtf8Body())
+        assertThat(recordedRequest.getBody().readUtf8())
             .contains("\"notify_testers\":true");
     }
 
@@ -108,7 +108,7 @@ public class DistributeResourceTaskTest {
         final RecordedRequest recordedRequest = mockWebServer.takeRequest();
 
         // Then
-        assertThat(recordedRequest.getUtf8Body())
+        assertThat(recordedRequest.getBody().readUtf8())
             .contains("\"notify_testers\":false");
     }
 
