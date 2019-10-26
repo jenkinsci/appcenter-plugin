@@ -14,13 +14,13 @@ final class UploadModule {
     @Provides
     @Singleton
     static UploadRequest provideUploadRequest(AppCenterRecorder appCenterRecorder, EnvVars envVars) {
-        return new UploadRequest(
-            envVars.expand(appCenterRecorder.getOwnerName()),
-            envVars.expand(appCenterRecorder.getAppName()),
-            envVars.expand(appCenterRecorder.getPathToApp()),
-            envVars.expand(appCenterRecorder.getDistributionGroups()),
-            envVars.expand(appCenterRecorder.getReleaseNotes()),
-            appCenterRecorder.getNotifyTesters()
-        );
+        return new UploadRequest.Builder()
+            .setOwnerName(envVars.expand(appCenterRecorder.getOwnerName()))
+            .setAppName(envVars.expand(appCenterRecorder.getAppName()))
+            .setPathToApp(envVars.expand(appCenterRecorder.getPathToApp()))
+            .setDestinationGroups(envVars.expand(appCenterRecorder.getDistributionGroups()))
+            .setReleaseNotes(envVars.expand(appCenterRecorder.getReleaseNotes()))
+            .setNotifyTesters(appCenterRecorder.getNotifyTesters())
+            .build();
     }
 }
