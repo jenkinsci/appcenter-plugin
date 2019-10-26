@@ -3,6 +3,7 @@ package io.jenkins.plugins.appcenter.task.internal;
 import hudson.FilePath;
 import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
+import io.jenkins.plugins.appcenter.AppCenterLogger;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -19,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import static io.jenkins.plugins.appcenter.task.internal.UploadAppToResourceTask.Request;
 
 @Singleton
-public final class UploadAppToResourceTask implements AppCenterTask<Request, String> {
+public final class UploadAppToResourceTask implements AppCenterTask<Request, String>, AppCenterLogger {
 
     private static final long serialVersionUID = 1L;
 
@@ -42,8 +43,7 @@ public final class UploadAppToResourceTask implements AppCenterTask<Request, Str
     @Nonnull
     @Override
     public CompletableFuture<String> execute(@Nonnull Request request) {
-        final PrintStream logger = taskListener.getLogger();
-        logger.println("Uploading app to resource.");
+        log("Uploading app to resource.");
 
         final CompletableFuture<String> future = new CompletableFuture<>();
 
@@ -58,11 +58,10 @@ public final class UploadAppToResourceTask implements AppCenterTask<Request, Str
                 .uploadApp(request.uploadUrl, body)
                 .whenComplete((responseBody, throwable) -> {
                     if (throwable != null) {
-                        final AppCenterException exception = new AppCenterException("Upload app to resource unsuccessful: ", throwable);
-                        exception.printStackTrace(logger);
+                        final AppCenterException exception = logFailure("Upload app to resource unsuccessful: ", throwable);
                         future.completeExceptionally(exception);
                     } else {
-                        logger.println("Upload app to resource successful.");
+                        log("Upload app to resource successful.");
                         future.complete(request.uploadId);
                     }
                 });
@@ -72,6 +71,11 @@ public final class UploadAppToResourceTask implements AppCenterTask<Request, Str
         }
 
         return future;
+    }
+
+    @Override
+    public PrintStream getLogger() {
+        return taskListener.getLogger();
     }
 
     public static class Request {

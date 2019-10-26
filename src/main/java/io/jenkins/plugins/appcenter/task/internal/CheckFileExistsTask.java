@@ -3,6 +3,7 @@ package io.jenkins.plugins.appcenter.task.internal;
 import hudson.FilePath;
 import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
+import io.jenkins.plugins.appcenter.AppCenterLogger;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -14,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import static io.jenkins.plugins.appcenter.task.internal.CheckFileExistsTask.Request;
 
 @Singleton
-public final class CheckFileExistsTask implements AppCenterTask<Request, Boolean> {
+public final class CheckFileExistsTask implements AppCenterTask<Request, Boolean>, AppCenterLogger {
 
     private static final long serialVersionUID = 1L;
 
@@ -32,22 +33,19 @@ public final class CheckFileExistsTask implements AppCenterTask<Request, Boolean
     @Nonnull
     @Override
     public CompletableFuture<Boolean> execute(@Nonnull Request request) {
-        final PrintStream logger = taskListener.getLogger();
         final CompletableFuture<Boolean> future = new CompletableFuture<>();
 
         try {
             final FilePath[] listOfMatchingFilePaths = filePath.list(request.pathToApp);
             final int numberOfMatchingFiles = listOfMatchingFilePaths.length;
             if (numberOfMatchingFiles > 1) {
-                final AppCenterException exception = new AppCenterException(String.format("Multiple files found matching pattern: %s", request.pathToApp));
-                exception.printStackTrace(logger);
+                final AppCenterException exception = logFailure(String.format("Multiple files found matching pattern: %s", request.pathToApp));
                 future.completeExceptionally(exception);
             } else if (numberOfMatchingFiles < 1) {
-                final AppCenterException exception = new AppCenterException(String.format("No file found matching pattern: %s", request.pathToApp));
-                exception.printStackTrace(logger);
+                final AppCenterException exception = logFailure(String.format("No file found matching pattern: %s", request.pathToApp));
                 future.completeExceptionally(exception);
             } else {
-                logger.println(String.format("File found matching pattern: %s", request.pathToApp));
+                log(String.format("File found matching pattern: %s", request.pathToApp));
                 future.complete(true);
             }
         } catch (IOException | InterruptedException e) {
@@ -55,6 +53,11 @@ public final class CheckFileExistsTask implements AppCenterTask<Request, Boolean
         }
 
         return future;
+    }
+
+    @Override
+    public PrintStream getLogger() {
+        return taskListener.getLogger();
     }
 
     public static class Request {

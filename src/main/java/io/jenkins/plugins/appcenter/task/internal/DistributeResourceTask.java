@@ -2,6 +2,7 @@ package io.jenkins.plugins.appcenter.task.internal;
 
 import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
+import io.jenkins.plugins.appcenter.AppCenterLogger;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.model.appcenter.DestinationId;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseDetailsUpdateRequest;
@@ -19,7 +20,7 @@ import java.util.stream.Stream;
 import static io.jenkins.plugins.appcenter.task.internal.DistributeResourceTask.Request;
 
 @Singleton
-public final class DistributeResourceTask implements AppCenterTask<Request, ReleaseDetailsUpdateResponse> {
+public final class DistributeResourceTask implements AppCenterTask<Request, ReleaseDetailsUpdateResponse>, AppCenterLogger {
 
     private static final long serialVersionUID = 1L;
 
@@ -38,8 +39,7 @@ public final class DistributeResourceTask implements AppCenterTask<Request, Rele
     @Nonnull
     @Override
     public CompletableFuture<ReleaseDetailsUpdateResponse> execute(@Nonnull Request request) {
-        final PrintStream logger = taskListener.getLogger();
-        logger.println("Distributing resource.");
+        log("Distributing resource.");
 
         final CompletableFuture<ReleaseDetailsUpdateResponse> future = new CompletableFuture<>();
 
@@ -56,16 +56,20 @@ public final class DistributeResourceTask implements AppCenterTask<Request, Rele
             .releaseDetailsUpdate(request.ownerName, request.appName, request.releaseId, releaseDetailsUpdateRequest)
             .whenComplete((releaseUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
-                    final AppCenterException exception = new AppCenterException("Distributing resource unsuccessful: ", throwable);
-                    exception.printStackTrace(logger);
+                    final AppCenterException exception = logFailure("Distributing resource unsuccessful: ", throwable);
                     future.completeExceptionally(exception);
                 } else {
-                    logger.println("Distributing resource successful.");
+                    log("Distributing resource successful.");
                     future.complete(releaseUploadBeginResponse);
                 }
             });
 
         return future;
+    }
+
+    @Override
+    public PrintStream getLogger() {
+        return taskListener.getLogger();
     }
 
     public static class Request {
