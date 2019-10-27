@@ -3,6 +3,7 @@ package io.jenkins.plugins.appcenter.task.internal;
 import hudson.FilePath;
 import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
+import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
@@ -31,11 +32,15 @@ public class CheckFileExistsTaskTest {
     @Mock
     FilePath mockFilePath;
 
-    private CheckFileExistsTask task;
+    private UploadRequest baseRequest;
 
+    private CheckFileExistsTask task;
 
     @Before
     public void setUp() {
+        baseRequest = new UploadRequest.Builder()
+            .setPathToApp("path/to/*.apk")
+            .build();
         given(mockTaskListener.getLogger()).willReturn(mockLogger);
         task = new CheckFileExistsTask(mockTaskListener, mockFilePath);
     }
@@ -43,50 +48,48 @@ public class CheckFileExistsTaskTest {
     @Test
     public void should_ReturnTrue_When_FileExists() throws Exception {
         // Given
-        final String pathToApp = "path/to/*.apk";
+        final String pathToApp = "path/to/app.apk";
         final FilePath[] files = {new FilePath(new File(pathToApp))};
         given(mockFilePath.list(anyString())).willReturn(files);
-        final CheckFileExistsTask.Request request = new CheckFileExistsTask.Request(pathToApp);
+        final UploadRequest expected = baseRequest.newBuilder().setPathToApp(pathToApp).build();
 
         // When
-        final Boolean result = task.execute(request).get();
+        final UploadRequest result = task.execute(baseRequest).get();
 
         // Then
         assertThat(result)
-            .isTrue();
+            .isEqualTo(expected);
     }
 
     @Test
     public void should_ThrowExecutionException_When_FileDoesNotExists() throws Exception {
         // Given
-        final String pathToApp = "path/to/*.apk";
         final FilePath[] files = {};
         given(mockFilePath.list(anyString())).willReturn(files);
-        final CheckFileExistsTask.Request request = new CheckFileExistsTask.Request(pathToApp);
 
         // When
-        final ThrowingRunnable throwingRunnable = () -> task.execute(request).get();
+        final ThrowingRunnable throwingRunnable = () -> task.execute(baseRequest).get();
 
         // Then
         final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
         assertThat(exception).hasCauseThat().isInstanceOf(AppCenterException.class);
-        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo(String.format("No file found matching pattern: %s", pathToApp));
+        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo(String.format("No file found matching pattern: %s", baseRequest.pathToApp));
     }
 
     @Test
     public void should_ThrowExecutionException_When_MultipleFilesExists() throws Exception {
         // Given
-        final String pathToApp = "path/to/*.apk";
-        final FilePath[] files = {new FilePath(new File("path/to/app.apk")), new FilePath(new File("path/to/sample.apk"))};
+        final String pathToApp = "path/to/app.apk";
+        final String pathToAnotherApp = "path/to/sample.apk";
+        final FilePath[] files = {new FilePath(new File(pathToApp)), new FilePath(new File(pathToAnotherApp))};
         given(mockFilePath.list(anyString())).willReturn(files);
-        final CheckFileExistsTask.Request request = new CheckFileExistsTask.Request(pathToApp);
 
         // When
-        final ThrowingRunnable throwingRunnable = () -> task.execute(request).get();
+        final ThrowingRunnable throwingRunnable = () -> task.execute(baseRequest).get();
 
         // Then
         final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
         assertThat(exception).hasCauseThat().isInstanceOf(AppCenterException.class);
-        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo(String.format("Multiple files found matching pattern: %s", pathToApp));
+        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo(String.format("Multiple files found matching pattern: %s", baseRequest.pathToApp));
     }
 }

@@ -5,7 +5,6 @@ import hudson.model.TaskListener;
 import hudson.util.Secret;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
-import io.jenkins.plugins.appcenter.model.appcenter.ReleaseDetailsUpdateResponse;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -41,13 +40,13 @@ public class DistributeResourceTaskTest {
     @Mock
     ProxyConfiguration mockProxyConfig;
 
-    private UploadRequest uploadRequest;
+    private UploadRequest baseRequest;
 
     private DistributeResourceTask task;
 
     @Before
     public void setUp() {
-        uploadRequest = new UploadRequest.Builder()
+        baseRequest = new UploadRequest.Builder()
             .setOwnerName("owner-name")
             .setAppName("app-name")
             .setDestinationGroups("group1, group2")
@@ -63,17 +62,34 @@ public class DistributeResourceTaskTest {
     @Test
     public void should_ReturnResponse_When_RequestIsSuccessful() throws Exception {
         // Given
-        final ReleaseDetailsUpdateResponse expected = new ReleaseDetailsUpdateResponse("string");
+        final UploadRequest expected = baseRequest;
         mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
             "  \"release_notes\": \"string\"\n" +
             "}"));
 
         // When
-        final UploadRequest actual = task.execute(uploadRequest).get();
+        final UploadRequest actual = task.execute(baseRequest).get();
 
         // Then
         assertThat(actual)
             .isEqualTo(expected);
+    }
+
+    @Test
+    public void should_SetReleaseNotes_When_RequestIsSuccessful() throws Exception {
+        // Given
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
+            "  \"release_notes\": \"string\"\n" +
+            "}"));
+
+        final UploadRequest actual = task.execute(baseRequest).get();
+
+        // When
+        final RecordedRequest recordedRequest = mockWebServer.takeRequest();
+
+        // Then
+        assertThat(recordedRequest.getBody().readUtf8())
+            .contains("\"release_notes\":\"release-notes\"");
     }
 
     @Test
@@ -83,7 +99,7 @@ public class DistributeResourceTaskTest {
             "  \"release_notes\": \"string\"\n" +
             "}"));
 
-        final UploadRequest actual = task.execute(uploadRequest).get();
+        final UploadRequest actual = task.execute(baseRequest).get();
 
         // When
         final RecordedRequest recordedRequest = mockWebServer.takeRequest();
@@ -96,13 +112,12 @@ public class DistributeResourceTaskTest {
     @Test
     public void should_NotNotifyTesters_When_NotConfigured() throws Exception {
         // Given
-        final UploadRequest uploadRequest = this.uploadRequest.newBuilder().setNotifyTesters(false).build();
-        final ReleaseDetailsUpdateResponse expected = new ReleaseDetailsUpdateResponse("string");
+        final UploadRequest request = baseRequest.newBuilder().setNotifyTesters(false).build();
         mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
             "  \"release_notes\": \"string\"\n" +
             "}"));
 
-        final UploadRequest actual = task.execute(uploadRequest).get();
+        final UploadRequest actual = task.execute(request).get();
 
         // When
         final RecordedRequest recordedRequest = mockWebServer.takeRequest();
@@ -118,7 +133,7 @@ public class DistributeResourceTaskTest {
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));
 
         // When
-        final ThrowingRunnable throwingRunnable = () -> task.execute(uploadRequest).get();
+        final ThrowingRunnable throwingRunnable = () -> task.execute(baseRequest).get();
 
         // Then
         final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);

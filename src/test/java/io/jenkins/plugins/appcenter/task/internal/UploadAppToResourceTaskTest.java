@@ -6,6 +6,7 @@ import hudson.model.TaskListener;
 import hudson.util.Secret;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
+import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -18,7 +19,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import retrofit2.HttpException;
 
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.concurrent.ExecutionException;
 
@@ -45,12 +45,19 @@ public class UploadAppToResourceTaskTest {
     @Mock
     ProxyConfiguration mockProxyConfig;
 
+    private UploadRequest baseRequest;
+
     private UploadAppToResourceTask task;
 
     @Before
-    public void setUp() throws IOException, InterruptedException {
+    public void setUp() {
+        baseRequest = new UploadRequest.Builder()
+            .setUploadUrl(mockWebServer.url("upload").toString())
+            .setUploadId("upload-id")
+            .setPathToApp("three/days/xiola.apk")
+            .build();
         given(mockTaskListener.getLogger()).willReturn(mockLogger);
-        given(mockFilePath.list(anyString())).willReturn(new FilePath[] { mockFilePath });
+        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
         given(mockFilePath.getRemote()).willReturn("src/test/resources/three/days/xiola.apk"); // Note: We cannot create a file in the workspace in this test so need to point to an actual file
         final AppCenterServiceFactory factory = new AppCenterServiceFactory(Secret.fromString("secret-token"), mockWebServer.url("/").toString(), mockProxyConfig);
         task = new UploadAppToResourceTask(mockTaskListener, mockFilePath, factory);
@@ -59,25 +66,23 @@ public class UploadAppToResourceTaskTest {
     @Test
     public void should_ReturnUploadId_When_RequestIsSuccess() throws Exception {
         // Given
-        final UploadAppToResourceTask.Request request = new UploadAppToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "three/days/xiola.apk");
         mockWebServer.enqueue(new MockResponse().setResponseCode(200));
 
         // When
-        final String result = task.execute(request).get();
+        final UploadRequest result = task.execute(baseRequest).get();
 
         // Then
         assertThat(result)
-            .isEqualTo("upload-id");
+            .isEqualTo(baseRequest);
     }
 
     @Test
     public void should_ReturnException_When_RequestIsUnSuccessful() {
         // Given
-        final UploadAppToResourceTask.Request request = new UploadAppToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "three/days/xiola.apk");
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));
 
         // When
-        final ThrowingRunnable throwingRunnable = () -> task.execute(request).get();
+        final ThrowingRunnable throwingRunnable = () -> task.execute(baseRequest).get();
 
         // Then
         final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
@@ -90,9 +95,8 @@ public class UploadAppToResourceTaskTest {
     @Test
     public void should_SendRequestToUploadUrl() throws Exception {
         // Given
-        final UploadAppToResourceTask.Request request = new UploadAppToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "three/days/xiola.apk");
         mockWebServer.enqueue(new MockResponse().setResponseCode(200));
-        task.execute(request).get();
+        task.execute(baseRequest).get();
 
         // When
         final RecordedRequest recordedRequest = mockWebServer.takeRequest();
@@ -105,9 +109,8 @@ public class UploadAppToResourceTaskTest {
     @Test
     public void should_SendRequestAsPost() throws Exception {
         // Given
-        final UploadAppToResourceTask.Request request = new UploadAppToResourceTask.Request(mockWebServer.url("upload").toString(), "upload-id", "three/days/xiola.apk");
         mockWebServer.enqueue(new MockResponse().setResponseCode(200));
-        task.execute(request).get();
+        task.execute(baseRequest).get();
 
         // When
         final RecordedRequest recordedRequest = mockWebServer.takeRequest();

@@ -5,7 +5,7 @@ import hudson.model.TaskListener;
 import hudson.util.Secret;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
-import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadBeginResponse;
+import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Before;
@@ -39,10 +39,16 @@ public class CreateUploadResourceTaskTest {
     @Mock
     ProxyConfiguration mockProxyConfig;
 
+    private UploadRequest baseRequest;
+
     private CreateUploadResourceTask task;
 
     @Before
     public void setUp() {
+        baseRequest = new UploadRequest.Builder()
+            .setOwnerName("owner-name")
+            .setAppName("app-name")
+            .build();
         given(mockTaskListener.getLogger()).willReturn(mockLogger);
         final AppCenterServiceFactory factory = new AppCenterServiceFactory(Secret.fromString("secret-token"), mockWebServer.url("/").toString(), mockProxyConfig);
         task = new CreateUploadResourceTask(mockTaskListener, factory);
@@ -51,8 +57,7 @@ public class CreateUploadResourceTaskTest {
     @Test
     public void should_ReturnResponse_When_RequestIsSuccessful() throws Exception {
         // Given
-        final CreateUploadResourceTask.Request request = new CreateUploadResourceTask.Request("owner-name", "app-name");
-        final ReleaseUploadBeginResponse expected = new ReleaseUploadBeginResponse("string", "string", "string", "string", "string");
+        final UploadRequest expected = baseRequest.newBuilder().setUploadId("string").setUploadUrl("string").build();
         mockWebServer.enqueue(new MockResponse().setResponseCode(201).setBody("{\n" +
             "  \"upload_id\": \"string\",\n" +
             "  \"upload_url\": \"string\",\n" +
@@ -62,7 +67,7 @@ public class CreateUploadResourceTaskTest {
             "}"));
 
         // When
-        final ReleaseUploadBeginResponse actual = task.execute(request).get();
+        final UploadRequest actual = task.execute(baseRequest).get();
 
         // Then
         assertThat(actual)
@@ -72,8 +77,8 @@ public class CreateUploadResourceTaskTest {
     @Test
     public void should_ReturnResponse_When_RequestIsSuccessful_NonAsciiCharactersInFileName() throws Exception {
         // Given
-        final CreateUploadResourceTask.Request request = new CreateUploadResourceTask.Request("owner-name", "åþþ ñåmë");
-        final ReleaseUploadBeginResponse expected = new ReleaseUploadBeginResponse("string", "string", "string", "string", "string");
+        final UploadRequest request = baseRequest.newBuilder().setAppName("åþþ ñåmë").build();
+        final UploadRequest expected = request.newBuilder().setUploadId("string").setUploadUrl("string").build();
         mockWebServer.enqueue(new MockResponse().setResponseCode(201).setBody("{\n" +
             "  \"upload_id\": \"string\",\n" +
             "  \"upload_url\": \"string\",\n" +
@@ -83,7 +88,7 @@ public class CreateUploadResourceTaskTest {
             "}"));
 
         // When
-        final ReleaseUploadBeginResponse actual = task.execute(request).get();
+        final UploadRequest actual = task.execute(request).get();
 
         // Then
         assertThat(actual)
@@ -93,11 +98,10 @@ public class CreateUploadResourceTaskTest {
     @Test
     public void should_ReturnException_When_RequestIsUnSuccessful() {
         // Given
-        final CreateUploadResourceTask.Request request = new CreateUploadResourceTask.Request("owner-name", "app-name");
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));
 
         // When
-        final ThrowingRunnable throwingRunnable = () -> task.execute(request).get();
+        final ThrowingRunnable throwingRunnable = () -> task.execute(baseRequest).get();
 
         // Then
         final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
