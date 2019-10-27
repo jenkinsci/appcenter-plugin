@@ -3,6 +3,7 @@ package io.jenkins.plugins.appcenter.task.request;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.Serializable;
+import java.util.Objects;
 
 public final class UploadRequest implements Serializable {
 
@@ -21,12 +22,61 @@ public final class UploadRequest implements Serializable {
 
     public final boolean notifyTesters;
 
+    // Properties above this line are expected to be set by plugin configuration before a run they should be nonnull.
+    // Properties below this line are expected to be set during a run as these values will come from AppCenter during
+    // execution they should be nullable prior to being set.
+
     @Nullable
     public final String uploadUrl;
     @Nullable
     public final String uploadId;
-    @Nullable
+
     public final int releaseId;
+
+    @Override
+    public String toString() {
+        return "UploadRequest{" +
+            "ownerName='" + ownerName + '\'' +
+            ", appName='" + appName + '\'' +
+            ", pathToApp='" + pathToApp + '\'' +
+            ", destinationGroups='" + destinationGroups + '\'' +
+            ", releaseNotes='" + releaseNotes + '\'' +
+            ", notifyTesters=" + notifyTesters +
+            ", uploadUrl='" + uploadUrl + '\'' +
+            ", uploadId='" + uploadId + '\'' +
+            ", releaseId=" + releaseId +
+            '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UploadRequest that = (UploadRequest) o;
+        return notifyTesters == that.notifyTesters &&
+            releaseId == that.releaseId &&
+            ownerName.equals(that.ownerName) &&
+            appName.equals(that.appName) &&
+            pathToApp.equals(that.pathToApp) &&
+            destinationGroups.equals(that.destinationGroups) &&
+            releaseNotes.equals(that.releaseNotes) &&
+            Objects.equals(uploadUrl, that.uploadUrl) &&
+            Objects.equals(uploadId, that.uploadId);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = ownerName.hashCode();
+        result = 31 * result + appName.hashCode();
+        result = 31 * result + pathToApp.hashCode();
+        result = 31 * result + destinationGroups.hashCode();
+        result = 31 * result + releaseNotes.hashCode();
+        result = 31 * result + (notifyTesters ? 1 : 0);
+        result = 31 * result + (uploadUrl != null ? uploadUrl.hashCode() : 0);
+        result = 31 * result + (uploadId != null ? uploadId.hashCode() : 0);
+        result = 31 * result + releaseId;
+        return result;
+    }
 
     private UploadRequest(Builder builder) {
         this.ownerName = builder.ownerName;

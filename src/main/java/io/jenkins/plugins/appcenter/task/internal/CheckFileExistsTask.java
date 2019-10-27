@@ -4,6 +4,7 @@ import hudson.FilePath;
 import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.AppCenterLogger;
+import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -12,10 +13,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
 
-import static io.jenkins.plugins.appcenter.task.internal.CheckFileExistsTask.Request;
-
 @Singleton
-public final class CheckFileExistsTask implements AppCenterTask<Request, Boolean>, AppCenterLogger {
+public final class CheckFileExistsTask implements AppCenterTask<UploadRequest>, AppCenterLogger {
 
     private static final long serialVersionUID = 1L;
 
@@ -32,8 +31,8 @@ public final class CheckFileExistsTask implements AppCenterTask<Request, Boolean
 
     @Nonnull
     @Override
-    public CompletableFuture<Boolean> execute(@Nonnull Request request) {
-        final CompletableFuture<Boolean> future = new CompletableFuture<>();
+    public CompletableFuture<UploadRequest> execute(@Nonnull UploadRequest request) {
+        final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
 
         try {
             final FilePath[] listOfMatchingFilePaths = filePath.list(request.pathToApp);
@@ -46,7 +45,10 @@ public final class CheckFileExistsTask implements AppCenterTask<Request, Boolean
                 future.completeExceptionally(exception);
             } else {
                 log(String.format("File found matching pattern: %s", request.pathToApp));
-                future.complete(true);
+                final UploadRequest uploadRequest = request.newBuilder()
+                    .setPathToApp(listOfMatchingFilePaths[0].getRemote())
+                    .build();
+                future.complete(uploadRequest);
             }
         } catch (IOException | InterruptedException e) {
             future.completeExceptionally(e);
@@ -58,14 +60,5 @@ public final class CheckFileExistsTask implements AppCenterTask<Request, Boolean
     @Override
     public PrintStream getLogger() {
         return taskListener.getLogger();
-    }
-
-    public static class Request {
-        @Nonnull
-        private final String pathToApp;
-
-        public Request(@Nonnull final String pathToApp) {
-            this.pathToApp = pathToApp;
-        }
     }
 }

@@ -5,8 +5,8 @@ import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.AppCenterLogger;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadEndRequest;
-import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadEndResponse;
 import io.jenkins.plugins.appcenter.model.appcenter.Status;
+import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -15,7 +15,7 @@ import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
 
 @Singleton
-public final class CommitUploadResourceTask implements AppCenterTask<CommitUploadResourceTask.Request, ReleaseUploadEndResponse>, AppCenterLogger {
+public final class CommitUploadResourceTask implements AppCenterTask<UploadRequest>, AppCenterLogger {
 
     private static final long serialVersionUID = 1L;
 
@@ -33,10 +33,10 @@ public final class CommitUploadResourceTask implements AppCenterTask<CommitUploa
 
     @Nonnull
     @Override
-    public CompletableFuture<ReleaseUploadEndResponse> execute(@Nonnull Request request) {
+    public CompletableFuture<UploadRequest> execute(@Nonnull UploadRequest request) {
         log("Committing resource.");
 
-        final CompletableFuture<ReleaseUploadEndResponse> future = new CompletableFuture<>();
+        final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
         final ReleaseUploadEndRequest releaseUploadEndRequest = new ReleaseUploadEndRequest(Status.committed);
 
         factory.createAppCenterService()
@@ -47,7 +47,10 @@ public final class CommitUploadResourceTask implements AppCenterTask<CommitUploa
                     future.completeExceptionally(exception);
                 } else {
                     log("Committing resource successful.");
-                    future.complete(releaseUploadBeginResponse);
+                    final UploadRequest uploadRequest = request.newBuilder()
+                        .setReleaseId(releaseUploadBeginResponse.release_id)
+                        .build();
+                    future.complete(uploadRequest);
                 }
             });
 
@@ -57,22 +60,5 @@ public final class CommitUploadResourceTask implements AppCenterTask<CommitUploa
     @Override
     public PrintStream getLogger() {
         return taskListener.getLogger();
-    }
-
-    public static class Request {
-        @Nonnull
-        private final String ownerName;
-        @Nonnull
-        private final String appName;
-        @Nonnull
-        private final String uploadId;
-
-        public Request(@Nonnull final String ownerName,
-                       @Nonnull final String appName,
-                       @Nonnull final String uploadId) {
-            this.ownerName = ownerName;
-            this.appName = appName;
-            this.uploadId = uploadId;
-        }
     }
 }

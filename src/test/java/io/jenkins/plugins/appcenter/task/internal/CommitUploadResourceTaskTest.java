@@ -5,7 +5,7 @@ import hudson.model.TaskListener;
 import hudson.util.Secret;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
-import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadEndResponse;
+import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Before;
@@ -39,10 +39,17 @@ public class CommitUploadResourceTaskTest {
     @Mock
     ProxyConfiguration mockProxyConfig;
 
+    private UploadRequest baseRequest;
+
     private CommitUploadResourceTask task;
 
     @Before
     public void setUp() {
+        baseRequest = new UploadRequest.Builder()
+            .setOwnerName("owner-name")
+            .setAppName("app-name")
+            .setUploadId("upload-id")
+            .build();
         given(mockTaskListener.getLogger()).willReturn(mockLogger);
         final AppCenterServiceFactory factory = new AppCenterServiceFactory(Secret.fromString("secret-token"), mockWebServer.url("/").toString(), mockProxyConfig);
         task = new CommitUploadResourceTask(mockTaskListener, factory);
@@ -51,15 +58,14 @@ public class CommitUploadResourceTaskTest {
     @Test
     public void should_ReturnResponse_When_RequestIsSuccessful() throws Exception {
         // Given
-        final CommitUploadResourceTask.Request request = new CommitUploadResourceTask.Request("owner-name", "app-name", "upload-id");
-        final ReleaseUploadEndResponse expected = new ReleaseUploadEndResponse(0, "string");
+        final UploadRequest expected = baseRequest.newBuilder().setReleaseId(0).build();
         mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
             "  \"release_id\": 0,\n" +
             "  \"release_url\": \"string\"\n" +
             "}"));
 
         // When
-        final ReleaseUploadEndResponse actual = task.execute(request).get();
+        final UploadRequest actual = task.execute(baseRequest).get();
 
         // Then
         assertThat(actual)
@@ -69,11 +75,10 @@ public class CommitUploadResourceTaskTest {
     @Test
     public void should_ReturnException_When_RequestIsUnSuccessful() {
         // Given
-        final CommitUploadResourceTask.Request request = new CommitUploadResourceTask.Request("owner-name", "app-name", "upload-id");
         mockWebServer.enqueue(new MockResponse().setResponseCode(400));
 
         // When
-        final ThrowingRunnable throwingRunnable = () -> task.execute(request).get();
+        final ThrowingRunnable throwingRunnable = () -> task.execute(baseRequest).get();
 
         // Then
         final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
