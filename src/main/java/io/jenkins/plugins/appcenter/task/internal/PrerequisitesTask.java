@@ -14,7 +14,7 @@ import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
 
 @Singleton
-public final class CheckFileExistsTask implements AppCenterTask<UploadRequest>, AppCenterLogger {
+public final class PrerequisitesTask implements AppCenterTask<UploadRequest>, AppCenterLogger {
 
     private static final long serialVersionUID = 1L;
 
@@ -24,7 +24,7 @@ public final class CheckFileExistsTask implements AppCenterTask<UploadRequest>, 
     private final FilePath filePath;
 
     @Inject
-    CheckFileExistsTask(@Nonnull TaskListener taskListener, @Nonnull final FilePath filePath) {
+    PrerequisitesTask(@Nonnull TaskListener taskListener, @Nonnull final FilePath filePath) {
         this.taskListener = taskListener;
         this.filePath = filePath;
     }

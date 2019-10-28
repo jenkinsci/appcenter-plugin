@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CheckFileExistsTaskTest {
+public class PrerequisitesTaskTest {
 
     @Mock
     TaskListener mockTaskListener;
@@ -34,7 +34,7 @@ public class CheckFileExistsTaskTest {
 
     private UploadRequest baseRequest;
 
-    private CheckFileExistsTask task;
+    private PrerequisitesTask task;
 
     @Before
     public void setUp() {
@@ -42,7 +42,7 @@ public class CheckFileExistsTaskTest {
             .setPathToApp("path/to/*.apk")
             .build();
         given(mockTaskListener.getLogger()).willReturn(mockLogger);
-        task = new CheckFileExistsTask(mockTaskListener, mockFilePath);
+        task = new PrerequisitesTask(mockTaskListener, mockFilePath);
     }
 
     @Test
