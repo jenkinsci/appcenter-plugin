@@ -6,6 +6,10 @@ import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadBeginRequest;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadBeginResponse;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadEndRequest;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadEndResponse;
+import io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadBeginRequest;
+import io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadBeginResponse;
+import io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadEndRequest;
+import io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadEndResponse;
 import retrofit2.http.Body;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
@@ -39,4 +43,17 @@ public interface AppCenterService {
         @Path("app_name") String appName,
         @Path("release_id") int releaseId,
         @Body ReleaseDetailsUpdateRequest releaseDetailsUpdateRequest);
+
+    @POST("v0.1/apps/{owner_name}/{app_name}/symbol_uploads")
+    CompletableFuture<SymbolUploadBeginResponse> symbolUploadBegin(
+        @Path("owner_name") String user,
+        @Path("app_name") String appName,
+        @Body SymbolUploadBeginRequest symbolUploadBeginRequest);
+
+    @PATCH("v0.1/apps/{owner_name}/{app_name}/symbol_uploads/{symbol_upload_id}")
+    CompletableFuture<SymbolUploadEndResponse> symbolsUploadEnd(
+        @Path("owner_name") String user,
+        @Path("app_name") String appName,
+        @Path("symbol_upload_id") String uploadId,
+        @Body SymbolUploadEndRequest symbolUploadEndRequest);
 }
