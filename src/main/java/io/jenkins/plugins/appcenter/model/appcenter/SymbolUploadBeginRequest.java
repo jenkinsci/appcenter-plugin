@@ -1,16 +1,22 @@
 package io.jenkins.plugins.appcenter.model.appcenter;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 public final class SymbolUploadBeginRequest {
+    @Nonnull
     public final SymbolType symbol_type;
+    @Nullable
     public final String client_callback;
+    @Nonnull
     public final String file_name;
+    @Nonnull
     public final String build;
+    @Nonnull
     public final String version;
 
-    public SymbolUploadBeginRequest(@Nonnull SymbolType symbol_type, @Nonnull String client_callback, @Nonnull String file_name, @Nonnull String build, @Nonnull String version) {
+    public SymbolUploadBeginRequest(@Nonnull SymbolType symbol_type, @Nullable String client_callback, @Nonnull String file_name, @Nonnull String build, @Nonnull String version) {
         this.symbol_type = symbol_type;
         this.client_callback = client_callback;
         this.file_name = file_name;
@@ -35,7 +41,7 @@ public final class SymbolUploadBeginRequest {
         if (o == null || getClass() != o.getClass()) return false;
         SymbolUploadBeginRequest that = (SymbolUploadBeginRequest) o;
         return symbol_type == that.symbol_type &&
-            client_callback.equals(that.client_callback) &&
+            Objects.equals(client_callback, that.client_callback) &&
             file_name.equals(that.file_name) &&
             build.equals(that.build) &&
             version.equals(that.version);
