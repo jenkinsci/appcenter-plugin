@@ -1,4 +1,7 @@
 # AppCenter Plugin
+[![Jenkins Plugin](https://img.shields.io/jenkins/plugin/v/appcenter.svg)](https://plugins.jenkins.io/appcenter)
+[![GitHub release](https://img.shields.io/github/release/jenkinsci/appcenter-plugin.svg?label=release)](https://github.com/jenkinsci/appcenter-plugin/releases/latest)
+[![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/appcenter.svg?color=blue)](https://plugins.jenkins.io/appcenter)
 
 Jenkins plugin to upload artefacts to [AppCenter](https://appcenter.ms). A replacement for the [HockeyApp](https://plugins.jenkins.io/hockeyapp)
 plugin.
