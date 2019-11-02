@@ -48,7 +48,7 @@ public class CheckFileExistsTaskTest {
     @Test
     public void should_ReturnTrue_When_FileExists() throws Exception {
         // Given
-        final String pathToApp = "path/to/app.apk";
+        final String pathToApp = String.join(File.separator, "path", "to", "app");
         final FilePath[] files = {new FilePath(new File(pathToApp))};
         given(mockFilePath.list(anyString())).willReturn(files);
         final UploadRequest expected = baseRequest.newBuilder().setPathToApp(pathToApp).build();
