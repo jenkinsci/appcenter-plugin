@@ -2,9 +2,13 @@ package io.jenkins.plugins.appcenter.model.appcenter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.Serializable;
 import java.util.Objects;
 
-public final class SymbolUploadBeginRequest {
+public final class SymbolUploadBeginRequest implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     @Nonnull
     public final SymbolType symbol_type;
     @Nullable
