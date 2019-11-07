@@ -22,6 +22,7 @@ import io.jenkins.plugins.appcenter.validator.AppNameValidator;
 import io.jenkins.plugins.appcenter.validator.DistributionGroupsValidator;
 import io.jenkins.plugins.appcenter.validator.PathPlaceholderValidator;
 import io.jenkins.plugins.appcenter.validator.PathToAppValidator;
+import io.jenkins.plugins.appcenter.validator.PathToDebugSymbolsValidator;
 import io.jenkins.plugins.appcenter.validator.UsernameValidator;
 import io.jenkins.plugins.appcenter.validator.Validator;
 import jenkins.model.Jenkins;
@@ -58,6 +59,9 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     private String releaseNotes;
 
     private boolean notifyTesters = true;
+
+    @Nullable
+    private String pathToDebugSymbols;
 
     @Nullable
     private transient String baseUrl;
@@ -105,6 +109,11 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         return notifyTesters;
     }
 
+    @Nonnull
+    public String getPathToDebugSymbols() {
+        return Util.fixNull(pathToDebugSymbols);
+    }
+
     @DataBoundSetter
     public void setReleaseNotes(@Nullable String releaseNotes) {
         this.releaseNotes = Util.fixEmpty(releaseNotes);
@@ -113,6 +122,11 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     @DataBoundSetter
     public void setNotifyTesters(boolean notifyTesters) {
         this.notifyTesters = notifyTesters;
+    }
+
+    @DataBoundSetter
+    public void setPathToDebugSymbols(@Nullable String pathToDebugSymbols) {
+        this.pathToDebugSymbols = Util.fixEmpty(pathToDebugSymbols);
     }
 
     /**
@@ -231,6 +245,29 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
 
             if (!validator.isValid(value)) {
                 return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_invalidDistributionGroups());
+            }
+
+            return FormValidation.ok();
+        }
+
+        @SuppressWarnings("unused")
+        public FormValidation doCheckPathToDebugSymbols(@QueryParameter String value) {
+
+
+            if (value.isEmpty()) {
+                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_missingPathToDebugSymbols());
+            }
+
+            final Validator pathToAppValidator = new PathToDebugSymbolsValidator();
+
+            if (!pathToAppValidator.isValid(value)) {
+                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_invalidPath());
+            }
+
+            final Validator pathPlaceholderValidator = new PathPlaceholderValidator();
+
+            if (!pathPlaceholderValidator.isValid(value)) {
+                return FormValidation.warning(Messages.AppCenterRecorder_DescriptorImpl_warnings_mustNotStartWithEnvVar());
             }
 
             return FormValidation.ok();
