@@ -21,6 +21,7 @@ final class UploadModule {
             .setDestinationGroups(envVars.expand(appCenterRecorder.getDistributionGroups()))
             .setReleaseNotes(envVars.expand(appCenterRecorder.getReleaseNotes()))
             .setNotifyTesters(appCenterRecorder.getNotifyTesters())
+            .setPathToDebugSymbols(envVars.expand(appCenterRecorder.getPathToDebugSymbols()))
             .build();
     }
 }
