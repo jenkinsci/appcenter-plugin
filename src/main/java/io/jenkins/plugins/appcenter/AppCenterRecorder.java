@@ -209,7 +209,7 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
             final Validator pathToAppValidator = new PathToAppValidator();
 
             if (!pathToAppValidator.isValid(value)) {
-                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_invalidPathToApp());
+                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_invalidPath());
             }
 
             final Validator pathPlaceholderValidator = new PathPlaceholderValidator();
