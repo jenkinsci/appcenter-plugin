@@ -4,11 +4,16 @@ import hudson.FilePath;
 import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.AppCenterLogger;
+import io.jenkins.plugins.appcenter.model.appcenter.SymbolType;
+import io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadBeginRequest;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
+import net.dongliu.apk.parser.ApkParsers;
+import net.dongliu.apk.parser.bean.ApkMeta;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
@@ -32,6 +37,16 @@ public final class PrerequisitesTask implements AppCenterTask<UploadRequest>, Ap
     @Nonnull
     @Override
     public CompletableFuture<UploadRequest> execute(@Nonnull UploadRequest request) {
+        if (request.pathToDebugSymbols.trim().isEmpty()) {
+            return checkFileExists(request);
+        } else {
+            return checkFileExists(request)
+                .thenCompose(this::checkSymbolsExist);
+        }
+    }
+
+    @Nonnull
+    private CompletableFuture<UploadRequest> checkFileExists(@Nonnull UploadRequest request) {
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
 
         try {
@@ -45,8 +60,9 @@ public final class PrerequisitesTask implements AppCenterTask<UploadRequest>, Ap
                 future.completeExceptionally(exception);
             } else {
                 log(String.format("File found matching pattern: %s", request.pathToApp));
+                final String pathToApp = listOfMatchingFilePaths[0].getRemote();
                 final UploadRequest uploadRequest = request.newBuilder()
-                    .setPathToApp(listOfMatchingFilePaths[0].getRemote())
+                    .setPathToApp(pathToApp)
                     .build();
                 future.complete(uploadRequest);
             }
@@ -55,6 +71,60 @@ public final class PrerequisitesTask implements AppCenterTask<UploadRequest>, Ap
         }
 
         return future;
+    }
+
+    @Nonnull
+    private CompletableFuture<UploadRequest> checkSymbolsExist(@Nonnull UploadRequest request) {
+        final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
+
+        try {
+            final FilePath[] listOfMatchingFilePaths = filePath.list(request.pathToDebugSymbols);
+            final int numberOfMatchingFiles = listOfMatchingFilePaths.length;
+            if (numberOfMatchingFiles > 1) {
+                final AppCenterException exception = logFailure(String.format("Multiple symbols found matching pattern: %s", request.pathToDebugSymbols));
+                future.completeExceptionally(exception);
+            } else if (numberOfMatchingFiles < 1) {
+                final AppCenterException exception = logFailure(String.format("No symbols found matching pattern: %s", request.pathToDebugSymbols));
+                future.completeExceptionally(exception);
+            } else {
+                log(String.format("Symbols found matching pattern: %s", request.pathToDebugSymbols));
+                final String pathToDebugSymbols = listOfMatchingFilePaths[0].getRemote();
+                final UploadRequest uploadRequest = request.newBuilder()
+                    .setPathToDebugSymbols(pathToDebugSymbols)
+                    .setSymbolUploadRequest(symbolUploadRequest(request.pathToApp))
+                    .build();
+                future.complete(uploadRequest);
+            }
+        } catch (IOException | InterruptedException e) {
+            future.completeExceptionally(e);
+        }
+
+        return future;
+    }
+
+    @Nonnull
+    private SymbolUploadBeginRequest symbolUploadRequest(@Nonnull String pathToApp) throws IllegalStateException, IOException {
+        if (pathToApp.endsWith(".apk")) return androidSymbolsUpload(pathToApp);
+        if (pathToApp.endsWith(".ipa")) return appleSymbolsUpload(pathToApp);
+
+        throw new IllegalStateException("Unable to determine application type and therefore debug symbol type");
+    }
+
+    @Nonnull
+    private SymbolUploadBeginRequest androidSymbolsUpload(@Nonnull String pathToApp) throws IOException {
+        final File file = new File(filePath.child(pathToApp).getRemote());
+        final ApkMeta metaInfo = ApkParsers.getMetaInfo(file);
+        final String versionCode = metaInfo.getVersionCode().toString();
+        final String versionName = metaInfo.getVersionName();
+
+        return new SymbolUploadBeginRequest(SymbolType.AndroidProguard, null, file.getName(), versionCode, versionName);
+    }
+
+    @Nonnull
+    private SymbolUploadBeginRequest appleSymbolsUpload(@Nonnull String pathToApp) {
+        final File file = new File(filePath.child(pathToApp).getRemote());
+
+        return new SymbolUploadBeginRequest(SymbolType.Apple, null, file.getName(), "", "");
     }
 
     @Override
