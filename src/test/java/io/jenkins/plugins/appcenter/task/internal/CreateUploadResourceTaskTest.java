@@ -106,7 +106,7 @@ public class CreateUploadResourceTaskTest {
         // Then
         final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
         assertThat(exception).hasCauseThat().isInstanceOf(AppCenterException.class);
-        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo("Create upload resource unsuccessful: ");
+        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo("Create upload resource for app unsuccessful: ");
         assertThat(exception).hasCauseThat().hasCauseThat().isInstanceOf(HttpException.class);
         assertThat(exception).hasCauseThat().hasCauseThat().hasMessageThat().isEqualTo("HTTP 500 Server Error");
     }
