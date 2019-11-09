@@ -252,10 +252,8 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
 
         @SuppressWarnings("unused")
         public FormValidation doCheckPathToDebugSymbols(@QueryParameter String value) {
-
-
-            if (value.isEmpty()) {
-                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_missingPathToDebugSymbols());
+            if (value.trim().isEmpty()) {
+                return FormValidation.ok();
             }
 
             final Validator pathToAppValidator = new PathToDebugSymbolsValidator();
