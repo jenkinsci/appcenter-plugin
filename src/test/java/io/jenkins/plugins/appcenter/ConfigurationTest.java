@@ -68,4 +68,21 @@ public class ConfigurationTest {
         // Then
         jenkinsRule.assertEqualDataBoundBeans(appCenterRecorder, configuredAppCenterRecorder);
     }
+
+    @Test
+    public void should_Configure_OptionalDebugSymbols_ViaWebForm() throws Exception {
+        // Given
+        final AppCenterRecorder appCenterRecorder = new AppCenterRecorder("at-this-moment-you-should-be-with-us", "janes-addiction", "ritual-de-lo-habitual", "three/days/xiola.apk", "casey, niccoli");
+        appCenterRecorder.setPathToDebugSymbols("path/to/linear-notes.txt");
+        freeStyleProject.getPublishersList().add(appCenterRecorder);
+
+        final HtmlForm htmlForm = jenkinsRule.createWebClient().getPage(freeStyleProject, "configure").getFormByName("config");
+        jenkinsRule.submit(htmlForm);
+
+        // When
+        final AppCenterRecorder configuredAppCenterRecorder = freeStyleProject.getPublishersList().get(AppCenterRecorder.class);
+
+        // Then
+        jenkinsRule.assertEqualDataBoundBeans(appCenterRecorder, configuredAppCenterRecorder);
+    }
 }
