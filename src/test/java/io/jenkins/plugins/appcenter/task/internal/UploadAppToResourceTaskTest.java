@@ -77,6 +77,26 @@ public class UploadAppToResourceTaskTest {
     }
 
     @Test
+    public void should_ReturnDebugSymbolUploadId_When_DebugSymbolsAreFound() throws Exception {
+        // Given
+        final UploadRequest request = baseRequest.newBuilder()
+            .setPathToDebugSymbols("string")
+            .setSymbolUploadUrl(mockWebServer.url("upload-debug-symbols").toString())
+            .setSymbolUploadId("string")
+            .build();
+
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200));
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200));
+
+        // When
+        final UploadRequest result = task.execute(request).get();
+
+        // Then
+        assertThat(result)
+            .isEqualTo(request);
+    }
+
+    @Test
     public void should_ReturnException_When_RequestIsUnSuccessful() {
         // Given
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));
