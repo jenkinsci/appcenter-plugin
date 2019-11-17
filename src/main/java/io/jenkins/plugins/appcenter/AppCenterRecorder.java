@@ -36,6 +36,9 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import static hudson.model.Result.FAILURE;
+import static hudson.model.Result.SUCCESS;
+
 @SuppressWarnings("unused")
 public final class AppCenterRecorder extends Recorder implements SimpleBuildStep {
 
@@ -126,10 +129,16 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
 
     @Override
     public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath filePath, @Nonnull Launcher launcher, @Nonnull TaskListener taskListener) throws InterruptedException, IOException {
+        final Result buildResult = run.getResult();
+        if (buildResult != null && buildResult.isWorseOrEqualTo(FAILURE)) {
+            taskListener.getLogger().println(Messages.AppCenterRecorder_DescriptorImpl_errors_upstreamBuildFailure());
+            return;
+        }
+
         if (uploadToAppCenter(run, filePath, taskListener)) {
-            run.setResult(Result.SUCCESS);
+            run.setResult(SUCCESS);
         } else {
-            run.setResult(Result.FAILURE);
+            run.setResult(FAILURE);
         }
     }
 
