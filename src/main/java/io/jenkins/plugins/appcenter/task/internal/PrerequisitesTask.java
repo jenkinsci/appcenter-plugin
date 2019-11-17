@@ -7,8 +7,8 @@ import io.jenkins.plugins.appcenter.AppCenterLogger;
 import io.jenkins.plugins.appcenter.model.appcenter.SymbolType;
 import io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadBeginRequest;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
-import net.dongliu.apk.parser.ApkParsers;
-import net.dongliu.apk.parser.bean.ApkMeta;
+import io.jenkins.plugins.appcenter.util.AndroidParser;
+import io.jenkins.plugins.appcenter.util.ParserFactory;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -27,11 +27,14 @@ public final class PrerequisitesTask implements AppCenterTask<UploadRequest>, Ap
     private final TaskListener taskListener;
     @Nonnull
     private final FilePath filePath;
+    @Nonnull
+    private final ParserFactory parserFactory;
 
     @Inject
-    PrerequisitesTask(@Nonnull TaskListener taskListener, @Nonnull final FilePath filePath) {
+    PrerequisitesTask(@Nonnull TaskListener taskListener, @Nonnull final FilePath filePath, @Nonnull final ParserFactory parserFactory) {
         this.taskListener = taskListener;
         this.filePath = filePath;
+        this.parserFactory = parserFactory;
     }
 
     @Nonnull
@@ -113,11 +116,12 @@ public final class PrerequisitesTask implements AppCenterTask<UploadRequest>, Ap
     @Nonnull
     private SymbolUploadBeginRequest androidSymbolsUpload(@Nonnull String pathToApp) throws IOException {
         final File file = new File(filePath.child(pathToApp).getRemote());
-        final ApkMeta metaInfo = ApkParsers.getMetaInfo(file);
-        final String versionCode = metaInfo.getVersionCode().toString();
-        final String versionName = metaInfo.getVersionName();
+        final AndroidParser androidParser = parserFactory.androidParser(file);
+        final String fileName = androidParser.fileName();
+        final String versionCode = androidParser.versionCode();
+        final String versionName = androidParser.versionName();
 
-        return new SymbolUploadBeginRequest(SymbolType.AndroidProguard, null, file.getName(), versionCode, versionName);
+        return new SymbolUploadBeginRequest(SymbolType.AndroidProguard, null, fileName, versionCode, versionName);
     }
 
     @Nonnull
