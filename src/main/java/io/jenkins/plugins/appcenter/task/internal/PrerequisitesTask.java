@@ -108,7 +108,7 @@ public final class PrerequisitesTask implements AppCenterTask<UploadRequest>, Ap
     @Nonnull
     private SymbolUploadBeginRequest symbolUploadRequest(@Nonnull String pathToApp) throws IllegalStateException, IOException {
         if (pathToApp.endsWith(".apk")) return androidSymbolsUpload(pathToApp);
-        if (pathToApp.endsWith(".ipa")) return appleSymbolsUpload(pathToApp);
+        if (pathToApp.endsWith(".ipa") || pathToApp.endsWith(".app.zip") || pathToApp.endsWith(".pkg") || pathToApp.endsWith(".dmg")) return appleSymbolsUpload(pathToApp);
 
         throw new IllegalStateException("Unable to determine application type and therefore debug symbol type");
     }
