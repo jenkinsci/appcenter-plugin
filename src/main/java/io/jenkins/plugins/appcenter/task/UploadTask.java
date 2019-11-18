@@ -1,10 +1,10 @@
 package io.jenkins.plugins.appcenter.task;
 
 import io.jenkins.plugins.appcenter.AppCenterException;
-import io.jenkins.plugins.appcenter.task.internal.CheckFileExistsTask;
 import io.jenkins.plugins.appcenter.task.internal.CommitUploadResourceTask;
 import io.jenkins.plugins.appcenter.task.internal.CreateUploadResourceTask;
 import io.jenkins.plugins.appcenter.task.internal.DistributeResourceTask;
+import io.jenkins.plugins.appcenter.task.internal.PrerequisitesTask;
 import io.jenkins.plugins.appcenter.task.internal.UploadAppToResourceTask;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import jenkins.security.MasterToSlaveCallable;
@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutionException;
 @Singleton
 public final class UploadTask extends MasterToSlaveCallable<Boolean, AppCenterException> {
 
-    private final CheckFileExistsTask checkFileExists;
+    private final PrerequisitesTask prerequisitesTask;
     private final CreateUploadResourceTask createUploadResource;
     private final UploadAppToResourceTask uploadAppToResource;
     private final CommitUploadResourceTask commitUploadResource;
@@ -25,8 +25,8 @@ public final class UploadTask extends MasterToSlaveCallable<Boolean, AppCenterEx
     private final UploadRequest originalRequest;
 
     @Inject
-    UploadTask(final CheckFileExistsTask checkFileExists, final CreateUploadResourceTask createUploadResource, final UploadAppToResourceTask uploadAppToResource, final CommitUploadResourceTask commitUploadResource, final DistributeResourceTask distributeResource, final UploadRequest request) {
-        this.checkFileExists = checkFileExists;
+    UploadTask(final PrerequisitesTask prerequisitesTask, final CreateUploadResourceTask createUploadResource, final UploadAppToResourceTask uploadAppToResource, final CommitUploadResourceTask commitUploadResource, final DistributeResourceTask distributeResource, final UploadRequest request) {
+        this.prerequisitesTask = prerequisitesTask;
         this.createUploadResource = createUploadResource;
         this.uploadAppToResource = uploadAppToResource;
         this.commitUploadResource = commitUploadResource;
@@ -39,7 +39,7 @@ public final class UploadTask extends MasterToSlaveCallable<Boolean, AppCenterEx
         final CompletableFuture<Boolean> future = new CompletableFuture<>();
 
         try {
-            checkFileExists.execute(originalRequest)
+            prerequisitesTask.execute(originalRequest)
                 .thenCompose(createUploadResource::execute)
                 .thenCompose(uploadAppToResource::execute)
                 .thenCompose(commitUploadResource::execute)

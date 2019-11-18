@@ -41,13 +41,22 @@ public final class UploadAppToResourceTask implements AppCenterTask<UploadReques
     @Nonnull
     @Override
     public CompletableFuture<UploadRequest> execute(@Nonnull UploadRequest request) {
+        if (request.symbolUploadUrl == null) {
+            return uploadApp(request);
+        } else {
+            return uploadApp(request)
+                .thenCompose(this::uploadSymbols);
+        }
+    }
+
+    @Nonnull
+    private CompletableFuture<UploadRequest> uploadApp(@Nonnull UploadRequest request) {
         log("Uploading app to resource.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
 
         final String pathToApp = request.pathToApp;
         final String uploadUrl = request.uploadUrl;
-
 
         if (uploadUrl == null) {
             final AppCenterException exception = logFailure("uploadUrl cannot be null");
@@ -73,6 +82,40 @@ public final class UploadAppToResourceTask implements AppCenterTask<UploadReques
 
         return future;
     }
+
+    @Nonnull
+    private CompletableFuture<UploadRequest> uploadSymbols(@Nonnull UploadRequest request) {
+        log("Uploading symbols to resource.");
+
+        final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
+
+        final String pathToDebugSymbols = request.pathToDebugSymbols;
+        final String symbolUploadUrl = request.symbolUploadUrl;
+
+        if (symbolUploadUrl == null) {
+            final AppCenterException exception = logFailure("symbolUploadUrl cannot be null");
+            future.completeExceptionally(exception);
+            return future;
+        }
+
+        final File file = new File(filePath.child(pathToDebugSymbols).getRemote());
+        final RequestBody requestFile = RequestBody.create(null, file);
+
+        factory.createUploadService(symbolUploadUrl)
+            .uploadSymbols(symbolUploadUrl, requestFile)
+            .whenComplete((responseBody, throwable) -> {
+                if (throwable != null) {
+                    final AppCenterException exception = logFailure("Upload symbols to resource unsuccessful: ", throwable);
+                    future.completeExceptionally(exception);
+                } else {
+                    log("Upload symbols to resource successful.");
+                    future.complete(request);
+                }
+            });
+
+        return future;
+    }
+
 
     @Override
     public PrintStream getLogger() {
