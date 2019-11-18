@@ -121,6 +121,72 @@ public class PrerequisitesTaskTest {
     }
 
     @Test
+    public void should_ReturnModifiedRequest_When_DebugSymbolsExists_MACOS_AppZip() throws Exception {
+        // Given
+        final UploadRequest request = baseRequest.newBuilder().setPathToDebugSymbols("path/to/*.zip").build();
+        final String pathToApp = String.join(File.separator, "path", "to", "app.app.zip");
+        final String pathToDebugSymbols = String.join(File.separator, "path", "to", "symbols.zip");
+        final FilePath[] files = {new FilePath(new File(pathToApp))};
+        final FilePath[] debugSymbols = {new FilePath(new File(pathToDebugSymbols))};
+        given(mockFilePath.list(anyString())).willReturn(files, debugSymbols);
+        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
+        given(mockFilePath.getRemote()).willReturn(pathToApp);
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(SymbolType.Apple, null, "app.app.zip", "", "");
+        final UploadRequest expected = baseRequest.newBuilder().setPathToApp(pathToApp).setPathToDebugSymbols(pathToDebugSymbols).setSymbolUploadRequest(symbolUploadBeginRequest).build();
+
+        // When
+        final UploadRequest result = task.execute(request).get();
+
+        // Then
+        assertThat(result)
+            .isEqualTo(expected);
+    }
+
+    @Test
+    public void should_ReturnModifiedRequest_When_DebugSymbolsExists_MACOS_Pkg() throws Exception {
+        // Given
+        final UploadRequest request = baseRequest.newBuilder().setPathToDebugSymbols("path/to/*.zip").build();
+        final String pathToApp = String.join(File.separator, "path", "to", "app.pkg");
+        final String pathToDebugSymbols = String.join(File.separator, "path", "to", "symbols.zip");
+        final FilePath[] files = {new FilePath(new File(pathToApp))};
+        final FilePath[] debugSymbols = {new FilePath(new File(pathToDebugSymbols))};
+        given(mockFilePath.list(anyString())).willReturn(files, debugSymbols);
+        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
+        given(mockFilePath.getRemote()).willReturn(pathToApp);
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(SymbolType.Apple, null, "app.pkg", "", "");
+        final UploadRequest expected = baseRequest.newBuilder().setPathToApp(pathToApp).setPathToDebugSymbols(pathToDebugSymbols).setSymbolUploadRequest(symbolUploadBeginRequest).build();
+
+        // When
+        final UploadRequest result = task.execute(request).get();
+
+        // Then
+        assertThat(result)
+            .isEqualTo(expected);
+    }
+
+    @Test
+    public void should_ReturnModifiedRequest_When_DebugSymbolsExists_MACOS_Dmg() throws Exception {
+        // Given
+        final UploadRequest request = baseRequest.newBuilder().setPathToDebugSymbols("path/to/*.zip").build();
+        final String pathToApp = String.join(File.separator, "path", "to", "app.dmg");
+        final String pathToDebugSymbols = String.join(File.separator, "path", "to", "symbols.zip");
+        final FilePath[] files = {new FilePath(new File(pathToApp))};
+        final FilePath[] debugSymbols = {new FilePath(new File(pathToDebugSymbols))};
+        given(mockFilePath.list(anyString())).willReturn(files, debugSymbols);
+        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
+        given(mockFilePath.getRemote()).willReturn(pathToApp);
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(SymbolType.Apple, null, "app.dmg", "", "");
+        final UploadRequest expected = baseRequest.newBuilder().setPathToApp(pathToApp).setPathToDebugSymbols(pathToDebugSymbols).setSymbolUploadRequest(symbolUploadBeginRequest).build();
+
+        // When
+        final UploadRequest result = task.execute(request).get();
+
+        // Then
+        assertThat(result)
+            .isEqualTo(expected);
+    }
+
+    @Test
     public void should_ThrowExecutionException_When_FileDoesNotExists() throws Exception {
         // Given
         final FilePath[] files = {};
