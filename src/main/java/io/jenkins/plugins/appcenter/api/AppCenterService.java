@@ -15,6 +15,7 @@ import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 public interface AppCenterService {
@@ -22,13 +23,8 @@ public interface AppCenterService {
     @POST("v0.1/apps/{owner_name}/{app_name}/release_uploads")
     CompletableFuture<ReleaseUploadBeginResponse> releaseUploadsCreate(
         @Path("owner_name") String user,
-        @Path("app_name") String appName);
-
-    @POST("v0.1/apps/{owner_name}/{app_name}/release_uploads")
-    CompletableFuture<ReleaseUploadBeginResponse> releaseUploadsCreate(
-        @Path("owner_name") String user,
         @Path("app_name") String appName,
-        @Body ReleaseUploadBeginRequest releaseUploadBeginRequest);
+        @Nullable @Body ReleaseUploadBeginRequest releaseUploadBeginRequest);
 
     @PATCH("v0.1/apps/{owner_name}/{app_name}/release_uploads/{upload_id}")
     CompletableFuture<ReleaseUploadEndResponse> releaseUploadsComplete(
