@@ -51,7 +51,7 @@ public final class DistributeResourceTask implements AppCenterTask<UploadRequest
         final ReleaseDetailsUpdateRequest releaseDetailsUpdateRequest = new ReleaseDetailsUpdateRequest(releaseNotes, mandatoryUpdate, destinations, null, notifyTesters);
 
         factory.createAppCenterService()
-            .releaseDetailsUpdate(request.ownerName, request.appName, request.releaseId, releaseDetailsUpdateRequest)
+            .releasesUpdate(request.ownerName, request.appName, request.releaseId, releaseDetailsUpdateRequest)
             .whenComplete((releaseUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
                     final AppCenterException exception = logFailure("Distributing resource unsuccessful: ", throwable);

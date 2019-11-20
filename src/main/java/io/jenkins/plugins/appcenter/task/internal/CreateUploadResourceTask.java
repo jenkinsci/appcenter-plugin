@@ -51,7 +51,7 @@ public final class CreateUploadResourceTask implements AppCenterTask<UploadReque
         //  final ReleaseUploadBeginRequest releaseUploadBeginRequest = new ReleaseUploadBeginRequest(upload.getReleaseId());
         //  using the overloaded releaseUploadBegin method.
         factory.createAppCenterService()
-            .releaseUploadBegin(request.ownerName, request.appName)
+            .releaseUploadsCreate(request.ownerName, request.appName)
             .whenComplete((releaseUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
                     final AppCenterException exception = logFailure("Create upload resource for app unsuccessful: ", throwable);
@@ -78,7 +78,7 @@ public final class CreateUploadResourceTask implements AppCenterTask<UploadReque
         final SymbolUploadBeginRequest symbolUploadRequest = request.symbolUploadRequest;
 
         factory.createAppCenterService()
-            .symbolUploadBegin(request.ownerName, request.appName, symbolUploadRequest)
+            .symbolUploadsCreate(request.ownerName, request.appName, symbolUploadRequest)
             .whenComplete((symbolsUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
                     final AppCenterException exception = logFailure("Create upload resource for debug symbols unsuccessful: ", throwable);

@@ -52,7 +52,7 @@ public final class CommitUploadResourceTask implements AppCenterTask<UploadReque
         final ReleaseUploadEndRequest releaseUploadEndRequest = new ReleaseUploadEndRequest(Status.committed);
 
         factory.createAppCenterService()
-            .releaseUploadEnd(request.ownerName, request.appName, request.uploadId, releaseUploadEndRequest)
+            .releaseUploadsComplete(request.ownerName, request.appName, request.uploadId, releaseUploadEndRequest)
             .whenComplete((releaseUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
                     final AppCenterException exception = logFailure("Committing app resource unsuccessful: ", throwable);
@@ -77,7 +77,7 @@ public final class CommitUploadResourceTask implements AppCenterTask<UploadReque
         final SymbolUploadEndRequest symbolUploadEndRequest = new SymbolUploadEndRequest(Status.committed);
 
         factory.createAppCenterService()
-            .symbolUploadEnd(request.ownerName, request.appName, request.symbolUploadId, symbolUploadEndRequest)
+            .symbolUploadsComplete(request.ownerName, request.appName, request.symbolUploadId, symbolUploadEndRequest)
             .whenComplete((symbolUploadEndResponse, throwable) -> {
                 if (throwable != null) {
                     final AppCenterException exception = logFailure("Committing symbol resource unsuccessful: ", throwable);
