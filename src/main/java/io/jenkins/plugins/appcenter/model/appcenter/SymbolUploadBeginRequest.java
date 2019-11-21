@@ -10,20 +10,20 @@ public final class SymbolUploadBeginRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Nonnull
-    public final SymbolType symbol_type;
+    public final SymbolTypeEnum symbol_type;
     @Nullable
     public final String client_callback;
-    @Nonnull
+    @Nullable
     public final String file_name;
-    @Nonnull
+    @Nullable
     public final String build;
-    @Nonnull
+    @Nullable
     public final String version;
 
-    public SymbolUploadBeginRequest(@Nonnull SymbolType symbol_type, @Nullable String client_callback, @Nonnull String file_name, @Nonnull String build, @Nonnull String version) {
-        this.symbol_type = symbol_type;
-        this.client_callback = client_callback;
-        this.file_name = file_name;
+    public SymbolUploadBeginRequest(@Nonnull SymbolTypeEnum symbolTypeEnum, @Nullable String clientCallback, @Nullable String fileName, @Nullable String build, @Nullable String version) {
+        this.symbol_type = symbolTypeEnum;
+        this.client_callback = clientCallback;
+        this.file_name = fileName;
         this.build = build;
         this.version = version;
     }
@@ -46,13 +46,21 @@ public final class SymbolUploadBeginRequest implements Serializable {
         SymbolUploadBeginRequest that = (SymbolUploadBeginRequest) o;
         return symbol_type == that.symbol_type &&
             Objects.equals(client_callback, that.client_callback) &&
-            file_name.equals(that.file_name) &&
-            build.equals(that.build) &&
-            version.equals(that.version);
+            Objects.equals(file_name, that.file_name) &&
+            Objects.equals(build, that.build) &&
+            Objects.equals(version, that.version);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(symbol_type, client_callback, file_name, build, version);
+    }
+
+    public enum SymbolTypeEnum {
+        Apple,
+        JavaScript,
+        Breakpad,
+        AndroidProguard,
+        UWP
     }
 }

@@ -1,21 +1,20 @@
 package io.jenkins.plugins.appcenter.api;
 
-import io.jenkins.plugins.appcenter.model.appcenter.ReleaseDetailsUpdateRequest;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseDetailsUpdateResponse;
+import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUpdateRequest;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadBeginRequest;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadBeginResponse;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadEndRequest;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadEndResponse;
+import io.jenkins.plugins.appcenter.model.appcenter.SymbolUpload;
 import io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadBeginRequest;
 import io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadBeginResponse;
 import io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadEndRequest;
-import io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadEndResponse;
 import retrofit2.http.Body;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 public interface AppCenterService {
@@ -24,7 +23,7 @@ public interface AppCenterService {
     CompletableFuture<ReleaseUploadBeginResponse> releaseUploadsCreate(
         @Path("owner_name") String user,
         @Path("app_name") String appName,
-        @Nullable @Body ReleaseUploadBeginRequest releaseUploadBeginRequest);
+        @Body ReleaseUploadBeginRequest releaseUploadBeginRequest);
 
     @PATCH("v0.1/apps/{owner_name}/{app_name}/release_uploads/{upload_id}")
     CompletableFuture<ReleaseUploadEndResponse> releaseUploadsComplete(
@@ -38,7 +37,7 @@ public interface AppCenterService {
         @Path("owner_name") String user,
         @Path("app_name") String appName,
         @Path("release_id") int releaseId,
-        @Body ReleaseDetailsUpdateRequest releaseDetailsUpdateRequest);
+        @Body ReleaseUpdateRequest releaseUpdateRequest);
 
     @POST("v0.1/apps/{owner_name}/{app_name}/symbol_uploads")
     CompletableFuture<SymbolUploadBeginResponse> symbolUploadsCreate(
@@ -47,7 +46,7 @@ public interface AppCenterService {
         @Body SymbolUploadBeginRequest symbolUploadBeginRequest);
 
     @PATCH("v0.1/apps/{owner_name}/{app_name}/symbol_uploads/{symbol_upload_id}")
-    CompletableFuture<SymbolUploadEndResponse> symbolUploadsComplete(
+    CompletableFuture<SymbolUpload> symbolUploadsComplete(
         @Path("owner_name") String user,
         @Path("app_name") String appName,
         @Path("symbol_upload_id") String uploadId,

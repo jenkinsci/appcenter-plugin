@@ -4,11 +4,13 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public final class UploadedSymbolInfo {
+    @Nonnull
     public final String symbol_id;
+    @Nonnull
     public final String platform;
 
-    public UploadedSymbolInfo(@Nonnull String symbol_id, @Nonnull String platform) {
-        this.symbol_id = symbol_id;
+    public UploadedSymbolInfo(@Nonnull String symbolId, @Nonnull String platform) {
+        this.symbol_id = symbolId;
         this.platform = platform;
     }
 

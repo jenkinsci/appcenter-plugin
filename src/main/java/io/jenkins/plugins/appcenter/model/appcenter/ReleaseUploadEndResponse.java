@@ -1,13 +1,16 @@
 package io.jenkins.plugins.appcenter.model.appcenter;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 public final class ReleaseUploadEndResponse {
-    public final int release_id;
+
+    @Nullable
+    public final Integer release_id;
+    @Nullable
     public final String release_url;
 
-    public ReleaseUploadEndResponse(int releaseId, @Nonnull String releaseUrl) {
+    public ReleaseUploadEndResponse(@Nullable Integer releaseId, @Nullable String releaseUrl) {
         this.release_id = releaseId;
         this.release_url = releaseUrl;
     }
@@ -25,8 +28,8 @@ public final class ReleaseUploadEndResponse {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ReleaseUploadEndResponse that = (ReleaseUploadEndResponse) o;
-        return release_id == that.release_id &&
-            release_url.equals(that.release_url);
+        return Objects.equals(release_id, that.release_id) &&
+            Objects.equals(release_url, that.release_url);
     }
 
     @Override

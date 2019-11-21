@@ -4,6 +4,7 @@ import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.AppCenterLogger;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
+import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadBeginRequest;
 import io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadBeginRequest;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 
@@ -48,10 +49,9 @@ public final class CreateUploadResourceTask implements AppCenterTask<UploadReque
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
 
         // TODO: Pass in the release_id as an optional parameter from the UI. Don't use it if  not available
-        //  final ReleaseUploadBeginRequest releaseUploadBeginRequest = new ReleaseUploadBeginRequest(upload.getReleaseId());
-        //  using the overloaded releaseUploadBegin method.
+        final ReleaseUploadBeginRequest releaseUploadBeginRequest = new ReleaseUploadBeginRequest(null, null, null);
         factory.createAppCenterService()
-            .releaseUploadsCreate(request.ownerName, request.appName, null)
+            .releaseUploadsCreate(request.ownerName, request.appName, releaseUploadBeginRequest)
             .whenComplete((releaseUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
                     final AppCenterException exception = logFailure("Create upload resource for app unsuccessful: ", throwable);

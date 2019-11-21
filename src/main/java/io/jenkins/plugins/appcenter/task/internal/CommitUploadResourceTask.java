@@ -5,7 +5,6 @@ import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.AppCenterLogger;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadEndRequest;
-import io.jenkins.plugins.appcenter.model.appcenter.Status;
 import io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadEndRequest;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 
@@ -49,7 +48,7 @@ public final class CommitUploadResourceTask implements AppCenterTask<UploadReque
         log("Committing app resource.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
-        final ReleaseUploadEndRequest releaseUploadEndRequest = new ReleaseUploadEndRequest(Status.committed);
+        final ReleaseUploadEndRequest releaseUploadEndRequest = new ReleaseUploadEndRequest(ReleaseUploadEndRequest.StatusEnum.committed);
 
         factory.createAppCenterService()
             .releaseUploadsComplete(request.ownerName, request.appName, request.uploadId, releaseUploadEndRequest)
@@ -74,7 +73,7 @@ public final class CommitUploadResourceTask implements AppCenterTask<UploadReque
         log("Committing symbol resource.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
-        final SymbolUploadEndRequest symbolUploadEndRequest = new SymbolUploadEndRequest(Status.committed);
+        final SymbolUploadEndRequest symbolUploadEndRequest = new SymbolUploadEndRequest(SymbolUploadEndRequest.StatusEnum.committed);
 
         factory.createAppCenterService()
             .symbolUploadsComplete(request.ownerName, request.appName, request.symbolUploadId, symbolUploadEndRequest)

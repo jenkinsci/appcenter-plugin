@@ -1,16 +1,22 @@
 package io.jenkins.plugins.appcenter.model.appcenter;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 public final class ReleaseUploadBeginResponse {
+    @Nonnull
     public final String upload_id;
+    @Nonnull
     public final String upload_url;
+    @Nullable
     public final String asset_id;
+    @Nullable
     public final String asset_domain;
+    @Nullable
     public final String asset_token;
 
-    public ReleaseUploadBeginResponse(@Nonnull String uploadId, @Nonnull String uploadUrl, @Nonnull String assetId, @Nonnull String assetDomain, @Nonnull String assetToken) {
+    public ReleaseUploadBeginResponse(@Nonnull String uploadId, @Nonnull String uploadUrl, @Nullable String assetId, @Nullable String assetDomain, @Nullable String assetToken) {
         this.upload_id = uploadId;
         this.upload_url = uploadUrl;
         this.asset_id = assetId;
@@ -36,9 +42,9 @@ public final class ReleaseUploadBeginResponse {
         ReleaseUploadBeginResponse that = (ReleaseUploadBeginResponse) o;
         return upload_id.equals(that.upload_id) &&
             upload_url.equals(that.upload_url) &&
-            asset_id.equals(that.asset_id) &&
-            asset_domain.equals(that.asset_domain) &&
-            asset_token.equals(that.asset_token);
+            Objects.equals(asset_id, that.asset_id) &&
+            Objects.equals(asset_domain, that.asset_domain) &&
+            Objects.equals(asset_token, that.asset_token);
     }
 
     @Override

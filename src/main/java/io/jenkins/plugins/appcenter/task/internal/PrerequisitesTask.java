@@ -4,7 +4,6 @@ import hudson.FilePath;
 import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.AppCenterLogger;
-import io.jenkins.plugins.appcenter.model.appcenter.SymbolType;
 import io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadBeginRequest;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import io.jenkins.plugins.appcenter.util.AndroidParser;
@@ -121,14 +120,14 @@ public final class PrerequisitesTask implements AppCenterTask<UploadRequest>, Ap
         final String versionCode = androidParser.versionCode();
         final String versionName = androidParser.versionName();
 
-        return new SymbolUploadBeginRequest(SymbolType.AndroidProguard, null, fileName, versionCode, versionName);
+        return new SymbolUploadBeginRequest(SymbolUploadBeginRequest.SymbolTypeEnum.AndroidProguard, null, fileName, versionCode, versionName);
     }
 
     @Nonnull
     private SymbolUploadBeginRequest appleSymbolsUpload(@Nonnull String pathToApp) {
         final File file = new File(filePath.child(pathToApp).getRemote());
 
-        return new SymbolUploadBeginRequest(SymbolType.Apple, null, file.getName(), "", "");
+        return new SymbolUploadBeginRequest(SymbolUploadBeginRequest.SymbolTypeEnum.Apple, null, file.getName(), "", "");
     }
 
     @Override
