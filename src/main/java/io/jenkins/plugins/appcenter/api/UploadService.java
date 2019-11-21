@@ -10,16 +10,17 @@ import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Url;
 
+import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 
 public interface UploadService {
 
     @Multipart
     @POST
-    CompletableFuture<Void> uploadApp(@Url String url, @Part MultipartBody.Part file);
+    CompletableFuture<Void> uploadApp(@Url @Nonnull String url, @Part @Nonnull MultipartBody.Part file);
 
     @Headers("x-ms-blob-type: BlockBlob")
     @PUT
-    CompletableFuture<Void> uploadSymbols(@Url String url, @Body RequestBody file);
+    CompletableFuture<Void> uploadSymbols(@Url @Nonnull String url, @Body @Nonnull RequestBody file);
 
 }

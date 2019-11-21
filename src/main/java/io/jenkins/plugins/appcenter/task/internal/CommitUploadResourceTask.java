@@ -14,6 +14,8 @@ import javax.inject.Singleton;
 import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
 
+import static java.util.Objects.requireNonNull;
+
 @Singleton
 public final class CommitUploadResourceTask implements AppCenterTask<UploadRequest>, AppCenterLogger {
 
@@ -45,13 +47,15 @@ public final class CommitUploadResourceTask implements AppCenterTask<UploadReque
 
     @Nonnull
     private CompletableFuture<UploadRequest> commitAppUpload(@Nonnull UploadRequest request) {
+        final String uploadId = requireNonNull(request.uploadId, "uploadId cannot be null");
+
         log("Committing app resource.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
         final ReleaseUploadEndRequest releaseUploadEndRequest = new ReleaseUploadEndRequest(ReleaseUploadEndRequest.StatusEnum.committed);
 
         factory.createAppCenterService()
-            .releaseUploadsComplete(request.ownerName, request.appName, request.uploadId, releaseUploadEndRequest)
+            .releaseUploadsComplete(request.ownerName, request.appName, uploadId, releaseUploadEndRequest)
             .whenComplete((releaseUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
                     final AppCenterException exception = logFailure("Committing app resource unsuccessful: ", throwable);
@@ -70,13 +74,15 @@ public final class CommitUploadResourceTask implements AppCenterTask<UploadReque
 
     @Nonnull
     private CompletableFuture<UploadRequest> commitSymbolsUpload(@Nonnull UploadRequest request) {
+        final String symbolUploadId = requireNonNull(request.symbolUploadId, "symbolUploadId cannot be null");
+
         log("Committing symbol resource.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
         final SymbolUploadEndRequest symbolUploadEndRequest = new SymbolUploadEndRequest(SymbolUploadEndRequest.StatusEnum.committed);
 
         factory.createAppCenterService()
-            .symbolUploadsComplete(request.ownerName, request.appName, request.symbolUploadId, symbolUploadEndRequest)
+            .symbolUploadsComplete(request.ownerName, request.appName, symbolUploadId, symbolUploadEndRequest)
             .whenComplete((symbolUploadEndResponse, throwable) -> {
                 if (throwable != null) {
                     final AppCenterException exception = logFailure("Committing symbol resource unsuccessful: ", throwable);

@@ -14,6 +14,8 @@ import javax.inject.Singleton;
 import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
 
+import static java.util.Objects.requireNonNull;
+
 @Singleton
 public final class CreateUploadResourceTask implements AppCenterTask<UploadRequest>, AppCenterLogger {
 
@@ -71,11 +73,11 @@ public final class CreateUploadResourceTask implements AppCenterTask<UploadReque
 
     @Nonnull
     private CompletableFuture<UploadRequest> createUploadResourceForDebugSymbols(@Nonnull UploadRequest request) {
+        final SymbolUploadBeginRequest symbolUploadRequest = requireNonNull(request.symbolUploadRequest, "symbolUploadRequest cannot be null");
+
         log("Creating an upload resource for debug symbols.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
-
-        final SymbolUploadBeginRequest symbolUploadRequest = request.symbolUploadRequest;
 
         factory.createAppCenterService()
             .symbolUploadsCreate(request.ownerName, request.appName, symbolUploadRequest)

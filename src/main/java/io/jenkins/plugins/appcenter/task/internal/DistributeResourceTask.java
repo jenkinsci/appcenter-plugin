@@ -17,6 +17,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Objects.requireNonNull;
+
 @Singleton
 public final class DistributeResourceTask implements AppCenterTask<UploadRequest>, AppCenterLogger {
 
@@ -37,6 +39,8 @@ public final class DistributeResourceTask implements AppCenterTask<UploadRequest
     @Nonnull
     @Override
     public CompletableFuture<UploadRequest> execute(@Nonnull UploadRequest request) {
+        final Integer releaseId = requireNonNull(request.releaseId, "releaseId cannot be null");
+
         log("Distributing resource.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
@@ -51,7 +55,7 @@ public final class DistributeResourceTask implements AppCenterTask<UploadRequest
         final ReleaseUpdateRequest releaseDetailsUpdateRequest = new ReleaseUpdateRequest(releaseNotes, mandatoryUpdate, destinations, null, notifyTesters);
 
         factory.createAppCenterService()
-            .releasesUpdate(request.ownerName, request.appName, request.releaseId, releaseDetailsUpdateRequest)
+            .releasesUpdate(request.ownerName, request.appName, releaseId, releaseDetailsUpdateRequest)
             .whenComplete((releaseUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
                     final AppCenterException exception = logFailure("Distributing resource unsuccessful: ", throwable);

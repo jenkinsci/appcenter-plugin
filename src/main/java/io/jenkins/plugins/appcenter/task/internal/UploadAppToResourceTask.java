@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
 
+import static java.util.Objects.requireNonNull;
+
 @Singleton
 public final class UploadAppToResourceTask implements AppCenterTask<UploadRequest>, AppCenterLogger {
 
@@ -51,18 +53,12 @@ public final class UploadAppToResourceTask implements AppCenterTask<UploadReques
 
     @Nonnull
     private CompletableFuture<UploadRequest> uploadApp(@Nonnull UploadRequest request) {
+        final String pathToApp = request.pathToApp;
+        final String uploadUrl = requireNonNull(request.uploadUrl, "uploadUrl cannot be null");
+
         log("Uploading app to resource.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
-
-        final String pathToApp = request.pathToApp;
-        final String uploadUrl = request.uploadUrl;
-
-        if (uploadUrl == null) {
-            final AppCenterException exception = logFailure("uploadUrl cannot be null");
-            future.completeExceptionally(exception);
-            return future;
-        }
 
         final File file = new File(filePath.child(pathToApp).getRemote());
         final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
@@ -85,18 +81,12 @@ public final class UploadAppToResourceTask implements AppCenterTask<UploadReques
 
     @Nonnull
     private CompletableFuture<UploadRequest> uploadSymbols(@Nonnull UploadRequest request) {
+        final String pathToDebugSymbols = request.pathToDebugSymbols;
+        final String symbolUploadUrl = requireNonNull(request.symbolUploadUrl, "symbolUploadUrl cannot be null");
+
         log("Uploading symbols to resource.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
-
-        final String pathToDebugSymbols = request.pathToDebugSymbols;
-        final String symbolUploadUrl = request.symbolUploadUrl;
-
-        if (symbolUploadUrl == null) {
-            final AppCenterException exception = logFailure("symbolUploadUrl cannot be null");
-            future.completeExceptionally(exception);
-            return future;
-        }
 
         final File file = new File(filePath.child(pathToDebugSymbols).getRemote());
         final RequestBody requestFile = RequestBody.create(null, file);
