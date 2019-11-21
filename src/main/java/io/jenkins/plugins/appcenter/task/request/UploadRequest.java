@@ -34,8 +34,8 @@ public final class UploadRequest implements Serializable {
     public final String uploadUrl;
     @Nullable
     public final String uploadId;
-
-    public final int releaseId;
+    @Nullable
+    public final Integer releaseId;
     @Nullable
     public final SymbolUploadBeginRequest symbolUploadRequest;
     @Nullable
@@ -68,7 +68,6 @@ public final class UploadRequest implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         UploadRequest that = (UploadRequest) o;
         return notifyTesters == that.notifyTesters &&
-            releaseId == that.releaseId &&
             ownerName.equals(that.ownerName) &&
             appName.equals(that.appName) &&
             pathToApp.equals(that.pathToApp) &&
@@ -77,6 +76,7 @@ public final class UploadRequest implements Serializable {
             pathToDebugSymbols.equals(that.pathToDebugSymbols) &&
             Objects.equals(uploadUrl, that.uploadUrl) &&
             Objects.equals(uploadId, that.uploadId) &&
+            Objects.equals(releaseId, that.releaseId) &&
             Objects.equals(symbolUploadRequest, that.symbolUploadRequest) &&
             Objects.equals(symbolUploadUrl, that.symbolUploadUrl) &&
             Objects.equals(symbolUploadId, that.symbolUploadId);
@@ -130,7 +130,8 @@ public final class UploadRequest implements Serializable {
         private String uploadUrl;
         @Nullable
         private String uploadId;
-        private int releaseId;
+        @Nullable
+        private Integer releaseId;
         @Nullable
         private SymbolUploadBeginRequest symbolUploadRequest;
         @Nullable
@@ -215,7 +216,7 @@ public final class UploadRequest implements Serializable {
             return this;
         }
 
-        public Builder setReleaseId(int releaseId) {
+        public Builder setReleaseId(Integer releaseId) {
             this.releaseId = releaseId;
             return this;
         }

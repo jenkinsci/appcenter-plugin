@@ -36,7 +36,7 @@ public interface AppCenterService {
     CompletableFuture<ReleaseDetailsUpdateResponse> releasesUpdate(
         @Path("owner_name") String user,
         @Path("app_name") String appName,
-        @Path("release_id") int releaseId,
+        @Path("release_id") Integer releaseId,
         @Body ReleaseUpdateRequest releaseUpdateRequest);
 
     @POST("v0.1/apps/{owner_name}/{app_name}/symbol_uploads")
