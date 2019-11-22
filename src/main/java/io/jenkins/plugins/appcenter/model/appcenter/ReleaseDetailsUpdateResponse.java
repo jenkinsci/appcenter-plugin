@@ -1,12 +1,13 @@
 package io.jenkins.plugins.appcenter.model.appcenter;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 public final class ReleaseDetailsUpdateResponse {
+    @Nullable
     public final String release_notes;
 
-    public ReleaseDetailsUpdateResponse(@Nonnull String releaseNotes) {
+    public ReleaseDetailsUpdateResponse(@Nullable String releaseNotes) {
         this.release_notes = releaseNotes;
     }
 
@@ -22,7 +23,7 @@ public final class ReleaseDetailsUpdateResponse {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ReleaseDetailsUpdateResponse that = (ReleaseDetailsUpdateResponse) o;
-        return release_notes.equals(that.release_notes);
+        return Objects.equals(release_notes, that.release_notes);
     }
 
     @Override

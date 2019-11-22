@@ -5,7 +5,6 @@ import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.AppCenterLogger;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadEndRequest;
-import io.jenkins.plugins.appcenter.model.appcenter.Status;
 import io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadEndRequest;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 
@@ -14,6 +13,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
+
+import static java.util.Objects.requireNonNull;
 
 @Singleton
 public final class CommitUploadResourceTask implements AppCenterTask<UploadRequest>, AppCenterLogger {
@@ -46,13 +47,15 @@ public final class CommitUploadResourceTask implements AppCenterTask<UploadReque
 
     @Nonnull
     private CompletableFuture<UploadRequest> commitAppUpload(@Nonnull UploadRequest request) {
+        final String uploadId = requireNonNull(request.uploadId, "uploadId cannot be null");
+
         log("Committing app resource.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
-        final ReleaseUploadEndRequest releaseUploadEndRequest = new ReleaseUploadEndRequest(Status.committed);
+        final ReleaseUploadEndRequest releaseUploadEndRequest = new ReleaseUploadEndRequest(ReleaseUploadEndRequest.StatusEnum.committed);
 
         factory.createAppCenterService()
-            .releaseUploadEnd(request.ownerName, request.appName, request.uploadId, releaseUploadEndRequest)
+            .releaseUploadsComplete(request.ownerName, request.appName, uploadId, releaseUploadEndRequest)
             .whenComplete((releaseUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
                     final AppCenterException exception = logFailure("Committing app resource unsuccessful: ", throwable);
@@ -71,13 +74,15 @@ public final class CommitUploadResourceTask implements AppCenterTask<UploadReque
 
     @Nonnull
     private CompletableFuture<UploadRequest> commitSymbolsUpload(@Nonnull UploadRequest request) {
+        final String symbolUploadId = requireNonNull(request.symbolUploadId, "symbolUploadId cannot be null");
+
         log("Committing symbol resource.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
-        final SymbolUploadEndRequest symbolUploadEndRequest = new SymbolUploadEndRequest(Status.committed);
+        final SymbolUploadEndRequest symbolUploadEndRequest = new SymbolUploadEndRequest(SymbolUploadEndRequest.StatusEnum.committed);
 
         factory.createAppCenterService()
-            .symbolUploadEnd(request.ownerName, request.appName, request.symbolUploadId, symbolUploadEndRequest)
+            .symbolUploadsComplete(request.ownerName, request.appName, symbolUploadId, symbolUploadEndRequest)
             .whenComplete((symbolUploadEndResponse, throwable) -> {
                 if (throwable != null) {
                     final AppCenterException exception = logFailure("Committing symbol resource unsuccessful: ", throwable);

@@ -1,15 +1,17 @@
 package io.jenkins.plugins.appcenter.model.appcenter;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 public final class SymbolUploadUserInfo {
+    @Nullable
     public final String email;
+    @Nullable
     public final String display_name;
 
-    public SymbolUploadUserInfo(@Nonnull String email, @Nonnull String display_name) {
+    public SymbolUploadUserInfo(@Nullable String email, @Nullable String displayName) {
         this.email = email;
-        this.display_name = display_name;
+        this.display_name = displayName;
     }
 
     @Override
@@ -25,8 +27,8 @@ public final class SymbolUploadUserInfo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SymbolUploadUserInfo that = (SymbolUploadUserInfo) o;
-        return email.equals(that.email) &&
-            display_name.equals(that.display_name);
+        return Objects.equals(email, that.email) &&
+            Objects.equals(display_name, that.display_name);
     }
 
     @Override

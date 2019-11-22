@@ -4,9 +4,10 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public final class SymbolUploadEndRequest {
-    public final Status status;
+    @Nonnull
+    public final StatusEnum status;
 
-    public SymbolUploadEndRequest(@Nonnull Status status) {
+    public SymbolUploadEndRequest(@Nonnull StatusEnum status) {
         this.status = status;
     }
 
@@ -28,5 +29,10 @@ public final class SymbolUploadEndRequest {
     @Override
     public int hashCode() {
         return Objects.hash(status);
+    }
+
+    public enum StatusEnum {
+        committed,
+        aborted
     }
 }

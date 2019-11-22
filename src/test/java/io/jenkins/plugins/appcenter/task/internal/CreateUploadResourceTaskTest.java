@@ -5,7 +5,6 @@ import hudson.model.TaskListener;
 import hudson.util.Secret;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
-import io.jenkins.plugins.appcenter.model.appcenter.SymbolType;
 import io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadBeginRequest;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import okhttp3.mockwebserver.MockResponse;
@@ -81,7 +80,7 @@ public class CreateUploadResourceTaskTest {
         // Given
         final UploadRequest request = baseRequest.newBuilder()
             .setPathToDebugSymbols("path/to/mappings.txt")
-            .setSymbolUploadRequest(new SymbolUploadBeginRequest(SymbolType.AndroidProguard, null, "mappings.txt", "1", "1.0.0"))
+            .setSymbolUploadRequest(new SymbolUploadBeginRequest(SymbolUploadBeginRequest.SymbolTypeEnum.AndroidProguard, null, "mappings.txt", "1", "1.0.0"))
             .build();
         final UploadRequest expected = request.newBuilder()
             .setUploadId("string").setUploadUrl("string")

@@ -5,7 +5,7 @@ import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.AppCenterLogger;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.model.appcenter.DestinationId;
-import io.jenkins.plugins.appcenter.model.appcenter.ReleaseDetailsUpdateRequest;
+import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUpdateRequest;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 
 import javax.annotation.Nonnull;
@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.Objects.requireNonNull;
 
 @Singleton
 public final class DistributeResourceTask implements AppCenterTask<UploadRequest>, AppCenterLogger {
@@ -37,6 +39,8 @@ public final class DistributeResourceTask implements AppCenterTask<UploadRequest
     @Nonnull
     @Override
     public CompletableFuture<UploadRequest> execute(@Nonnull UploadRequest request) {
+        final Integer releaseId = requireNonNull(request.releaseId, "releaseId cannot be null");
+
         log("Distributing resource.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
@@ -48,10 +52,10 @@ public final class DistributeResourceTask implements AppCenterTask<UploadRequest
             .map(name -> new DestinationId(name, null))
             .collect(Collectors.toList());
         final boolean notifyTesters = request.notifyTesters;
-        final ReleaseDetailsUpdateRequest releaseDetailsUpdateRequest = new ReleaseDetailsUpdateRequest(releaseNotes, mandatoryUpdate, destinations, null, notifyTesters);
+        final ReleaseUpdateRequest releaseDetailsUpdateRequest = new ReleaseUpdateRequest(releaseNotes, mandatoryUpdate, destinations, null, notifyTesters);
 
         factory.createAppCenterService()
-            .releaseDetailsUpdate(request.ownerName, request.appName, request.releaseId, releaseDetailsUpdateRequest)
+            .releasesUpdate(request.ownerName, request.appName, releaseId, releaseDetailsUpdateRequest)
             .whenComplete((releaseUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
                     final AppCenterException exception = logFailure("Distributing resource unsuccessful: ", throwable);

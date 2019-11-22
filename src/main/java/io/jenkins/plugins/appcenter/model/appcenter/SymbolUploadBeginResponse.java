@@ -4,14 +4,17 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public final class SymbolUploadBeginResponse {
+    @Nonnull
     public final String symbol_upload_id;
+    @Nonnull
     public final String upload_url;
+    @Nonnull
     public final String expiration_date;
 
-    public SymbolUploadBeginResponse(@Nonnull String symbol_upload_id, @Nonnull String upload_url, @Nonnull String expiration_date) {
-        this.symbol_upload_id = symbol_upload_id;
-        this.upload_url = upload_url;
-        this.expiration_date = expiration_date;
+    public SymbolUploadBeginResponse(@Nonnull String symbolUploadId, @Nonnull String uploadUrl, @Nonnull String expirationDate) {
+        this.symbol_upload_id = symbolUploadId;
+        this.upload_url = uploadUrl;
+        this.expiration_date = expirationDate;
     }
 
     @Override

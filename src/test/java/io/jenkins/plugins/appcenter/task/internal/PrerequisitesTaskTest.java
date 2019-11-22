@@ -3,7 +3,6 @@ package io.jenkins.plugins.appcenter.task.internal;
 import hudson.FilePath;
 import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
-import io.jenkins.plugins.appcenter.model.appcenter.SymbolType;
 import io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadBeginRequest;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import io.jenkins.plugins.appcenter.util.AndroidParser;
@@ -87,7 +86,7 @@ public class PrerequisitesTaskTest {
         given(mockAndroidParser.fileName()).willReturn("app.apk");
         given(mockAndroidParser.versionCode()).willReturn("1");
         given(mockAndroidParser.versionName()).willReturn("1.0.0");
-        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(SymbolType.AndroidProguard, null, "app.apk", "1", "1.0.0");
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(SymbolUploadBeginRequest.SymbolTypeEnum.AndroidProguard, null, "app.apk", "1", "1.0.0");
         final UploadRequest expected = baseRequest.newBuilder().setPathToApp(pathToApp).setPathToDebugSymbols(pathToDebugSymbols).setSymbolUploadRequest(symbolUploadBeginRequest).build();
 
         // When
@@ -109,7 +108,7 @@ public class PrerequisitesTaskTest {
         given(mockFilePath.list(anyString())).willReturn(files, debugSymbols);
         given(mockFilePath.child(anyString())).willReturn(mockFilePath);
         given(mockFilePath.getRemote()).willReturn(pathToApp);
-        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(SymbolType.Apple, null, "app.ipa", "", "");
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(SymbolUploadBeginRequest.SymbolTypeEnum.Apple, null, "app.ipa", "", "");
         final UploadRequest expected = baseRequest.newBuilder().setPathToApp(pathToApp).setPathToDebugSymbols(pathToDebugSymbols).setSymbolUploadRequest(symbolUploadBeginRequest).build();
 
         // When
@@ -131,7 +130,7 @@ public class PrerequisitesTaskTest {
         given(mockFilePath.list(anyString())).willReturn(files, debugSymbols);
         given(mockFilePath.child(anyString())).willReturn(mockFilePath);
         given(mockFilePath.getRemote()).willReturn(pathToApp);
-        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(SymbolType.Apple, null, "app.app.zip", "", "");
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(SymbolUploadBeginRequest.SymbolTypeEnum.Apple, null, "app.app.zip", "", "");
         final UploadRequest expected = baseRequest.newBuilder().setPathToApp(pathToApp).setPathToDebugSymbols(pathToDebugSymbols).setSymbolUploadRequest(symbolUploadBeginRequest).build();
 
         // When
@@ -153,7 +152,7 @@ public class PrerequisitesTaskTest {
         given(mockFilePath.list(anyString())).willReturn(files, debugSymbols);
         given(mockFilePath.child(anyString())).willReturn(mockFilePath);
         given(mockFilePath.getRemote()).willReturn(pathToApp);
-        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(SymbolType.Apple, null, "app.pkg", "", "");
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(SymbolUploadBeginRequest.SymbolTypeEnum.Apple, null, "app.pkg", "", "");
         final UploadRequest expected = baseRequest.newBuilder().setPathToApp(pathToApp).setPathToDebugSymbols(pathToDebugSymbols).setSymbolUploadRequest(symbolUploadBeginRequest).build();
 
         // When
@@ -175,7 +174,7 @@ public class PrerequisitesTaskTest {
         given(mockFilePath.list(anyString())).willReturn(files, debugSymbols);
         given(mockFilePath.child(anyString())).willReturn(mockFilePath);
         given(mockFilePath.getRemote()).willReturn(pathToApp);
-        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(SymbolType.Apple, null, "app.dmg", "", "");
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(SymbolUploadBeginRequest.SymbolTypeEnum.Apple, null, "app.dmg", "", "");
         final UploadRequest expected = baseRequest.newBuilder().setPathToApp(pathToApp).setPathToDebugSymbols(pathToDebugSymbols).setSymbolUploadRequest(symbolUploadBeginRequest).build();
 
         // When

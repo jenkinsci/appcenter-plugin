@@ -4,6 +4,7 @@ import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.AppCenterLogger;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
+import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUploadBeginRequest;
 import io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadBeginRequest;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 
@@ -12,6 +13,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
+
+import static java.util.Objects.requireNonNull;
 
 @Singleton
 public final class CreateUploadResourceTask implements AppCenterTask<UploadRequest>, AppCenterLogger {
@@ -48,10 +51,9 @@ public final class CreateUploadResourceTask implements AppCenterTask<UploadReque
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
 
         // TODO: Pass in the release_id as an optional parameter from the UI. Don't use it if  not available
-        //  final ReleaseUploadBeginRequest releaseUploadBeginRequest = new ReleaseUploadBeginRequest(upload.getReleaseId());
-        //  using the overloaded releaseUploadBegin method.
+        final ReleaseUploadBeginRequest releaseUploadBeginRequest = new ReleaseUploadBeginRequest(null, null, null);
         factory.createAppCenterService()
-            .releaseUploadBegin(request.ownerName, request.appName)
+            .releaseUploadsCreate(request.ownerName, request.appName, releaseUploadBeginRequest)
             .whenComplete((releaseUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
                     final AppCenterException exception = logFailure("Create upload resource for app unsuccessful: ", throwable);
@@ -71,14 +73,14 @@ public final class CreateUploadResourceTask implements AppCenterTask<UploadReque
 
     @Nonnull
     private CompletableFuture<UploadRequest> createUploadResourceForDebugSymbols(@Nonnull UploadRequest request) {
+        final SymbolUploadBeginRequest symbolUploadRequest = requireNonNull(request.symbolUploadRequest, "symbolUploadRequest cannot be null");
+
         log("Creating an upload resource for debug symbols.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
 
-        final SymbolUploadBeginRequest symbolUploadRequest = request.symbolUploadRequest;
-
         factory.createAppCenterService()
-            .symbolUploadBegin(request.ownerName, request.appName, symbolUploadRequest)
+            .symbolUploadsCreate(request.ownerName, request.appName, symbolUploadRequest)
             .whenComplete((symbolsUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
                     final AppCenterException exception = logFailure("Create upload resource for debug symbols unsuccessful: ", throwable);

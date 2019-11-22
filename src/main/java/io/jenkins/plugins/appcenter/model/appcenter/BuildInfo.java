@@ -1,15 +1,18 @@
 package io.jenkins.plugins.appcenter.model.appcenter;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 public final class BuildInfo {
-    public final String branch;
+    @Nullable
+    public final String branch_name;
+    @Nullable
     public final String commit_hash;
+    @Nullable
     public final String commit_message;
 
-    public BuildInfo(@Nonnull String branch, @Nonnull String commitHash, @Nonnull String commitMessage) {
-        this.branch = branch;
+    public BuildInfo(@Nullable String branchName, @Nullable String commitHash, @Nullable String commitMessage) {
+        this.branch_name = branchName;
         this.commit_hash = commitHash;
         this.commit_message = commitMessage;
     }
@@ -17,7 +20,7 @@ public final class BuildInfo {
     @Override
     public String toString() {
         return "BuildInfo{" +
-            "branch='" + branch + '\'' +
+            "branch_name='" + branch_name + '\'' +
             ", commit_hash='" + commit_hash + '\'' +
             ", commit_message='" + commit_message + '\'' +
             '}';
@@ -28,13 +31,13 @@ public final class BuildInfo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BuildInfo buildInfo = (BuildInfo) o;
-        return branch.equals(buildInfo.branch) &&
-            commit_hash.equals(buildInfo.commit_hash) &&
-            commit_message.equals(buildInfo.commit_message);
+        return Objects.equals(branch_name, buildInfo.branch_name) &&
+            Objects.equals(commit_hash, buildInfo.commit_hash) &&
+            Objects.equals(commit_message, buildInfo.commit_message);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(branch, commit_hash, commit_message);
+        return Objects.hash(branch_name, commit_hash, commit_message);
     }
 }
