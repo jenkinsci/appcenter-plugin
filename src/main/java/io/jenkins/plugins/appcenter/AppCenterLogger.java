@@ -28,7 +28,7 @@ public interface AppCenterLogger {
         requireNonNull(throwable, "throwable cannot be null.");
 
         // Error could be an HttPException or it could not be
-        if (HttpException.class.isAssignableFrom(throwable.getClass())) {
+        if (throwable instanceof HttpException) {
             try {
                 final HttpException httpException = (HttpException) throwable;
                 final Response<?> response = requireNonNull(httpException.response(), "response cannot be null.");
