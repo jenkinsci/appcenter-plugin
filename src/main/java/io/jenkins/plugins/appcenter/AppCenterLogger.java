@@ -1,6 +1,14 @@
 package io.jenkins.plugins.appcenter;
 
+import okhttp3.ResponseBody;
+import retrofit2.HttpException;
+import retrofit2.Response;
+
+import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.io.PrintStream;
+
+import static java.util.Objects.requireNonNull;
 
 public interface AppCenterLogger {
 
@@ -10,21 +18,28 @@ public interface AppCenterLogger {
         getLogger().println(message);
     }
 
-    default AppCenterException logFailure(String message) {
-        return logFailure(message, null);
+    default AppCenterException logFailure(@Nonnull String message) {
+        requireNonNull(message, "message cannot be null.");
+        return new AppCenterException(message);
     }
 
-    default AppCenterException logFailure(String message, Throwable throwable) {
-        final AppCenterException exception;
+    default AppCenterException logFailure(@Nonnull String message, @Nonnull Throwable throwable) {
+        requireNonNull(message, "message cannot be null.");
+        requireNonNull(throwable, "throwable cannot be null.");
 
-        if (throwable == null) {
-            exception = new AppCenterException(message);
-        } else {
-            exception = new AppCenterException(message, throwable);
+        // Error could be an HttPException or it could not be
+        if (HttpException.class.isAssignableFrom(throwable.getClass())) {
+            try {
+                final HttpException httpException = (HttpException) throwable;
+                final Response<?> response = requireNonNull(httpException.response(), "response cannot be null.");
+                final ResponseBody responseBody = requireNonNull(response.errorBody(), "errorBody cannot be null.");
+                final String json = responseBody.string();
+                return logFailure(String.format("%1$s: %2$s: %3$s", message, httpException.getLocalizedMessage(), json));
+            } catch (IOException e) {
+                return new AppCenterException(message, e);
+            }
         }
 
-        exception.printStackTrace(getLogger());
-
-        return exception;
+        return new AppCenterException(message, throwable);
     }
 }

@@ -56,7 +56,7 @@ public final class CreateUploadResourceTask implements AppCenterTask<UploadReque
             .releaseUploadsCreate(request.ownerName, request.appName, releaseUploadBeginRequest)
             .whenComplete((releaseUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
-                    final AppCenterException exception = logFailure("Create upload resource for app unsuccessful: ", throwable);
+                    final AppCenterException exception = logFailure("Create upload resource for app unsuccessful", throwable);
                     future.completeExceptionally(exception);
                 } else {
                     log("Create upload resource for app successful.");

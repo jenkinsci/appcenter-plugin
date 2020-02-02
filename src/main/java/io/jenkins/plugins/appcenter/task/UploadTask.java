@@ -12,7 +12,6 @@ import jenkins.security.MasterToSlaveCallable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @Singleton
 public final class UploadTask extends MasterToSlaveCallable<Boolean, AppCenterException> {
@@ -35,26 +34,22 @@ public final class UploadTask extends MasterToSlaveCallable<Boolean, AppCenterEx
     }
 
     @Override
-    public Boolean call() throws AppCenterException {
+    public Boolean call() {
         final CompletableFuture<Boolean> future = new CompletableFuture<>();
 
-        try {
-            prerequisitesTask.execute(originalRequest)
-                .thenCompose(createUploadResource::execute)
-                .thenCompose(uploadAppToResource::execute)
-                .thenCompose(commitUploadResource::execute)
-                .thenCompose(distributeResource::execute)
-                .whenComplete((uploadRequest, throwable) -> {
-                    if (throwable != null) {
-                        future.complete(false);
-                    } else {
-                        future.complete(true);
-                    }
-                })
-                .get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new AppCenterException("Upload to AppCenter failed.", e);
-        }
+        prerequisitesTask.execute(originalRequest)
+            .thenCompose(createUploadResource::execute)
+            .thenCompose(uploadAppToResource::execute)
+            .thenCompose(commitUploadResource::execute)
+            .thenCompose(distributeResource::execute)
+            .whenComplete((uploadRequest, throwable) -> {
+                if (throwable != null) {
+                    future.completeExceptionally(throwable);
+                } else {
+                    future.complete(true);
+                }
+            })
+            .join();
 
         return future.join();
     }

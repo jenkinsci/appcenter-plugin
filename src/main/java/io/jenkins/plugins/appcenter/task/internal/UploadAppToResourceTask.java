@@ -68,7 +68,7 @@ public final class UploadAppToResourceTask implements AppCenterTask<UploadReques
             .uploadApp(uploadUrl, body)
             .whenComplete((responseBody, throwable) -> {
                 if (throwable != null) {
-                    final AppCenterException exception = logFailure("Upload app to resource unsuccessful: ", throwable);
+                    final AppCenterException exception = logFailure("Upload app to resource unsuccessful", throwable);
                     future.completeExceptionally(exception);
                 } else {
                     log("Upload app to resource successful.");
