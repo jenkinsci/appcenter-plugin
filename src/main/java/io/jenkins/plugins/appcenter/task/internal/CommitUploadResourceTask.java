@@ -58,7 +58,7 @@ public final class CommitUploadResourceTask implements AppCenterTask<UploadReque
             .releaseUploadsComplete(request.ownerName, request.appName, uploadId, releaseUploadEndRequest)
             .whenComplete((releaseUploadBeginResponse, throwable) -> {
                 if (throwable != null) {
-                    final AppCenterException exception = logFailure("Committing app resource unsuccessful: ", throwable);
+                    final AppCenterException exception = logFailure("Committing app resource unsuccessful", throwable);
                     future.completeExceptionally(exception);
                 } else {
                     log("Committing app resource successful.");

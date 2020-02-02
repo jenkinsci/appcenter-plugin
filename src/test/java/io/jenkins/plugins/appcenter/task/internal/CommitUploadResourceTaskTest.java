@@ -16,7 +16,6 @@ import org.junit.function.ThrowingRunnable;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import retrofit2.HttpException;
 
 import java.io.PrintStream;
 import java.util.concurrent.ExecutionException;
@@ -127,8 +126,6 @@ public class CommitUploadResourceTaskTest {
         // Then
         final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
         assertThat(exception).hasCauseThat().isInstanceOf(AppCenterException.class);
-        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo("Committing app resource unsuccessful: ");
-        assertThat(exception).hasCauseThat().hasCauseThat().isInstanceOf(HttpException.class);
-        assertThat(exception).hasCauseThat().hasCauseThat().hasMessageThat().isEqualTo("HTTP 400 Client Error");
+        assertThat(exception).hasCauseThat().hasMessageThat().contains("Committing app resource unsuccessful: HTTP 400 Client Error: ");
     }
 }
