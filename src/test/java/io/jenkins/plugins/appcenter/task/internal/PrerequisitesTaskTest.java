@@ -98,6 +98,32 @@ public class PrerequisitesTaskTest {
     }
 
     @Test
+    public void should_ReturnModifiedRequest_When_DebugSymbolsExists_Android_Breakpad() throws Exception {
+        // Given
+        final UploadRequest request = baseRequest.newBuilder().setPathToDebugSymbols("path/to/*.zip").build();
+        final String pathToApp = String.join(File.separator, "path", "to", "app.apk");
+        final String pathToDebugSymbols = String.join(File.separator, "path", "to", "breakpad-symbols.zip");
+        final FilePath[] files = {new FilePath(new File(pathToApp))};
+        final FilePath[] debugSymbols = {new FilePath(new File(pathToDebugSymbols))};
+        given(mockFilePath.list(anyString())).willReturn(files, debugSymbols);
+        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
+        given(mockFilePath.getRemote()).willReturn(pathToDebugSymbols);
+        given(mockParserFactory.androidParser(any(File.class))).willReturn(mockAndroidParser);
+        given(mockAndroidParser.fileName()).willReturn("app.apk");
+        given(mockAndroidParser.versionCode()).willReturn("1");
+        given(mockAndroidParser.versionName()).willReturn("1.0.0");
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(SymbolUploadBeginRequest.SymbolTypeEnum.Breakpad, null, "app.apk", "1", "1.0.0");
+        final UploadRequest expected = baseRequest.newBuilder().setPathToApp(pathToApp).setPathToDebugSymbols(pathToDebugSymbols).setSymbolUploadRequest(symbolUploadBeginRequest).build();
+
+        // When
+        final UploadRequest result = task.execute(request).get();
+
+        // Then
+        assertThat(result)
+            .isEqualTo(expected);
+    }
+
+    @Test
     public void should_ReturnModifiedRequest_When_DebugSymbolsExists_IOS() throws Exception {
         // Given
         final UploadRequest request = baseRequest.newBuilder().setPathToDebugSymbols("path/to/*.zip").build();
