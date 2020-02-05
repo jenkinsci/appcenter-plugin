@@ -12,6 +12,8 @@ This plugin is currently in Alpha and looking for contributors. To begin with it
 functionality of AppCenter. When the APIs for AppCenter become stable this plugin will be eligible to be moved out of
 Alpha.
 
+These are the [outstanding tickets](https://issues.jenkins-ci.org/issues/?filter=20347) for this project.
+
 ## Contributing
 
 If you would like to contribute it would be massively helpful if you followed these steps:
