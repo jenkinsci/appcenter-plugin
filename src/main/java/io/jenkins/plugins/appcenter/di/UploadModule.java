@@ -20,6 +20,7 @@ final class UploadModule {
             .setPathToApp(envVars.expand(appCenterRecorder.getPathToApp()))
             .setDestinationGroups(envVars.expand(appCenterRecorder.getDistributionGroups()))
             .setReleaseNotes(envVars.expand(appCenterRecorder.getReleaseNotes()))
+            .setPathToReleaseNotes(envVars.expand(appCenterRecorder.getPathToReleaseNotes()))
             .setNotifyTesters(appCenterRecorder.getNotifyTesters())
             .setPathToDebugSymbols(envVars.expand(appCenterRecorder.getPathToDebugSymbols()))
             .build();
