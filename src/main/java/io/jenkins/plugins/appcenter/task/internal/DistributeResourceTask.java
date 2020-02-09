@@ -45,7 +45,7 @@ public final class DistributeResourceTask implements AppCenterTask<UploadRequest
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
 
-        final String releaseNotes = request.releaseNotes;
+        final String releaseNotes = parseReleaseNotes(request);
         final boolean mandatoryUpdate = false;
         final List<DestinationId> destinations = Stream.of(request.destinationGroups.split(","))
             .map(String::trim)
@@ -67,6 +67,11 @@ public final class DistributeResourceTask implements AppCenterTask<UploadRequest
             });
 
         return future;
+    }
+
+    @Nonnull
+    private String parseReleaseNotes(@Nonnull UploadRequest request) {
+        return request.releaseNotes;
     }
 
     @Override
