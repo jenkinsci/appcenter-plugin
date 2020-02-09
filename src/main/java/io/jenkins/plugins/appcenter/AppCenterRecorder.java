@@ -23,6 +23,7 @@ import io.jenkins.plugins.appcenter.validator.DistributionGroupsValidator;
 import io.jenkins.plugins.appcenter.validator.PathPlaceholderValidator;
 import io.jenkins.plugins.appcenter.validator.PathToAppValidator;
 import io.jenkins.plugins.appcenter.validator.PathToDebugSymbolsValidator;
+import io.jenkins.plugins.appcenter.validator.PathToReleaseNotesValidator;
 import io.jenkins.plugins.appcenter.validator.UsernameValidator;
 import io.jenkins.plugins.appcenter.validator.Validator;
 import jenkins.model.Jenkins;
@@ -65,6 +66,9 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
 
     @Nullable
     private String pathToDebugSymbols;
+
+    @Nullable
+    private String pathToReleaseNotes;
 
     @Nullable
     private transient String baseUrl;
@@ -117,6 +121,11 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         return Util.fixNull(pathToDebugSymbols);
     }
 
+    @Nonnull
+    public String getPathToReleaseNotes() {
+        return Util.fixNull(pathToReleaseNotes);
+    }
+
     @DataBoundSetter
     public void setReleaseNotes(@Nullable String releaseNotes) {
         this.releaseNotes = Util.fixEmpty(releaseNotes);
@@ -130,6 +139,11 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     @DataBoundSetter
     public void setPathToDebugSymbols(@Nullable String pathToDebugSymbols) {
         this.pathToDebugSymbols = Util.fixEmpty(pathToDebugSymbols);
+    }
+
+    @DataBoundSetter
+    public void setPathToReleaseNotes(@Nullable String pathToReleaseNotes) {
+        this.pathToReleaseNotes = Util.fixEmpty(pathToReleaseNotes);
     }
 
     /**
@@ -268,6 +282,27 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
             final Validator pathToAppValidator = new PathToDebugSymbolsValidator();
 
             if (!pathToAppValidator.isValid(value)) {
+                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_invalidPath());
+            }
+
+            final Validator pathPlaceholderValidator = new PathPlaceholderValidator();
+
+            if (!pathPlaceholderValidator.isValid(value)) {
+                return FormValidation.warning(Messages.AppCenterRecorder_DescriptorImpl_warnings_mustNotStartWithEnvVar());
+            }
+
+            return FormValidation.ok();
+        }
+
+        @SuppressWarnings("unused")
+        public FormValidation doCheckPathToReleaseNotes(@QueryParameter String value) {
+            if (value.trim().isEmpty()) {
+                return FormValidation.ok();
+            }
+
+            final Validator pathToReleaseNotesValidator = new PathToReleaseNotesValidator();
+
+            if (!pathToReleaseNotesValidator.isValid(value)) {
                 return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_invalidPath());
             }
 
