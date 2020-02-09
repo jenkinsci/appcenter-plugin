@@ -39,12 +39,12 @@
     <f:section title="Release Notes">
 
         <f:entry title="${%Release Notes}" field="releaseNotes"
-                 description="${%Optional, release notes in markdown format.}">
+                 description="${%Optional, but merged with other type release notes types. Merged limit 5000 characters.}">
             <f:textarea/>
         </f:entry>
 
         <f:entry title="${%Release Notes From A File}" field="pathToReleaseNotes"
-                 description="${%Optional, release notes in markdown format.}">
+                 description="${%Optional, but merged with other type release notes types. Merged limit 5000 characters.}">
             <f:textbox/>
         </f:entry>
 
