@@ -44,12 +44,8 @@ public final class PrerequisitesTask implements AppCenterTask<UploadRequest>, Ap
     @Nonnull
     @Override
     public CompletableFuture<UploadRequest> execute(@Nonnull UploadRequest request) {
-        if (request.pathToDebugSymbols.trim().isEmpty()) {
-            return checkFileExists(request);
-        } else {
-            return checkFileExists(request)
-                .thenCompose(this::checkSymbolsExist);
-        }
+        return checkFileExists(request)
+            .thenCompose(this::checkSymbolsExist);
     }
 
     @Nonnull
@@ -83,6 +79,11 @@ public final class PrerequisitesTask implements AppCenterTask<UploadRequest>, Ap
     @Nonnull
     private CompletableFuture<UploadRequest> checkSymbolsExist(@Nonnull UploadRequest request) {
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
+
+        if (request.pathToDebugSymbols.trim().isEmpty()) {
+            future.complete(request);
+            return future;
+        }
 
         try {
             final FilePath[] listOfMatchingFilePaths = filePath.list(request.pathToDebugSymbols);
@@ -142,6 +143,35 @@ public final class PrerequisitesTask implements AppCenterTask<UploadRequest>, Ap
         final File file = new File(filePath.child(pathToApp).getRemote());
 
         return new SymbolUploadBeginRequest(Apple, null, file.getName(), "", "");
+    }
+
+    @Nonnull
+    private CompletableFuture<UploadRequest> checkReleaseNotesExist(@Nonnull UploadRequest request) {
+        final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
+
+        try {
+            final FilePath[] listOfMatchingFilePaths = filePath.list(request.pathToReleaseNotes);
+            final int numberOfMatchingFiles = listOfMatchingFilePaths.length;
+            if (numberOfMatchingFiles > 1) {
+                final AppCenterException exception = logFailure(String.format("Multiple symbols found matching pattern: %s", request.pathToDebugSymbols));
+                future.completeExceptionally(exception);
+            } else if (numberOfMatchingFiles < 1) {
+                final AppCenterException exception = logFailure(String.format("No symbols found matching pattern: %s", request.pathToDebugSymbols));
+                future.completeExceptionally(exception);
+            } else {
+                log(String.format("Symbols found matching pattern: %s", request.pathToDebugSymbols));
+                final String pathToDebugSymbols = listOfMatchingFilePaths[0].getRemote();
+                final UploadRequest uploadRequest = request.newBuilder()
+                    .setPathToDebugSymbols(pathToDebugSymbols)
+                    .setSymbolUploadRequest(symbolUploadRequest(request.pathToApp))
+                    .build();
+                future.complete(uploadRequest);
+            }
+        } catch (IOException | InterruptedException e) {
+            future.completeExceptionally(e);
+        }
+
+        return future;
     }
 
     @Override
