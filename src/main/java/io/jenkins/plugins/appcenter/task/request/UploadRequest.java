@@ -22,7 +22,7 @@ public final class UploadRequest implements Serializable {
     @Nonnull
     public final String releaseNotes;
     @Nonnull
-    private final String pathToReleaseNotes;
+    public final String pathToReleaseNotes;
     public final boolean notifyTesters;
     @Nonnull
     public final String pathToDebugSymbols;
