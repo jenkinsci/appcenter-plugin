@@ -45,7 +45,8 @@ public final class PrerequisitesTask implements AppCenterTask<UploadRequest>, Ap
     @Override
     public CompletableFuture<UploadRequest> execute(@Nonnull UploadRequest request) {
         return checkFileExists(request)
-            .thenCompose(this::checkSymbolsExist);
+            .thenCompose(this::checkSymbolsExist)
+            .thenCompose(this::checkReleaseNotesExist);
     }
 
     @Nonnull
@@ -99,7 +100,7 @@ public final class PrerequisitesTask implements AppCenterTask<UploadRequest>, Ap
                 final String pathToDebugSymbols = listOfMatchingFilePaths[0].getRemote();
                 final UploadRequest uploadRequest = request.newBuilder()
                     .setPathToDebugSymbols(pathToDebugSymbols)
-                    .setSymbolUploadRequest(symbolUploadRequest(request.pathToApp, request.pathToDebugSymbols))
+                    .setSymbolUploadRequest(symbolUploadRequest(request.pathToApp, pathToDebugSymbols))
                     .build();
                 future.complete(uploadRequest);
             }
@@ -149,21 +150,25 @@ public final class PrerequisitesTask implements AppCenterTask<UploadRequest>, Ap
     private CompletableFuture<UploadRequest> checkReleaseNotesExist(@Nonnull UploadRequest request) {
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
 
+        if (request.pathToReleaseNotes.trim().isEmpty()) {
+            future.complete(request);
+            return future;
+        }
+
         try {
             final FilePath[] listOfMatchingFilePaths = filePath.list(request.pathToReleaseNotes);
             final int numberOfMatchingFiles = listOfMatchingFilePaths.length;
             if (numberOfMatchingFiles > 1) {
-                final AppCenterException exception = logFailure(String.format("Multiple symbols found matching pattern: %s", request.pathToDebugSymbols));
+                final AppCenterException exception = logFailure(String.format("Multiple release notes found matching pattern: %s", request.pathToReleaseNotes));
                 future.completeExceptionally(exception);
             } else if (numberOfMatchingFiles < 1) {
-                final AppCenterException exception = logFailure(String.format("No symbols found matching pattern: %s", request.pathToDebugSymbols));
+                final AppCenterException exception = logFailure(String.format("No release notes found matching pattern: %s", request.pathToReleaseNotes));
                 future.completeExceptionally(exception);
             } else {
-                log(String.format("Symbols found matching pattern: %s", request.pathToDebugSymbols));
-                final String pathToDebugSymbols = listOfMatchingFilePaths[0].getRemote();
+                log(String.format("Release notes found matching pattern: %s", request.pathToReleaseNotes));
+                final String pathToReleaseNotes = listOfMatchingFilePaths[0].getRemote();
                 final UploadRequest uploadRequest = request.newBuilder()
-                    .setPathToDebugSymbols(pathToDebugSymbols)
-                    .setSymbolUploadRequest(symbolUploadRequest(request.pathToApp))
+                    .setPathToReleaseNotes(pathToReleaseNotes)
                     .build();
                 future.complete(uploadRequest);
             }
