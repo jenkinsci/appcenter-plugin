@@ -32,17 +32,30 @@ simplest form you can upload an artefact to AppCenter like this:
 ```Groovy
 stage('Publish') {
   environment {
-    APPCENTER_API_TOKEN = credentials('at-this-moment-you-should-be-with-us')
+    APPCENTER_API_TOKEN = 'appcenter api token'
   }
   steps {
     appCenter apiToken: APPCENTER_API_TOKEN,
-            ownerName: 'janes-addiction',
-            appName: 'ritual-de-lo-habitual',
+            ownerName: 'appcenter account name of the owner of the app (username or organization URL name)',
+            appName: 'appcenter app name (as seen in app URL)',
             pathToApp: 'three/days/xiola.apk',
             distributionGroups: 'casey, niccoli'
   }
 }
 ```
+
+#### `appCenter`
+
+| Key & Type | Description |
+|-----------------|--------------------|
+| `apiToken` <br/> `String` | API Token for App Center |
+| `ownerName` <br/> `String` | Owner name as found in the App's URL in App Center |
+| `app_name` <br/> `String` | App name as found in the App's URL in App Center.|
+| `pathToApp` <br/> `String` |  File path to the release build to publish |
+| `distributionGroups` <br/> `String` | Distribute the app to groups on appcenter |
+| `notifyTesters` <br/> `boolean` | Send email notification about release.  (default: `true`) |
+| `pathToDebugSymbols` <br/> `String` |  |
+| `release_notes` <br/> `String` | Release notes  (default: `No changelog given`) |
 
 It may sound obvious but ensure the file you are trying to upload is available on the node that you are running the 
 plugin from.
