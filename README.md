@@ -32,7 +32,7 @@ simplest form you can upload an artefact to AppCenter like this:
 ```Groovy
 stage('Publish') {
   environment {
-    APPCENTER_API_TOKEN = 'appcenter api token'
+    APPCENTER_API_TOKEN = credentials('at-this-moment-you-should-be-with-us')
   }
   steps {
     appCenter apiToken: APPCENTER_API_TOKEN,
