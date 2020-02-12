@@ -5,6 +5,7 @@ import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.AppCenterLogger;
 import io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadBeginRequest;
+import io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadBeginRequest.SymbolTypeEnum;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import io.jenkins.plugins.appcenter.util.AndroidParser;
 import io.jenkins.plugins.appcenter.util.ParserFactory;
@@ -16,6 +17,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
+
+import static io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadBeginRequest.SymbolTypeEnum.AndroidProguard;
+import static io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadBeginRequest.SymbolTypeEnum.Apple;
+import static io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadBeginRequest.SymbolTypeEnum.Breakpad;
 
 @Singleton
 public final class PrerequisitesTask implements AppCenterTask<UploadRequest>, AppCenterLogger {
@@ -93,7 +98,7 @@ public final class PrerequisitesTask implements AppCenterTask<UploadRequest>, Ap
                 final String pathToDebugSymbols = listOfMatchingFilePaths[0].getRemote();
                 final UploadRequest uploadRequest = request.newBuilder()
                     .setPathToDebugSymbols(pathToDebugSymbols)
-                    .setSymbolUploadRequest(symbolUploadRequest(request.pathToApp))
+                    .setSymbolUploadRequest(symbolUploadRequest(request.pathToApp, request.pathToDebugSymbols))
                     .build();
                 future.complete(uploadRequest);
             }
@@ -105,29 +110,38 @@ public final class PrerequisitesTask implements AppCenterTask<UploadRequest>, Ap
     }
 
     @Nonnull
-    private SymbolUploadBeginRequest symbolUploadRequest(@Nonnull String pathToApp) throws IllegalStateException, IOException {
-        if (pathToApp.endsWith(".apk")) return androidSymbolsUpload(pathToApp);
+    private SymbolUploadBeginRequest symbolUploadRequest(@Nonnull String pathToApp, @Nonnull String pathToDebugSymbols) throws IllegalStateException, IOException {
+        if (pathToApp.endsWith(".apk")) return androidSymbolsUpload(pathToApp, pathToDebugSymbols);
         if (pathToApp.endsWith(".ipa") || pathToApp.endsWith(".app.zip") || pathToApp.endsWith(".pkg") || pathToApp.endsWith(".dmg")) return appleSymbolsUpload(pathToApp);
 
         throw new IllegalStateException("Unable to determine application type and therefore debug symbol type");
     }
 
     @Nonnull
-    private SymbolUploadBeginRequest androidSymbolsUpload(@Nonnull String pathToApp) throws IOException {
+    private SymbolUploadBeginRequest androidSymbolsUpload(@Nonnull String pathToApp, @Nonnull String pathToDebugSymbols) throws IOException {
         final File file = new File(filePath.child(pathToApp).getRemote());
         final AndroidParser androidParser = parserFactory.androidParser(file);
         final String fileName = androidParser.fileName();
         final String versionCode = androidParser.versionCode();
         final String versionName = androidParser.versionName();
+        final SymbolTypeEnum symbolType = getAndroidSymbolTypeEnum(pathToDebugSymbols);
 
-        return new SymbolUploadBeginRequest(SymbolUploadBeginRequest.SymbolTypeEnum.AndroidProguard, null, fileName, versionCode, versionName);
+        return new SymbolUploadBeginRequest(symbolType, null, fileName, versionCode, versionName);
+    }
+
+    @Nonnull
+    private SymbolTypeEnum getAndroidSymbolTypeEnum(@Nonnull String pathToDebugSymbols) {
+        if (pathToDebugSymbols.endsWith(".txt")) return AndroidProguard;
+        if (pathToDebugSymbols.endsWith(".zip")) return Breakpad;
+
+        throw new IllegalStateException("Unable to determine Android debug symbol type");
     }
 
     @Nonnull
     private SymbolUploadBeginRequest appleSymbolsUpload(@Nonnull String pathToApp) {
         final File file = new File(filePath.child(pathToApp).getRemote());
 
-        return new SymbolUploadBeginRequest(SymbolUploadBeginRequest.SymbolTypeEnum.Apple, null, file.getName(), "", "");
+        return new SymbolUploadBeginRequest(Apple, null, file.getName(), "", "");
     }
 
     @Override
