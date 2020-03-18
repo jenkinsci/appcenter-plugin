@@ -1,5 +1,6 @@
 package io.jenkins.plugins.appcenter.task.internal;
 
+import hudson.FilePath;
 import hudson.ProxyConfiguration;
 import hudson.model.TaskListener;
 import hudson.util.Secret;
@@ -22,6 +23,7 @@ import java.util.concurrent.ExecutionException;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -32,6 +34,9 @@ public class DistributeResourceTaskTest {
 
     @Mock
     TaskListener mockTaskListener;
+
+    @Mock
+    FilePath mockFilePath;
 
     @Mock
     PrintStream mockLogger;
@@ -55,7 +60,7 @@ public class DistributeResourceTaskTest {
             .build();
         given(mockTaskListener.getLogger()).willReturn(mockLogger);
         final AppCenterServiceFactory factory = new AppCenterServiceFactory(Secret.fromString("secret-token"), mockWebServer.url("/").toString(), mockProxyConfig);
-        task = new DistributeResourceTask(mockTaskListener, factory);
+        task = new DistributeResourceTask(mockTaskListener, mockFilePath, factory);
     }
 
     @Test
@@ -75,7 +80,7 @@ public class DistributeResourceTaskTest {
     }
 
     @Test
-    public void should_SetReleaseNotes_When_RequestIsSuccessful() throws Exception {
+    public void should_SetReleaseNotes_When_RequestIsSuccessful_OnlyReleaseNotes() throws Exception {
         // Given
         mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
             "  \"release_notes\": \"string\"\n" +
@@ -89,6 +94,26 @@ public class DistributeResourceTaskTest {
         // Then
         assertThat(recordedRequest.getBody().readUtf8())
             .contains("\"release_notes\":\"release-notes\"");
+    }
+
+    @Test
+    public void should_SetReleaseNotes_When_RequestIsSuccessful_BothReleaseNotesAndReleaseNotesFromFile() throws Exception {
+        // Given
+        final UploadRequest uploadRequest = baseRequest.newBuilder().setPathToReleaseNotes("path-to-release-notes").build();
+        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
+        given(mockFilePath.readToString()).willReturn("from file");
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
+            "  \"release_notes\": \"string\"\n" +
+            "}"));
+
+        final UploadRequest actual = task.execute(uploadRequest).get();
+
+        // When
+        final RecordedRequest recordedRequest = mockWebServer.takeRequest();
+
+        // Then
+        assertThat(recordedRequest.getBody().readUtf8())
+            .contains("\"release_notes\":\"release-notes\\n\\nfrom file\"");
     }
 
     @Test
