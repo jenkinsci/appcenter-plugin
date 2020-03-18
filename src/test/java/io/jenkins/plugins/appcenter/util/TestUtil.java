@@ -11,7 +11,7 @@ import java.util.Objects;
 
 public final class TestUtil {
     public static TestBuilder createFileForFreeStyle(final @Nonnull String pathToFile) {
-        return new TestAppWriter(pathToFile, "all of us with wings");
+        return createFileForFreeStyle(pathToFile, "all of us with wings");
     }
 
     public static TestBuilder createFileForFreeStyle(final @Nonnull String pathToFile, final @Nonnull String content) {
