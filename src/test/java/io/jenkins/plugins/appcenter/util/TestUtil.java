@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.util.Objects;
 
 public final class TestUtil {
-    public static TestBuilder createFileForFreeStyle(final @Nonnull String pathToFile) {
-        return createFileForFreeStyle(pathToFile, "all of us with wings");
+    public static TestBuilder createFile(final @Nonnull String pathToFile) {
+        return createFile(pathToFile, "all of us with wings");
     }
 
-    public static TestBuilder createFileForFreeStyle(final @Nonnull String pathToFile, final @Nonnull String content) {
+    public static TestBuilder createFile(final @Nonnull String pathToFile, final @Nonnull String content) {
         return new TestAppWriter(pathToFile, content);
     }
 
