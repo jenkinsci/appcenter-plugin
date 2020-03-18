@@ -18,10 +18,6 @@ public final class TestUtil {
         return new TestAppWriter(pathToFile, content);
     }
 
-    public static TestBuilder createFileForPipeline(final @Nonnull String pathToFile) {
-        return new TestAppWriter(pathToFile, "all of us with wings");
-    }
-
     private static class TestAppWriter extends TestBuilder {
 
         @Nonnull
