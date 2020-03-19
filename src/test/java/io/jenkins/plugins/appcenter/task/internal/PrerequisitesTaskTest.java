@@ -45,14 +45,16 @@ public class PrerequisitesTaskTest {
     @Mock
     AndroidParser mockAndroidParser;
 
-    private UploadRequest baseRequest;
+    private UploadRequest fullUploadRequest;
 
     private PrerequisitesTask task;
 
     @Before
     public void setUp() {
-        baseRequest = new UploadRequest.Builder()
-            .setPathToApp("path/to/*.apk")
+        fullUploadRequest = new UploadRequest.Builder()
+            .setPathToApp("path/to/app")
+            .setPathToDebugSymbols("path/to/debug-symbols")
+            .setPathToReleaseNotes("path/to/release-notes")
             .build();
         given(mockTaskListener.getLogger()).willReturn(mockLogger);
         task = new PrerequisitesTask(mockTaskListener, mockFilePath, mockParserFactory);
@@ -61,153 +63,16 @@ public class PrerequisitesTaskTest {
     @Test
     public void should_ReturnModifiedRequest_When_FileExists() throws Exception {
         // Given
+        final UploadRequest uploadRequest = fullUploadRequest.newBuilder().setPathToDebugSymbols("").setPathToReleaseNotes("").build();
         final String pathToApp = String.join(File.separator, "path", "to", "app.apk");
         final FilePath[] files = {new FilePath(new File(pathToApp))};
         given(mockFilePath.list(anyString())).willReturn(files);
-        final UploadRequest expected = baseRequest.newBuilder().setPathToApp(pathToApp).build();
+        final UploadRequest expected = uploadRequest.newBuilder()
+            .setPathToApp(pathToApp)
+            .build();
 
         // When
-        final UploadRequest result = task.execute(baseRequest).get();
-
-        // Then
-        assertThat(result)
-            .isEqualTo(expected);
-    }
-
-    @Test
-    public void should_ReturnModifiedRequest_When_DebugSymbolsExists_Android() throws Exception {
-        // Given
-        final UploadRequest request = baseRequest.newBuilder().setPathToDebugSymbols("path/to/*.txt").build();
-        final String pathToApp = String.join(File.separator, "path", "to", "app.apk");
-        final String pathToDebugSymbols = String.join(File.separator, "path", "to", "mapping.txt");
-        final FilePath[] files = {new FilePath(new File(pathToApp))};
-        final FilePath[] debugSymbols = {new FilePath(new File(pathToDebugSymbols))};
-        given(mockFilePath.list(anyString())).willReturn(files, debugSymbols);
-        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
-        given(mockFilePath.getRemote()).willReturn(pathToDebugSymbols);
-        given(mockParserFactory.androidParser(any(File.class))).willReturn(mockAndroidParser);
-        given(mockAndroidParser.fileName()).willReturn("app.apk");
-        given(mockAndroidParser.versionCode()).willReturn("1");
-        given(mockAndroidParser.versionName()).willReturn("1.0.0");
-        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(AndroidProguard, null, "app.apk", "1", "1.0.0");
-        final UploadRequest expected = baseRequest.newBuilder().setPathToApp(pathToApp).setPathToDebugSymbols(pathToDebugSymbols).setSymbolUploadRequest(symbolUploadBeginRequest).build();
-
-        // When
-        final UploadRequest result = task.execute(request).get();
-
-        // Then
-        assertThat(result)
-            .isEqualTo(expected);
-    }
-
-    @Test
-    public void should_ReturnModifiedRequest_When_DebugSymbolsExists_Android_Breakpad() throws Exception {
-        // Given
-        final UploadRequest request = baseRequest.newBuilder().setPathToDebugSymbols("path/to/*.zip").build();
-        final String pathToApp = String.join(File.separator, "path", "to", "app.apk");
-        final String pathToDebugSymbols = String.join(File.separator, "path", "to", "breakpad-symbols.zip");
-        final FilePath[] files = {new FilePath(new File(pathToApp))};
-        final FilePath[] debugSymbols = {new FilePath(new File(pathToDebugSymbols))};
-        given(mockFilePath.list(anyString())).willReturn(files, debugSymbols);
-        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
-        given(mockFilePath.getRemote()).willReturn(pathToDebugSymbols);
-        given(mockParserFactory.androidParser(any(File.class))).willReturn(mockAndroidParser);
-        given(mockAndroidParser.fileName()).willReturn("app.apk");
-        given(mockAndroidParser.versionCode()).willReturn("1");
-        given(mockAndroidParser.versionName()).willReturn("1.0.0");
-        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(Breakpad, null, "app.apk", "1", "1.0.0");
-        final UploadRequest expected = baseRequest.newBuilder().setPathToApp(pathToApp).setPathToDebugSymbols(pathToDebugSymbols).setSymbolUploadRequest(symbolUploadBeginRequest).build();
-
-        // When
-        final UploadRequest result = task.execute(request).get();
-
-        // Then
-        assertThat(result)
-            .isEqualTo(expected);
-    }
-
-    @Test
-    public void should_ReturnModifiedRequest_When_DebugSymbolsExists_IOS() throws Exception {
-        // Given
-        final UploadRequest request = baseRequest.newBuilder().setPathToDebugSymbols("path/to/*.zip").build();
-        final String pathToApp = String.join(File.separator, "path", "to", "app.ipa");
-        final String pathToDebugSymbols = String.join(File.separator, "path", "to", "symbols.zip");
-        final FilePath[] files = {new FilePath(new File(pathToApp))};
-        final FilePath[] debugSymbols = {new FilePath(new File(pathToDebugSymbols))};
-        given(mockFilePath.list(anyString())).willReturn(files, debugSymbols);
-        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
-        given(mockFilePath.getRemote()).willReturn(pathToApp);
-        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(Apple, null, "app.ipa", "", "");
-        final UploadRequest expected = baseRequest.newBuilder().setPathToApp(pathToApp).setPathToDebugSymbols(pathToDebugSymbols).setSymbolUploadRequest(symbolUploadBeginRequest).build();
-
-        // When
-        final UploadRequest result = task.execute(request).get();
-
-        // Then
-        assertThat(result)
-            .isEqualTo(expected);
-    }
-
-    @Test
-    public void should_ReturnModifiedRequest_When_DebugSymbolsExists_MACOS_AppZip() throws Exception {
-        // Given
-        final UploadRequest request = baseRequest.newBuilder().setPathToDebugSymbols("path/to/*.zip").build();
-        final String pathToApp = String.join(File.separator, "path", "to", "app.app.zip");
-        final String pathToDebugSymbols = String.join(File.separator, "path", "to", "symbols.zip");
-        final FilePath[] files = {new FilePath(new File(pathToApp))};
-        final FilePath[] debugSymbols = {new FilePath(new File(pathToDebugSymbols))};
-        given(mockFilePath.list(anyString())).willReturn(files, debugSymbols);
-        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
-        given(mockFilePath.getRemote()).willReturn(pathToApp);
-        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(Apple, null, "app.app.zip", "", "");
-        final UploadRequest expected = baseRequest.newBuilder().setPathToApp(pathToApp).setPathToDebugSymbols(pathToDebugSymbols).setSymbolUploadRequest(symbolUploadBeginRequest).build();
-
-        // When
-        final UploadRequest result = task.execute(request).get();
-
-        // Then
-        assertThat(result)
-            .isEqualTo(expected);
-    }
-
-    @Test
-    public void should_ReturnModifiedRequest_When_DebugSymbolsExists_MACOS_Pkg() throws Exception {
-        // Given
-        final UploadRequest request = baseRequest.newBuilder().setPathToDebugSymbols("path/to/*.zip").build();
-        final String pathToApp = String.join(File.separator, "path", "to", "app.pkg");
-        final String pathToDebugSymbols = String.join(File.separator, "path", "to", "symbols.zip");
-        final FilePath[] files = {new FilePath(new File(pathToApp))};
-        final FilePath[] debugSymbols = {new FilePath(new File(pathToDebugSymbols))};
-        given(mockFilePath.list(anyString())).willReturn(files, debugSymbols);
-        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
-        given(mockFilePath.getRemote()).willReturn(pathToApp);
-        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(Apple, null, "app.pkg", "", "");
-        final UploadRequest expected = baseRequest.newBuilder().setPathToApp(pathToApp).setPathToDebugSymbols(pathToDebugSymbols).setSymbolUploadRequest(symbolUploadBeginRequest).build();
-
-        // When
-        final UploadRequest result = task.execute(request).get();
-
-        // Then
-        assertThat(result)
-            .isEqualTo(expected);
-    }
-
-    @Test
-    public void should_ReturnModifiedRequest_When_DebugSymbolsExists_MACOS_Dmg() throws Exception {
-        // Given
-        final UploadRequest request = baseRequest.newBuilder().setPathToDebugSymbols("path/to/*.zip").build();
-        final String pathToApp = String.join(File.separator, "path", "to", "app.dmg");
-        final String pathToDebugSymbols = String.join(File.separator, "path", "to", "symbols.zip");
-        final FilePath[] files = {new FilePath(new File(pathToApp))};
-        final FilePath[] debugSymbols = {new FilePath(new File(pathToDebugSymbols))};
-        given(mockFilePath.list(anyString())).willReturn(files, debugSymbols);
-        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
-        given(mockFilePath.getRemote()).willReturn(pathToApp);
-        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(Apple, null, "app.dmg", "", "");
-        final UploadRequest expected = baseRequest.newBuilder().setPathToApp(pathToApp).setPathToDebugSymbols(pathToDebugSymbols).setSymbolUploadRequest(symbolUploadBeginRequest).build();
-
-        // When
-        final UploadRequest result = task.execute(request).get();
+        final UploadRequest result = task.execute(uploadRequest).get();
 
         // Then
         assertThat(result)
@@ -221,12 +86,12 @@ public class PrerequisitesTaskTest {
         given(mockFilePath.list(anyString())).willReturn(files);
 
         // When
-        final ThrowingRunnable throwingRunnable = () -> task.execute(baseRequest).get();
+        final ThrowingRunnable throwingRunnable = () -> task.execute(fullUploadRequest).get();
 
         // Then
         final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
         assertThat(exception).hasCauseThat().isInstanceOf(AppCenterException.class);
-        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo(String.format("No file found matching pattern: %s", baseRequest.pathToApp));
+        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo(String.format("No file found matching pattern: %s", fullUploadRequest.pathToApp));
     }
 
     @Test
@@ -238,11 +103,287 @@ public class PrerequisitesTaskTest {
         given(mockFilePath.list(anyString())).willReturn(files);
 
         // When
-        final ThrowingRunnable throwingRunnable = () -> task.execute(baseRequest).get();
+        final ThrowingRunnable throwingRunnable = () -> task.execute(fullUploadRequest).get();
 
         // Then
         final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
         assertThat(exception).hasCauseThat().isInstanceOf(AppCenterException.class);
-        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo(String.format("Multiple files found matching pattern: %s", baseRequest.pathToApp));
+        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo(String.format("Multiple files found matching pattern: %s", fullUploadRequest.pathToApp));
+    }
+
+    @Test
+    public void should_ReturnModifiedRequest_When_DebugSymbolsExists_Android() throws Exception {
+        // Given
+        final String pathToApp = String.join(File.separator, "path", "to", "app.apk");
+        final String pathToDebugSymbols = String.join(File.separator, "path", "to", "mapping.txt");
+        final String pathToReleaseNotes = String.join(File.separator, "path", "to", "release-notes.md");
+        final FilePath[] files = {new FilePath(new File(pathToApp))};
+        final FilePath[] debugSymbols = {new FilePath(new File(pathToDebugSymbols))};
+        final FilePath[] releaseNotes = {new FilePath(new File(pathToReleaseNotes))};
+        given(mockFilePath.list(anyString())).willReturn(files, debugSymbols, releaseNotes);
+        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
+        given(mockFilePath.getRemote()).willReturn(pathToDebugSymbols);
+        given(mockParserFactory.androidParser(any(File.class))).willReturn(mockAndroidParser);
+        given(mockAndroidParser.fileName()).willReturn("app.apk");
+        given(mockAndroidParser.versionCode()).willReturn("1");
+        given(mockAndroidParser.versionName()).willReturn("1.0.0");
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(AndroidProguard, null, "app.apk", "1", "1.0.0");
+        final UploadRequest expected = fullUploadRequest.newBuilder()
+            .setPathToApp(pathToApp)
+            .setPathToDebugSymbols(pathToDebugSymbols)
+            .setSymbolUploadRequest(symbolUploadBeginRequest)
+            .setPathToReleaseNotes(pathToReleaseNotes)
+            .build();
+
+        // When
+        final UploadRequest result = task.execute(fullUploadRequest).get();
+
+        // Then
+        assertThat(result)
+            .isEqualTo(expected);
+    }
+
+    @Test
+    public void should_ReturnModifiedRequest_When_DebugSymbolsExists_Android_Breakpad() throws Exception {
+        // Given
+        final String pathToApp = String.join(File.separator, "path", "to", "app.apk");
+        final String pathToDebugSymbols = String.join(File.separator, "path", "to", "breakpad-symbols.zip");
+        final String pathToReleaseNotes = String.join(File.separator, "path", "to", "release-notes.md");
+        final FilePath[] files = {new FilePath(new File(pathToApp))};
+        final FilePath[] debugSymbols = {new FilePath(new File(pathToDebugSymbols))};
+        final FilePath[] releaseNotes = {new FilePath(new File(pathToReleaseNotes))};
+        given(mockFilePath.list(anyString())).willReturn(files, debugSymbols, releaseNotes);
+        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
+        given(mockFilePath.getRemote()).willReturn(pathToDebugSymbols);
+        given(mockParserFactory.androidParser(any(File.class))).willReturn(mockAndroidParser);
+        given(mockAndroidParser.fileName()).willReturn("app.apk");
+        given(mockAndroidParser.versionCode()).willReturn("1");
+        given(mockAndroidParser.versionName()).willReturn("1.0.0");
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(Breakpad, null, "app.apk", "1", "1.0.0");
+        final UploadRequest expected = fullUploadRequest.newBuilder()
+            .setPathToApp(pathToApp)
+            .setPathToDebugSymbols(pathToDebugSymbols)
+            .setSymbolUploadRequest(symbolUploadBeginRequest)
+            .setPathToReleaseNotes(pathToReleaseNotes)
+            .build();
+
+        // When
+        final UploadRequest result = task.execute(fullUploadRequest).get();
+
+        // Then
+        assertThat(result)
+            .isEqualTo(expected);
+    }
+
+    @Test
+    public void should_ReturnModifiedRequest_When_DebugSymbolsExists_IOS() throws Exception {
+        // Given
+        final String pathToApp = String.join(File.separator, "path", "to", "app.ipa");
+        final String pathToDebugSymbols = String.join(File.separator, "path", "to", "symbols.zip");
+        final String pathToReleaseNotes = String.join(File.separator, "path", "to", "release-notes.md");
+        final FilePath[] files = {new FilePath(new File(pathToApp))};
+        final FilePath[] debugSymbols = {new FilePath(new File(pathToDebugSymbols))};
+        final FilePath[] releaseNotes = {new FilePath(new File(pathToReleaseNotes))};
+        given(mockFilePath.list(anyString())).willReturn(files, debugSymbols, releaseNotes);
+        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
+        given(mockFilePath.getRemote()).willReturn(pathToApp);
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(Apple, null, "app.ipa", "", "");
+        final UploadRequest expected = fullUploadRequest.newBuilder()
+            .setPathToApp(pathToApp)
+            .setPathToDebugSymbols(pathToDebugSymbols)
+            .setSymbolUploadRequest(symbolUploadBeginRequest)
+            .setPathToReleaseNotes(pathToReleaseNotes)
+            .build();
+
+        // When
+        final UploadRequest result = task.execute(fullUploadRequest).get();
+
+        // Then
+        assertThat(result)
+            .isEqualTo(expected);
+    }
+
+    @Test
+    public void should_ReturnModifiedRequest_When_DebugSymbolsExists_MACOS_AppZip() throws Exception {
+        // Given
+        final String pathToApp = String.join(File.separator, "path", "to", "app.app.zip");
+        final String pathToDebugSymbols = String.join(File.separator, "path", "to", "symbols.zip");
+        final String pathToReleaseNotes = String.join(File.separator, "path", "to", "release-notes.md");
+        final FilePath[] files = {new FilePath(new File(pathToApp))};
+        final FilePath[] debugSymbols = {new FilePath(new File(pathToDebugSymbols))};
+        final FilePath[] releaseNotes = {new FilePath(new File(pathToReleaseNotes))};
+        given(mockFilePath.list(anyString())).willReturn(files, debugSymbols, releaseNotes);
+        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
+        given(mockFilePath.getRemote()).willReturn(pathToApp);
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(Apple, null, "app.app.zip", "", "");
+        final UploadRequest expected = fullUploadRequest.newBuilder()
+            .setPathToApp(pathToApp)
+            .setPathToDebugSymbols(pathToDebugSymbols)
+            .setSymbolUploadRequest(symbolUploadBeginRequest)
+            .setPathToReleaseNotes(pathToReleaseNotes)
+            .build();
+
+        // When
+        final UploadRequest result = task.execute(fullUploadRequest).get();
+
+        // Then
+        assertThat(result)
+            .isEqualTo(expected);
+    }
+
+    @Test
+    public void should_ReturnModifiedRequest_When_DebugSymbolsExists_MACOS_Pkg() throws Exception {
+        // Given
+        final String pathToApp = String.join(File.separator, "path", "to", "app.pkg");
+        final String pathToDebugSymbols = String.join(File.separator, "path", "to", "symbols.zip");
+        final String pathToReleaseNotes = String.join(File.separator, "path", "to", "release-notes.md");
+        final FilePath[] files = {new FilePath(new File(pathToApp))};
+        final FilePath[] debugSymbols = {new FilePath(new File(pathToDebugSymbols))};
+        final FilePath[] releaseNotes = {new FilePath(new File(pathToReleaseNotes))};
+        given(mockFilePath.list(anyString())).willReturn(files, debugSymbols, releaseNotes);
+        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
+        given(mockFilePath.getRemote()).willReturn(pathToApp);
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(Apple, null, "app.pkg", "", "");
+        final UploadRequest expected = fullUploadRequest.newBuilder()
+            .setPathToApp(pathToApp)
+            .setPathToDebugSymbols(pathToDebugSymbols)
+            .setSymbolUploadRequest(symbolUploadBeginRequest)
+            .setPathToReleaseNotes(pathToReleaseNotes)
+            .build();
+
+        // When
+        final UploadRequest result = task.execute(fullUploadRequest).get();
+
+        // Then
+        assertThat(result)
+            .isEqualTo(expected);
+    }
+
+    @Test
+    public void should_ReturnModifiedRequest_When_DebugSymbolsExists_MACOS_Dmg() throws Exception {
+        // Given
+        final String pathToApp = String.join(File.separator, "path", "to", "app.dmg");
+        final String pathToDebugSymbols = String.join(File.separator, "path", "to", "symbols.zip");
+        final String pathToReleaseNotes = String.join(File.separator, "path", "to", "release-notes.md");
+        final FilePath[] files = {new FilePath(new File(pathToApp))};
+        final FilePath[] debugSymbols = {new FilePath(new File(pathToDebugSymbols))};
+        final FilePath[] releaseNotes = {new FilePath(new File(pathToReleaseNotes))};
+        given(mockFilePath.list(anyString())).willReturn(files, debugSymbols, releaseNotes);
+        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
+        given(mockFilePath.getRemote()).willReturn(pathToApp);
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(Apple, null, "app.dmg", "", "");
+        final UploadRequest expected = fullUploadRequest.newBuilder()
+            .setPathToApp(pathToApp)
+            .setPathToDebugSymbols(pathToDebugSymbols)
+            .setSymbolUploadRequest(symbolUploadBeginRequest)
+            .setPathToReleaseNotes(pathToReleaseNotes)
+            .build();
+
+        // When
+        final UploadRequest result = task.execute(fullUploadRequest).get();
+
+        // Then
+        assertThat(result)
+            .isEqualTo(expected);
+    }
+
+    @Test
+    public void should_ThrowExecutionException_When_DebugSymbolsDoesNotExists() throws Exception {
+        // Given
+        final String pathToApp = String.join(File.separator, "path", "to", "app.apk");
+        final String pathToReleaseNotes = String.join(File.separator, "path", "to", "release-notes.md");
+        final FilePath[] files = {new FilePath(new File(pathToApp))};
+        final FilePath[] debugSymbols = {};
+        final FilePath[] releaseNotes = {new FilePath(new File(pathToReleaseNotes))};
+        given(mockFilePath.list(anyString())).willReturn(files, debugSymbols, releaseNotes);
+
+        // When
+        final ThrowingRunnable throwingRunnable = () -> task.execute(fullUploadRequest).get();
+
+        // Then
+        final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
+        assertThat(exception).hasCauseThat().isInstanceOf(AppCenterException.class);
+        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo(String.format("No symbols found matching pattern: %s", fullUploadRequest.pathToDebugSymbols));
+    }
+
+    @Test
+    public void should_ThrowExecutionException_When_MultipleDebugSymbolsExists() throws Exception {
+        // Given
+        final String pathToApp = String.join(File.separator, "path", "to", "app.apk");
+        final String pathToDebugSymbols = String.join(File.separator, "path", "to", "debug.zip");
+        final String pathToAnotherDebugSymbols = String.join(File.separator, "path", "to", "more-debug.zip");
+        final String pathToReleaseNotes = String.join(File.separator, "path", "to", "release-notes.md");
+        final FilePath[] files = {new FilePath(new File(pathToApp))};
+        final FilePath[] debugSymbols = {new FilePath(new File(pathToDebugSymbols)), new FilePath(new File(pathToAnotherDebugSymbols))};
+        final FilePath[] releaseNotes = {new FilePath(new File(pathToReleaseNotes))};
+        given(mockFilePath.list(anyString())).willReturn(files, debugSymbols, releaseNotes);
+
+        // When
+        final ThrowingRunnable throwingRunnable = () -> task.execute(fullUploadRequest).get();
+
+        // Then
+        final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
+        assertThat(exception).hasCauseThat().isInstanceOf(AppCenterException.class);
+        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo(String.format("Multiple symbols found matching pattern: %s", fullUploadRequest.pathToDebugSymbols));
+    }
+
+    @Test
+    public void should_ReturnModifiedRequest_When_ReleaseNotesExists() throws Exception {
+        // Given
+        final UploadRequest uploadRequest = fullUploadRequest.newBuilder().setPathToDebugSymbols("").build();
+        final String pathToApp = String.join(File.separator, "path", "to", "app.apk");
+        final String pathToReleaseNotes = String.join(File.separator, "path", "to", "release-notes.md");
+        final FilePath[] files = {new FilePath(new File(pathToApp))};
+        final FilePath[] releaseNotes = {new FilePath(new File(pathToReleaseNotes))};
+        given(mockFilePath.list(anyString())).willReturn(files, releaseNotes);
+        final UploadRequest expected = uploadRequest.newBuilder()
+            .setPathToApp(pathToApp)
+            .setPathToReleaseNotes(pathToReleaseNotes)
+            .build();
+
+        // When
+        final UploadRequest result = task.execute(uploadRequest).get();
+
+        // Then
+        assertThat(result)
+            .isEqualTo(expected);
+    }
+
+    @Test
+    public void should_ThrowExecutionException_When_ReleaseNotesDoesNotExists() throws Exception {
+        // Given
+        final UploadRequest uploadRequest = fullUploadRequest.newBuilder().setPathToDebugSymbols("").build();
+        final String pathToApp = String.join(File.separator, "path", "to", "app.apk");
+        final FilePath[] files = {new FilePath(new File(pathToApp))};
+        final FilePath[] releaseNotes = {};
+        given(mockFilePath.list(anyString())).willReturn(files, releaseNotes);
+
+        // When
+        final ThrowingRunnable throwingRunnable = () -> task.execute(uploadRequest).get();
+
+        // Then
+        final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
+        assertThat(exception).hasCauseThat().isInstanceOf(AppCenterException.class);
+        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo(String.format("No release notes found matching pattern: %s", fullUploadRequest.pathToReleaseNotes));
+    }
+
+    @Test
+    public void should_ThrowExecutionException_When_MultipleReleaseNotesExists() throws Exception {
+        // Given
+        final UploadRequest uploadRequest = fullUploadRequest.newBuilder().setPathToDebugSymbols("").build();
+        final String pathToApp = String.join(File.separator, "path", "to", "app.apk");
+        final String pathToReleaseNotes = String.join(File.separator, "path", "to", "release-notes.md");
+        final String pathToAnotherReleaseNotes = String.join(File.separator, "path", "to", "more-release-notes.md");
+        final FilePath[] files = {new FilePath(new File(pathToApp))};
+        final FilePath[] releaseNotes = {new FilePath(new File(pathToReleaseNotes)), new FilePath(new File(pathToAnotherReleaseNotes))};
+        given(mockFilePath.list(anyString())).willReturn(files, releaseNotes);
+
+        // When
+        final ThrowingRunnable throwingRunnable = () -> task.execute(uploadRequest).get();
+
+        // Then
+        final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
+        assertThat(exception).hasCauseThat().isInstanceOf(AppCenterException.class);
+        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo(String.format("Multiple release notes found matching pattern: %s", fullUploadRequest.pathToReleaseNotes));
     }
 }

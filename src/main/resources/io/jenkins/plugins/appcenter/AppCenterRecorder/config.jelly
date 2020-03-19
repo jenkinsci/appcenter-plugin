@@ -26,11 +26,6 @@
         <f:textbox/>
     </f:entry>
 
-    <f:entry title="${%Release Notes}" field="releaseNotes"
-             description="${%Optional, release notes in markdown format.}">
-        <f:textarea/>
-    </f:entry>
-
     <f:entry title="${%Notify Testers}" field="notifyTesters"
              description="${%Optional, defaults to true}">
         <f:checkbox name="notifyTesters" default="true"/>
@@ -40,5 +35,19 @@
              description="${%Optional, relative path to debug symbols.}">
         <f:textbox/>
     </f:entry>
+
+    <f:section title="Release Notes">
+
+        <f:entry title="${%Release Notes}" field="releaseNotes"
+                 description="${%Optional, but merged with other type release notes types. Merged limit 5000 characters.}">
+            <f:textarea/>
+        </f:entry>
+
+        <f:entry title="${%Release Notes From A File}" field="pathToReleaseNotes"
+                 description="${%Optional, but merged with other type release notes types. Merged limit 5000 characters.}">
+            <f:textbox/>
+        </f:entry>
+
+    </f:section>
 
 </j:jelly>
