@@ -41,6 +41,7 @@ public class EnvInterpolationTest {
         envVars.put("OWNER_NAME", "janes-addiction");
         envVars.put("APP_NAME", "ritual-de-lo-habitual");
         envVars.put("PATH_TO_APP", "three/days/xiola.ipa");
+        envVars.put("BUILD_VERSION", "1.2.3");
         envVars.put("PATH_TO_DEBUG_SYMBOLS", "three/days/blue.zip");
         envVars.put("DISTRIBUTION_GROUPS", "casey, niccoli");
         envVars.put("RELEASE_NOTES", "I miss you my dear Xiola");
@@ -55,6 +56,7 @@ public class EnvInterpolationTest {
             "${PATH_TO_APP}",
             "${DISTRIBUTION_GROUPS}"
         );
+        appCenterRecorder.setBuildVersion("${BUILD_VERSION}");
         appCenterRecorder.setPathToDebugSymbols("${PATH_TO_DEBUG_SYMBOLS}");
         appCenterRecorder.setReleaseNotes("${RELEASE_NOTES}");
         appCenterRecorder.setPathToReleaseNotes("${PATH_TO_RELEASE_NOTES}");

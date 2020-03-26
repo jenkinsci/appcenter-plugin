@@ -146,6 +146,11 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     }
 
     @DataBoundSetter
+    public void setBuildVersion(@Nullable String buildVersion) {
+        this.buildVersion = Util.fixEmpty(buildVersion);
+    }
+
+    @DataBoundSetter
     public void setPathToDebugSymbols(@Nullable String pathToDebugSymbols) {
         this.pathToDebugSymbols = Util.fixEmpty(pathToDebugSymbols);
     }
