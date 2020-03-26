@@ -19,6 +19,7 @@ import io.jenkins.plugins.appcenter.di.DaggerAppCenterComponent;
 import io.jenkins.plugins.appcenter.task.UploadTask;
 import io.jenkins.plugins.appcenter.validator.ApiTokenValidator;
 import io.jenkins.plugins.appcenter.validator.AppNameValidator;
+import io.jenkins.plugins.appcenter.validator.BuildVersionValidator;
 import io.jenkins.plugins.appcenter.validator.DistributionGroupsValidator;
 import io.jenkins.plugins.appcenter.validator.PathPlaceholderValidator;
 import io.jenkins.plugins.appcenter.validator.PathToAppValidator;
@@ -63,6 +64,9 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     private String releaseNotes;
 
     private boolean notifyTesters = true;
+
+    @Nullable
+    private String buildVersion;
 
     @Nullable
     private String pathToDebugSymbols;
@@ -114,6 +118,11 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
 
     public boolean getNotifyTesters() {
         return notifyTesters;
+    }
+
+    @Nonnull
+    public String getBuildVersion() {
+        return Util.fixNull(buildVersion);
     }
 
     @Nonnull
@@ -268,6 +277,21 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
 
             if (!validator.isValid(value)) {
                 return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_invalidDistributionGroups());
+            }
+
+            return FormValidation.ok();
+        }
+
+        @SuppressWarnings("unused")
+        public FormValidation doCheckBuildVersion(@QueryParameter String value) {
+            if (value.trim().isEmpty()) {
+                return FormValidation.ok();
+            }
+
+            final Validator buildVersionValidator = new BuildVersionValidator();
+
+            if (!buildVersionValidator.isValid(value)) {
+                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_invalidBuildVersion());
             }
 
             return FormValidation.ok();
