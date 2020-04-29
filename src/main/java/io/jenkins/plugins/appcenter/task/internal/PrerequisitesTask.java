@@ -121,9 +121,10 @@ public final class PrerequisitesTask implements AppCenterTask<UploadRequest>, Ap
 
     @Nonnull
     private SymbolUploadBeginRequest androidSymbolsUpload(@Nonnull String pathToApp, @Nonnull String pathToDebugSymbols) throws IOException {
-        final File file = new File(filePath.child(pathToApp).getRemote());
-        final AndroidParser androidParser = parserFactory.androidParser(file);
-        final String fileName = androidParser.fileName();
+        final File apkFile = new File(filePath.child(pathToApp).getRemote());
+        final File debugSymbolsFile = new File(filePath.child(pathToDebugSymbols).getRemote());
+        final AndroidParser androidParser = parserFactory.androidParser(apkFile);
+        final String fileName = debugSymbolsFile.getName();
         final String versionCode = androidParser.versionCode();
         final String versionName = androidParser.versionName();
         final SymbolTypeEnum symbolType = getAndroidSymbolTypeEnum(pathToDebugSymbols);

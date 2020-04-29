@@ -124,10 +124,9 @@ public class PrerequisitesTaskTest {
         given(mockFilePath.child(anyString())).willReturn(mockFilePath);
         given(mockFilePath.getRemote()).willReturn(pathToDebugSymbols);
         given(mockParserFactory.androidParser(any(File.class))).willReturn(mockAndroidParser);
-        given(mockAndroidParser.fileName()).willReturn("app.apk");
         given(mockAndroidParser.versionCode()).willReturn("1");
         given(mockAndroidParser.versionName()).willReturn("1.0.0");
-        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(AndroidProguard, null, "app.apk", "1", "1.0.0");
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(AndroidProguard, null, "mapping.txt", "1", "1.0.0");
         final UploadRequest expected = fullUploadRequest.newBuilder()
             .setPathToApp(pathToApp)
             .setPathToDebugSymbols(pathToDebugSymbols)
@@ -156,10 +155,9 @@ public class PrerequisitesTaskTest {
         given(mockFilePath.child(anyString())).willReturn(mockFilePath);
         given(mockFilePath.getRemote()).willReturn(pathToDebugSymbols);
         given(mockParserFactory.androidParser(any(File.class))).willReturn(mockAndroidParser);
-        given(mockAndroidParser.fileName()).willReturn("app.apk");
         given(mockAndroidParser.versionCode()).willReturn("1");
         given(mockAndroidParser.versionName()).willReturn("1.0.0");
-        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(Breakpad, null, "app.apk", "1", "1.0.0");
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(Breakpad, null, "breakpad-symbols.zip", "1", "1.0.0");
         final UploadRequest expected = fullUploadRequest.newBuilder()
             .setPathToApp(pathToApp)
             .setPathToDebugSymbols(pathToDebugSymbols)
