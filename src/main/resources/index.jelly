@@ -1,4 +1,4 @@
 <?jelly escape-by-default='true'?>
 <div>
-    Upload new versions of your Android, iOS, Windows and MacOS applications to AppCenter.
+    Upload new versions of your Android, iOS, MacOS, and (limited) Windows applications to AppCenter.
 </div>
