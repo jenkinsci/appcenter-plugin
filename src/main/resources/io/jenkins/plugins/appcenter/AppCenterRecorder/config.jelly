@@ -31,6 +31,11 @@
         <f:checkbox name="notifyTesters" default="true"/>
     </f:entry>
 
+    <f:entry title="${%Build version}" field="buildVersion"
+                 description="${%Optional, version string for the build.}">
+        <f:textbox/>
+    </f:entry>
+
     <f:entry title="${%Path To Debug Symbols}" field="pathToDebugSymbols"
              description="${%Optional, relative path to debug symbols.}">
         <f:textbox/>

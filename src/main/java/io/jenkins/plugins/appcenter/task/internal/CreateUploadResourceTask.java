@@ -51,7 +51,7 @@ public final class CreateUploadResourceTask implements AppCenterTask<UploadReque
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
 
         // TODO: Pass in the release_id as an optional parameter from the UI. Don't use it if  not available
-        final ReleaseUploadBeginRequest releaseUploadBeginRequest = new ReleaseUploadBeginRequest(null, null, null);
+        final ReleaseUploadBeginRequest releaseUploadBeginRequest = new ReleaseUploadBeginRequest(null, request.buildVersion, null);
         factory.createAppCenterService()
             .releaseUploadsCreate(request.ownerName, request.appName, releaseUploadBeginRequest)
             .whenComplete((releaseUploadBeginResponse, throwable) -> {
