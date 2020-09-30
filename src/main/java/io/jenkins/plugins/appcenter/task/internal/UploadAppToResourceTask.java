@@ -1,10 +1,13 @@
 package io.jenkins.plugins.appcenter.task.internal;
 
+import com.azure.storage.blob.BlobClient;
+import com.azure.storage.blob.BlobClientBuilder;
 import hudson.FilePath;
 import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.AppCenterLogger;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
+import io.jenkins.plugins.appcenter.api.UploadService;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -14,8 +17,12 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URL;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static java.util.Objects.requireNonNull;
 
@@ -84,11 +91,54 @@ public final class UploadAppToResourceTask implements AppCenterTask<UploadReques
         final String pathToDebugSymbols = request.pathToDebugSymbols;
         final String symbolUploadUrl = requireNonNull(request.symbolUploadUrl, "symbolUploadUrl cannot be null");
 
-        log("Uploading symbols to resource.");
+        final File file = new File(filePath.child(pathToDebugSymbols).getRemote());
+        if (file.length() > (1024 * 1024) * 256) {
+            return uploadSymbolsChunked(request, symbolUploadUrl, file);
+        } else {
+            return uploadSymbolsComplete(request, symbolUploadUrl, file);
+        }
+    }
+
+    @Nonnull
+    private CompletableFuture<UploadRequest> uploadSymbolsChunked(@Nonnull UploadRequest request, @Nonnull String symbolUploadUrl, @Nonnull File file) {
+        log("Uploading symbols to resource chunked.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
+        CompletableFuture.supplyAsync(() ->
+        {
+            try {
+                //Workaround for bug in Azure Blob Storage, as AppCenter returns the upload URL with a port attached
+                //See https://github.com/Azure/azure-sdk-for-java/issues/15827
+                final URL oldURL = new URL(symbolUploadUrl);
+                final URL newURL = new URL(oldURL.getProtocol(), oldURL.getHost(), oldURL.getFile());
+                final String symbolUploadUrlWithoutPort = newURL.toString();
 
-        final File file = new File(filePath.child(pathToDebugSymbols).getRemote());
+                final BlobClient blobClient = new BlobClientBuilder().endpoint(symbolUploadUrlWithoutPort).buildClient();
+                blobClient.uploadFromFile(file.getPath(), true);
+            } catch (Exception e) {
+                final AppCenterException exception = logFailure("Upload symbols to resource unsuccessful: ", e);
+                future.completeExceptionally(exception);
+            }
+            return (Void) null;
+        }).whenComplete((responseBody, throwable) -> {
+            if (throwable != null) {
+                final AppCenterException exception = logFailure("Upload symbols to resource unsuccessful: ", throwable);
+                future.completeExceptionally(exception);
+            } else {
+                log("Upload symbols to resource successful.");
+                future.complete(request);
+            }
+        });
+        ;
+
+        return future;
+    }
+
+    @Nonnull
+    private CompletableFuture<UploadRequest> uploadSymbolsComplete(@Nonnull UploadRequest request, @Nonnull String symbolUploadUrl, @Nonnull File file) {
+        log("Uploading all symbols at once to resource.");
+
+        final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
         final RequestBody requestFile = RequestBody.create(null, file);
 
         factory.createUploadService(symbolUploadUrl)
