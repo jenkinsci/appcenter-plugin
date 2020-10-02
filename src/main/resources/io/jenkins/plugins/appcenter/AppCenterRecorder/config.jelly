@@ -41,6 +41,16 @@
         <f:textbox/>
     </f:entry>
 
+    <f:entry title="${%Branch Name}" field="branchName"
+             description="${%Optional, name of the branch being pushed to AppCenter}">
+        <f:textbox/>
+    </f:entry>
+
+    <f:entry title="${%Commit Hash}" field="commitHash"
+             description="${%Optional, commit hash pushed to AppCenter}">
+        <f:textbox/>
+    </f:entry>
+
     <f:section title="Release Notes">
 
         <f:entry title="${%Release Notes}" field="releaseNotes"

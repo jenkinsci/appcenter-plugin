@@ -5,6 +5,7 @@ import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.AppCenterLogger;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
+import io.jenkins.plugins.appcenter.model.appcenter.BuildInfo;
 import io.jenkins.plugins.appcenter.model.appcenter.DestinationId;
 import io.jenkins.plugins.appcenter.model.appcenter.ReleaseUpdateRequest;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
@@ -59,7 +60,8 @@ public final class DistributeResourceTask implements AppCenterTask<UploadRequest
             .map(name -> new DestinationId(name, null))
             .collect(Collectors.toList());
         final boolean notifyTesters = request.notifyTesters;
-        final ReleaseUpdateRequest releaseDetailsUpdateRequest = new ReleaseUpdateRequest(releaseNotes, mandatoryUpdate, destinations, null, notifyTesters);
+
+        final ReleaseUpdateRequest releaseDetailsUpdateRequest = new ReleaseUpdateRequest(releaseNotes, mandatoryUpdate, destinations, CreateBuildInfo(request), notifyTesters);
 
         factory.createAppCenterService()
             .releasesUpdate(request.ownerName, request.appName, releaseId, releaseDetailsUpdateRequest)
@@ -99,8 +101,15 @@ public final class DistributeResourceTask implements AppCenterTask<UploadRequest
 
     }
 
+    private static BuildInfo CreateBuildInfo(@Nonnull UploadRequest request) {
+        if (request.branchName == null && request.commitHash == null) return null;
+        return new BuildInfo(request.branchName,request.commitHash,null);
+    }
+
     @Override
     public PrintStream getLogger() {
         return taskListener.getLogger();
     }
+
+
 }
