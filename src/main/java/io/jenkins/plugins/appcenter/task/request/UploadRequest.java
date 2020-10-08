@@ -24,6 +24,7 @@ public final class UploadRequest implements Serializable {
     @Nonnull
     public final String pathToReleaseNotes;
     public final boolean notifyTesters;
+    public final boolean mandatoryUpdate;
     @Nonnull
     public final String buildVersion;
     @Nonnull
@@ -56,6 +57,7 @@ public final class UploadRequest implements Serializable {
             ", releaseNotes='" + releaseNotes + '\'' +
             ", pathToReleaseNotes='" + pathToReleaseNotes + '\'' +
             ", notifyTesters=" + notifyTesters +
+            ", mandatoryUpdate=" + mandatoryUpdate +
             ", buildVersion='" + buildVersion + '\'' +
             ", pathToDebugSymbols='" + pathToDebugSymbols + '\'' +
             ", uploadUrl='" + uploadUrl + '\'' +
@@ -73,6 +75,7 @@ public final class UploadRequest implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         UploadRequest that = (UploadRequest) o;
         return notifyTesters == that.notifyTesters &&
+            mandatoryUpdate == that.mandatoryUpdate &&
             ownerName.equals(that.ownerName) &&
             appName.equals(that.appName) &&
             pathToApp.equals(that.pathToApp) &&
@@ -91,7 +94,7 @@ public final class UploadRequest implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(ownerName, appName, pathToApp, destinationGroups, releaseNotes, pathToReleaseNotes, notifyTesters, buildVersion, pathToDebugSymbols, uploadUrl, uploadId, releaseId, symbolUploadRequest, symbolUploadUrl, symbolUploadId);
+        return Objects.hash(ownerName, appName, pathToApp, destinationGroups, releaseNotes, pathToReleaseNotes, mandatoryUpdate, notifyTesters, buildVersion, pathToDebugSymbols, uploadUrl, uploadId, releaseId, symbolUploadRequest, symbolUploadUrl, symbolUploadId);
     }
 
     private UploadRequest(Builder builder) {
@@ -102,6 +105,7 @@ public final class UploadRequest implements Serializable {
         this.releaseNotes = builder.releaseNotes;
         this.pathToReleaseNotes = builder.pathToReleaseNotes;
         this.notifyTesters = builder.notifyTesters;
+        this.mandatoryUpdate = builder.mandatoryUpdate;
         this.buildVersion = builder.buildVersion;
         this.pathToDebugSymbols = builder.pathToDebugSymbols;
 
@@ -133,6 +137,7 @@ public final class UploadRequest implements Serializable {
         @Nonnull
         private String pathToReleaseNotes;
         private boolean notifyTesters;
+        private boolean mandatoryUpdate;
         @Nonnull
         private String buildVersion;
         @Nonnull
@@ -160,6 +165,7 @@ public final class UploadRequest implements Serializable {
             releaseNotes = "";
             pathToReleaseNotes = "";
             notifyTesters = true;
+            mandatoryUpdate = false;
             buildVersion = "";
             pathToDebugSymbols = "";
         }
@@ -172,6 +178,7 @@ public final class UploadRequest implements Serializable {
             this.releaseNotes = uploadRequest.releaseNotes;
             this.pathToReleaseNotes = uploadRequest.pathToReleaseNotes;
             this.notifyTesters = uploadRequest.notifyTesters;
+            this.mandatoryUpdate = uploadRequest.mandatoryUpdate;
             this.buildVersion = uploadRequest.buildVersion;
             this.pathToDebugSymbols = uploadRequest.pathToDebugSymbols;
 
@@ -216,6 +223,11 @@ public final class UploadRequest implements Serializable {
 
         public Builder setNotifyTesters(boolean notifyTesters) {
             this.notifyTesters = notifyTesters;
+            return this;
+        }
+
+        public Builder setMandatoryUpdate(boolean mandatoryUpdate) {
+            this.mandatoryUpdate = mandatoryUpdate;
             return this;
         }
 
