@@ -61,7 +61,7 @@ public final class DistributeResourceTask implements AppCenterTask<UploadRequest
             .collect(Collectors.toList());
         final boolean notifyTesters = request.notifyTesters;
 
-        final ReleaseUpdateRequest releaseDetailsUpdateRequest = new ReleaseUpdateRequest(releaseNotes, mandatoryUpdate, destinations, CreateBuildInfo(request), notifyTesters);
+        final ReleaseUpdateRequest releaseDetailsUpdateRequest = new ReleaseUpdateRequest(releaseNotes, mandatoryUpdate, destinations, createBuildInfo(request), notifyTesters);
 
         factory.createAppCenterService()
             .releasesUpdate(request.ownerName, request.appName, releaseId, releaseDetailsUpdateRequest)
@@ -101,7 +101,7 @@ public final class DistributeResourceTask implements AppCenterTask<UploadRequest
 
     }
 
-    private BuildInfo CreateBuildInfo(@Nonnull UploadRequest request) {
+    private BuildInfo createBuildInfo(@Nonnull UploadRequest request) {
         if (request.branchName == null && request.commitHash == null) return null;
         return new BuildInfo(request.branchName, request.commitHash, null);
     }
