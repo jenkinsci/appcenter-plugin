@@ -103,13 +103,11 @@ public final class DistributeResourceTask implements AppCenterTask<UploadRequest
 
     private static BuildInfo CreateBuildInfo(@Nonnull UploadRequest request) {
         if (request.branchName == null && request.commitHash == null) return null;
-        return new BuildInfo(request.branchName,request.commitHash,null);
+        return new BuildInfo(request.branchName, request.commitHash, null);
     }
 
     @Override
     public PrintStream getLogger() {
         return taskListener.getLogger();
     }
-
-
 }
