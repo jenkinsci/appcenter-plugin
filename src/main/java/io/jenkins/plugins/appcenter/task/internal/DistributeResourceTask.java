@@ -12,6 +12,7 @@ import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -101,6 +102,7 @@ public final class DistributeResourceTask implements AppCenterTask<UploadRequest
 
     }
 
+    @Nullable
     private BuildInfo createBuildInfo(@Nonnull UploadRequest request) {
         if (request.branchName == null && request.commitHash == null) return null;
         return new BuildInfo(request.branchName, request.commitHash, null);
