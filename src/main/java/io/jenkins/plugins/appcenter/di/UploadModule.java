@@ -25,6 +25,8 @@ final class UploadModule {
             .setMandatoryUpdate(appCenterRecorder.getMandatoryUpdate())
             .setBuildVersion(envVars.expand(appCenterRecorder.getBuildVersion()))
             .setPathToDebugSymbols(envVars.expand(appCenterRecorder.getPathToDebugSymbols()))
+            .setCommitHash(envVars.expand(appCenterRecorder.getCommitHash()))
+            .setBranchName(envVars.expand(appCenterRecorder.getBranchName()))
             .build();
     }
 }

@@ -46,6 +46,10 @@ public final class UploadRequest implements Serializable {
     public final String symbolUploadUrl;
     @Nullable
     public final String symbolUploadId;
+    @Nullable
+    public final String commitHash;
+    @Nullable
+    public final String branchName;
 
     @Override
     public String toString() {
@@ -66,6 +70,8 @@ public final class UploadRequest implements Serializable {
             ", symbolUploadRequest=" + symbolUploadRequest +
             ", symbolUploadUrl='" + symbolUploadUrl + '\'' +
             ", symbolUploadId='" + symbolUploadId + '\'' +
+            ", commitHash='" + commitHash + '\'' +
+            ", branchName='" + branchName + '\'' +
             '}';
     }
 
@@ -116,6 +122,8 @@ public final class UploadRequest implements Serializable {
         this.symbolUploadRequest = builder.symbolUploadRequest;
         this.symbolUploadUrl = builder.symbolUploadUrl;
         this.symbolUploadId = builder.symbolUploadId;
+        this.commitHash = builder.commitHash;
+        this.branchName = builder.branchName;
     }
 
     public Builder newBuilder() {
@@ -156,6 +164,10 @@ public final class UploadRequest implements Serializable {
         private String symbolUploadUrl;
         @Nullable
         private String symbolUploadId;
+        @Nullable
+        private String commitHash;
+        @Nullable
+        private String branchName;
 
         public Builder() {
             ownerName = "";
@@ -168,6 +180,8 @@ public final class UploadRequest implements Serializable {
             mandatoryUpdate = false;
             buildVersion = "";
             pathToDebugSymbols = "";
+            commitHash = "";
+            branchName = "";
         }
 
         Builder(@Nonnull final UploadRequest uploadRequest) {
@@ -189,6 +203,8 @@ public final class UploadRequest implements Serializable {
             this.symbolUploadRequest = uploadRequest.symbolUploadRequest;
             this.symbolUploadUrl = uploadRequest.symbolUploadUrl;
             this.symbolUploadId = uploadRequest.symbolUploadId;
+            this.commitHash = uploadRequest.commitHash;
+            this.branchName = uploadRequest.branchName;
         }
 
         public Builder setOwnerName(@Nonnull String ownerName) {
@@ -272,6 +288,16 @@ public final class UploadRequest implements Serializable {
 
         public Builder setSymbolUploadId(@Nonnull String symbolUploadId) {
             this.symbolUploadId = symbolUploadId;
+            return this;
+        }
+
+        public Builder setCommitHash(@Nonnull String commitHash) {
+            this.commitHash = commitHash;
+            return this;
+        }
+
+        public Builder setBranchName(@Nonnull String branchName) {
+            this.branchName = branchName;
             return this;
         }
 

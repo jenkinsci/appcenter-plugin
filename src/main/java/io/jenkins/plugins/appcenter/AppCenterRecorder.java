@@ -27,6 +27,8 @@ import io.jenkins.plugins.appcenter.validator.PathToDebugSymbolsValidator;
 import io.jenkins.plugins.appcenter.validator.PathToReleaseNotesValidator;
 import io.jenkins.plugins.appcenter.validator.UsernameValidator;
 import io.jenkins.plugins.appcenter.validator.Validator;
+import io.jenkins.plugins.appcenter.validator.CommitHashValidator;
+import io.jenkins.plugins.appcenter.validator.BranchNameValidator;
 import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.Symbol;
@@ -69,6 +71,12 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
 
     @Nullable
     private String buildVersion;
+
+    @Nullable
+    private String branchName;
+
+    @Nullable
+    private String commitHash;
 
     @Nullable
     private String pathToDebugSymbols;
@@ -141,6 +149,16 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         return Util.fixNull(pathToReleaseNotes);
     }
 
+    @Nonnull
+    public String getBranchName() {
+        return Util.fixNull(branchName);
+    }
+
+    @Nonnull
+    public String getCommitHash() {
+        return Util.fixNull(commitHash);
+    }
+
     @DataBoundSetter
     public void setReleaseNotes(@Nullable String releaseNotes) {
         this.releaseNotes = Util.fixEmpty(releaseNotes);
@@ -157,9 +175,13 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     }
 
     @DataBoundSetter
-    public void setBuildVersion(@Nullable String buildVersion) {
-        this.buildVersion = Util.fixEmpty(buildVersion);
-    }
+    public void setBuildVersion(@Nullable String buildVersion) { this.buildVersion = Util.fixEmpty(buildVersion); }
+
+    @DataBoundSetter
+    public void setBranchName(@Nullable String branchName) { this.branchName = Util.fixEmpty(branchName); }
+
+    @DataBoundSetter
+    public void setCommitHash(@Nullable String commitHash) { this.commitHash = Util.fixEmpty(commitHash); }
 
     @DataBoundSetter
     public void setPathToDebugSymbols(@Nullable String pathToDebugSymbols) {
@@ -350,6 +372,36 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
 
             if (!pathPlaceholderValidator.isValid(value)) {
                 return FormValidation.warning(Messages.AppCenterRecorder_DescriptorImpl_warnings_mustNotStartWithEnvVar());
+            }
+
+            return FormValidation.ok();
+        }
+
+        @SuppressWarnings("unused")
+        public FormValidation doCheckBranchName(@QueryParameter String value) {
+            if (value.isEmpty()) {
+                return FormValidation.ok();
+            }
+
+            final Validator validator = new BranchNameValidator();
+
+            if (!validator.isValid(value)) {
+                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_invalidBranchName());
+            }
+
+            return FormValidation.ok();
+        }
+
+        @SuppressWarnings("unused")
+        public FormValidation doCheckCommitHash(@QueryParameter String value) {
+            if (value.isEmpty()) {
+                return FormValidation.ok();
+            }
+
+            final Validator validator = new CommitHashValidator();
+
+            if (!validator.isValid(value)) {
+                return FormValidation.error(Messages.AppCenterRecorder_DescriptorImpl_errors_invalidCommitHash());
             }
 
             return FormValidation.ok();

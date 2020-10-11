@@ -199,4 +199,24 @@ public class DistributeResourceTaskTest {
         assertThat(exception).hasCauseThat().isInstanceOf(AppCenterException.class);
         assertThat(exception).hasMessageThat().contains("Distributing resource unsuccessful: HTTP 500 Server Error: ");
     }
+
+    @Test
+    public void should_SetCommitHash_and_BranchName() throws Exception {
+        // Given
+        final UploadRequest request = baseRequest.newBuilder().setCommitHash("0e62d85530892a9178ff2b55ac30e8ede56c9c0e").setBranchName("origin/master").build();
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
+            "  \"release_notes\": \"string\"\n" +
+            "}"));
+
+        final UploadRequest actual = task.execute(request).get();
+
+        // When
+        final RecordedRequest recordedRequest = mockWebServer.takeRequest();
+
+        // Then
+        final String body = recordedRequest.getBody().readUtf8();
+
+        assertThat(body).contains("\"branch_name\":\"origin/master\"");
+        assertThat(body).contains("\"commit_hash\":\"0e62d85530892a9178ff2b55ac30e8ede56c9c0e\"");
+    }
 }
