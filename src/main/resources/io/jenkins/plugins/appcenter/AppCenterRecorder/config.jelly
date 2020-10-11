@@ -26,6 +26,11 @@
         <f:textbox/>
     </f:entry>
 
+    <f:entry title="${%Mandatory Update}" field="mandatoryUpdate"
+             description="${%Optional, defaults to false}">
+        <f:checkbox name="mandatoryUpdate" default="false"/>
+    </f:entry>
+
     <f:entry title="${%Notify Testers}" field="notifyTesters"
              description="${%Optional, defaults to true}">
         <f:checkbox name="notifyTesters" default="true"/>

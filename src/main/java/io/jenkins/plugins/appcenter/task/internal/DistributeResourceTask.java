@@ -55,7 +55,7 @@ public final class DistributeResourceTask implements AppCenterTask<UploadRequest
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
 
         final String releaseNotes = parseReleaseNotes(request);
-        final boolean mandatoryUpdate = false;
+        final boolean mandatoryUpdate = request.mandatoryUpdate;
         final List<DestinationId> destinations = Stream.of(request.destinationGroups.split(","))
             .map(String::trim)
             .map(name -> new DestinationId(name, null))

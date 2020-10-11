@@ -152,6 +152,41 @@ public class DistributeResourceTaskTest {
     }
 
     @Test
+    public void should_MandatoryUpdate_When_Configured() throws Exception {
+        // Given
+        final UploadRequest request = baseRequest.newBuilder().setMandatoryUpdate(true).build();
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
+            "  \"release_notes\": \"string\"\n" +
+            "}"));
+
+        final UploadRequest actual = task.execute(request).get();
+
+        // When
+        final RecordedRequest recordedRequest = mockWebServer.takeRequest();
+
+        // Then
+        assertThat(recordedRequest.getBody().readUtf8())
+            .contains("\"mandatory_update\":true");
+    }
+
+    @Test
+    public void should_MandatoryUpdate_When_NotConfigured() throws Exception {
+        // Given
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
+            "  \"release_notes\": \"string\"\n" +
+            "}"));
+
+        final UploadRequest actual = task.execute(baseRequest).get();
+
+        // When
+        final RecordedRequest recordedRequest = mockWebServer.takeRequest();
+
+        // Then
+        assertThat(recordedRequest.getBody().readUtf8())
+            .contains("\"mandatory_update\":false");
+    }
+
+    @Test
     public void should_ReturnException_When_RequestIsUnSuccessful() {
         // Given
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));

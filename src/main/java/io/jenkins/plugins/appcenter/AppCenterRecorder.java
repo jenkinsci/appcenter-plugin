@@ -67,6 +67,8 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
 
     private boolean notifyTesters = true;
 
+    private boolean mandatoryUpdate = false;
+
     @Nullable
     private String buildVersion;
 
@@ -128,6 +130,10 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
         return notifyTesters;
     }
 
+    public boolean getMandatoryUpdate() {
+        return mandatoryUpdate;
+    }
+
     @Nonnull
     public String getBuildVersion() {
         return Util.fixNull(buildVersion);
@@ -161,6 +167,11 @@ public final class AppCenterRecorder extends Recorder implements SimpleBuildStep
     @DataBoundSetter
     public void setNotifyTesters(boolean notifyTesters) {
         this.notifyTesters = notifyTesters;
+    }
+
+    @DataBoundSetter
+    public void setMandatoryUpdate(boolean mandatoryUpdate) {
+        this.mandatoryUpdate = mandatoryUpdate;
     }
 
     @DataBoundSetter
