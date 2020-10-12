@@ -26,6 +26,11 @@
         <f:textbox/>
     </f:entry>
 
+    <f:entry title="${%Mandatory Update}" field="mandatoryUpdate"
+             description="${%Optional, defaults to false}">
+        <f:checkbox name="mandatoryUpdate" default="false"/>
+    </f:entry>
+
     <f:entry title="${%Notify Testers}" field="notifyTesters"
              description="${%Optional, defaults to true}">
         <f:checkbox name="notifyTesters" default="true"/>
@@ -38,6 +43,16 @@
 
     <f:entry title="${%Path To Debug Symbols}" field="pathToDebugSymbols"
              description="${%Optional, relative path to debug symbols.}">
+        <f:textbox/>
+    </f:entry>
+
+    <f:entry title="${%Branch Name}" field="branchName"
+             description="${%Optional, name of the branch being pushed to AppCenter}">
+        <f:textbox/>
+    </f:entry>
+
+    <f:entry title="${%Commit Hash}" field="commitHash"
+             description="${%Optional, commit hash pushed to AppCenter}">
         <f:textbox/>
     </f:entry>
 

@@ -22,8 +22,11 @@ final class UploadModule {
             .setReleaseNotes(envVars.expand(appCenterRecorder.getReleaseNotes()))
             .setPathToReleaseNotes(envVars.expand(appCenterRecorder.getPathToReleaseNotes()))
             .setNotifyTesters(appCenterRecorder.getNotifyTesters())
+            .setMandatoryUpdate(appCenterRecorder.getMandatoryUpdate())
             .setBuildVersion(envVars.expand(appCenterRecorder.getBuildVersion()))
             .setPathToDebugSymbols(envVars.expand(appCenterRecorder.getPathToDebugSymbols()))
+            .setCommitHash(envVars.expand(appCenterRecorder.getCommitHash()))
+            .setBranchName(envVars.expand(appCenterRecorder.getBranchName()))
             .build();
     }
 }
