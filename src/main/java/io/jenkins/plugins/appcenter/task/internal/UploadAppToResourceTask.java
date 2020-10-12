@@ -7,7 +7,6 @@ import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.AppCenterLogger;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
-import io.jenkins.plugins.appcenter.api.UploadService;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -17,12 +16,9 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import static java.util.Objects.requireNonNull;
 
@@ -104,8 +100,7 @@ public final class UploadAppToResourceTask implements AppCenterTask<UploadReques
         log("Uploading symbols to resource chunked.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
-        CompletableFuture.supplyAsync(() ->
-        {
+        CompletableFuture.supplyAsync(() -> {
             try {
                 //Workaround for bug in Azure Blob Storage, as AppCenter returns the upload URL with a port attached
                 //See https://github.com/Azure/azure-sdk-for-java/issues/15827
@@ -119,6 +114,8 @@ public final class UploadAppToResourceTask implements AppCenterTask<UploadReques
                 final AppCenterException exception = logFailure("Upload symbols to resource unsuccessful: ", e);
                 future.completeExceptionally(exception);
             }
+
+            //null is returned because the return type is CompletableFuture<Void>
             return (Void) null;
         }).whenComplete((responseBody, throwable) -> {
             if (throwable != null) {
@@ -129,7 +126,6 @@ public final class UploadAppToResourceTask implements AppCenterTask<UploadReques
                 future.complete(request);
             }
         });
-        ;
 
         return future;
     }
