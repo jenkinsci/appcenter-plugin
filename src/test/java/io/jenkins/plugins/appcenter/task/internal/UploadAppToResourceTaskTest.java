@@ -1,12 +1,13 @@
 package io.jenkins.plugins.appcenter.task.internal;
 
-import hudson.FilePath;
 import hudson.ProxyConfiguration;
 import hudson.model.TaskListener;
 import hudson.util.Secret;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
+import io.jenkins.plugins.appcenter.util.RemoteFileUtils;
+import io.jenkins.plugins.appcenter.util.TestFileUtil;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -33,9 +34,6 @@ public class UploadAppToResourceTaskTest {
     public MockWebServer mockWebServer = new MockWebServer();
 
     @Mock
-    FilePath mockFilePath;
-
-    @Mock
     TaskListener mockTaskListener;
 
     @Mock
@@ -43,6 +41,9 @@ public class UploadAppToResourceTaskTest {
 
     @Mock
     ProxyConfiguration mockProxyConfig;
+
+    @Mock
+    RemoteFileUtils mockRemoteFileUtils;
 
     private UploadRequest baseRequest;
 
@@ -56,10 +57,9 @@ public class UploadAppToResourceTaskTest {
             .setPathToApp("three/days/xiola.apk")
             .build();
         given(mockTaskListener.getLogger()).willReturn(mockLogger);
-        given(mockFilePath.child(anyString())).willReturn(mockFilePath);
-        given(mockFilePath.getRemote()).willReturn("src/test/resources/three/days/xiola.apk"); // Note: We cannot create a file in the workspace in this test so need to point to an actual file
+        given(mockRemoteFileUtils.getRemoteFile(anyString())).willReturn(TestFileUtil.createFileForTesting());
         final AppCenterServiceFactory factory = new AppCenterServiceFactory(Secret.fromString("secret-token"), mockWebServer.url("/").toString(), mockProxyConfig);
-        task = new UploadAppToResourceTask(mockTaskListener, mockFilePath, factory);
+        task = new UploadAppToResourceTask(mockTaskListener, factory, mockRemoteFileUtils);
     }
 
     @Test
