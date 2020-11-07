@@ -111,7 +111,7 @@ public final class UploadAppToResourceTask implements AppCenterTask<UploadReques
                 final BlobClient blobClient = new BlobClientBuilder().endpoint(symbolUploadUrlWithoutPort).buildClient();
                 blobClient.uploadFromFile(file.getPath(), true);
             } catch (Exception e) {
-                final AppCenterException exception = logFailure("Upload symbols to resource unsuccessful: ", e);
+                final AppCenterException exception = logFailure("Upload symbols to resource chunked unsuccessful: ", e);
                 future.completeExceptionally(exception);
             }
 
@@ -119,10 +119,10 @@ public final class UploadAppToResourceTask implements AppCenterTask<UploadReques
             return (Void) null;
         }).whenComplete((responseBody, throwable) -> {
             if (throwable != null) {
-                final AppCenterException exception = logFailure("Upload symbols to resource unsuccessful: ", throwable);
+                final AppCenterException exception = logFailure("Upload symbols to resource chunked unsuccessful: ", throwable);
                 future.completeExceptionally(exception);
             } else {
-                log("Upload symbols to resource successful.");
+                log("Upload symbols to resource chunked successful.");
                 future.complete(request);
             }
         });
