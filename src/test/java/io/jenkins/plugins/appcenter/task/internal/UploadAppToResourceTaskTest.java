@@ -12,6 +12,7 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
@@ -86,6 +87,29 @@ public class UploadAppToResourceTaskTest {
 
         mockWebServer.enqueue(new MockResponse().setResponseCode(200));
         mockWebServer.enqueue(new MockResponse().setResponseCode(200));
+
+        // When
+        final UploadRequest result = task.execute(request).get();
+
+        // Then
+        assertThat(result)
+            .isEqualTo(request);
+    }
+
+    @Test
+    @Ignore("Unable to test chunked uploads due to inability to mock BlobStorage server using MockWebserver.")
+    public void should_ReturnDebugSymbolUploadId_When_DebugSymbolsAreFound_ChunkedMode() throws Exception {
+        // Given
+        final UploadRequest request = baseRequest.newBuilder()
+            .setPathToDebugSymbols("string")
+            .setSymbolUploadUrl("<accountname>.blob.core.windows.net/upload-debug-symbols")
+            .setSymbolUploadId("string")
+            .build();
+
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200));
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200));
+
+        given(mockRemoteFileUtils.getRemoteFile(anyString())).willReturn(TestFileUtil.createFileForTesting(), TestFileUtil.createLargeFileForTesting());
 
         // When
         final UploadRequest result = task.execute(request).get();
