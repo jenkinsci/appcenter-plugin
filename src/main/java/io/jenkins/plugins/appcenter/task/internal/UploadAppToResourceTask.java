@@ -1,7 +1,5 @@
 package io.jenkins.plugins.appcenter.task.internal;
 
-import com.azure.storage.blob.BlobClient;
-import com.azure.storage.blob.BlobClientBuilder;
 import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.AppCenterLogger;
@@ -17,7 +15,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.PrintStream;
-import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
 import static java.util.Objects.requireNonNull;
@@ -101,32 +98,17 @@ public final class UploadAppToResourceTask implements AppCenterTask<UploadReques
         log("Uploading symbols to resource chunked.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
-        CompletableFuture.supplyAsync(() -> {
-            try {
-                //Workaround for bug in Azure Blob Storage, as AppCenter returns the upload URL with a port attached
-                //See https://github.com/Azure/azure-sdk-for-java/issues/15827
-                final URL oldURL = new URL(symbolUploadUrl);
-                final URL newURL = new URL(oldURL.getProtocol(), oldURL.getHost(), oldURL.getFile());
-                final String symbolUploadUrlWithoutPort = newURL.toString();
 
-                final BlobClient blobClient = new BlobClientBuilder().endpoint(symbolUploadUrlWithoutPort).buildClient();
-                blobClient.uploadFromFile(file.getPath(), true);
-            } catch (Exception e) {
-                final AppCenterException exception = logFailure("Upload symbols to resource chunked unsuccessful: ", e);
-                future.completeExceptionally(exception);
-            }
-
-            //null is returned because the return type is CompletableFuture<Void>
-            return (Void) null;
-        }).whenComplete((responseBody, throwable) -> {
-            if (throwable != null) {
-                final AppCenterException exception = logFailure("Upload symbols to resource chunked unsuccessful: ", throwable);
-                future.completeExceptionally(exception);
-            } else {
-                log("Upload symbols to resource chunked successful.");
-                future.complete(request);
-            }
-        });
+        CompletableFuture.runAsync(() -> factory.createBlobUploadService(symbolUploadUrl).uploadFromFile(file.getPath(), true))
+            .whenComplete((responseBody, throwable) -> {
+                if (throwable != null) {
+                    final AppCenterException exception = logFailure("Upload symbols to resource chunked unsuccessful: ", throwable);
+                    future.completeExceptionally(exception);
+                } else {
+                    log("Upload symbols to resource chunked successful.");
+                    future.complete(request);
+                }
+            });
 
         return future;
     }
