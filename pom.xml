@@ -13,6 +13,17 @@
     <properties>
         <jenkins.version>2.222.3</jenkins.version>
         <java.level>8</java.level>
+        <dagger.version>2.29.1</dagger.version>
+        <okhttp.version>4.9.0</okhttp.version>
+        <retrofit.version>2.6.2</retrofit.version>
+        <moshi.version>1.8.0</moshi.version>
+        <azure-storage-blob.version>12.8.0</azure-storage-blob.version>
+        <azure-core-http-okhttp.version>1.2.5</azure-core-http-okhttp.version>
+        <apk-parser.version>2.6.9</apk-parser.version>
+        <mock-slave.version>1.13</mock-slave.version>
+        <truth.version>1.0</truth.version>
+        <junit.version>4.13.1</junit.version>
+        <mockito.version>3.0.0</mockito.version>
     </properties>
 
     <groupId>io.jenkins.plugins</groupId>
@@ -41,50 +52,50 @@
         <dependency>
             <groupId>com.google.dagger</groupId>
             <artifactId>dagger</artifactId>
-            <version>2.29.1</version>
+            <version>${dagger.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.dagger</groupId>
             <artifactId>dagger-compiler</artifactId>
-            <version>2.29.1</version>
+            <version>${dagger.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>4.9.0</version>
+            <version>${okhttp.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>logging-interceptor</artifactId>
-            <version>4.9.0</version>
+            <version>${okhttp.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>retrofit</artifactId>
-            <version>2.6.2</version>
+            <version>${retrofit.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>converter-moshi</artifactId>
-            <version>2.6.2</version>
+            <version>${retrofit.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.squareup.moshi</groupId>
             <artifactId>moshi</artifactId>
-            <version>1.8.0</version>
+            <version>${moshi.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-storage-blob</artifactId>
-            <version>12.8.0</version>
+            <version>${azure-storage-blob.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.azure</groupId>
@@ -96,13 +107,13 @@
         <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-core-http-okhttp</artifactId>
-            <version>1.2.5</version>
+            <version>${azure-core-http-okhttp.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.dongliu</groupId>
             <artifactId>apk-parser</artifactId>
-            <version>2.6.9</version>
+            <version>${apk-parser.version}</version>
         </dependency>
 
         <dependency>
@@ -150,42 +161,42 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>mock-slave</artifactId>
-            <version>1.13</version>
+            <version>${mock-slave.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.google.truth</groupId>
             <artifactId>truth</artifactId>
-            <version>1.0</version>
+            <version>${truth.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.google.truth.extensions</groupId>
             <artifactId>truth-java8-extension</artifactId>
-            <version>1.0</version>
+            <version>${truth.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>mockwebserver</artifactId>
-            <version>4.9.0</version>
+            <version>${okhttp.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>3.0.0</version>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
 
