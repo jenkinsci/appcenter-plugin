@@ -1,17 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>4.7</version>
-        <relativePath />
+        <version>4.13</version>
+        <relativePath/>
     </parent>
 
     <properties>
         <jenkins.version>2.222.3</jenkins.version>
         <java.level>8</java.level>
+        <dagger.version>2.29.1</dagger.version>
+        <okhttp.version>4.9.0</okhttp.version>
+        <retrofit.version>2.6.2</retrofit.version>
+        <moshi.version>1.8.0</moshi.version>
+        <azure-storage-blob.version>12.8.0</azure-storage-blob.version>
+        <azure-core-http-okhttp.version>1.2.5</azure-core-http-okhttp.version>
+        <apk-parser.version>2.6.9</apk-parser.version>
+        <mock-slave.version>1.13</mock-slave.version>
+        <truth.version>1.0</truth.version>
+        <junit.version>4.13.1</junit.version>
+        <mockito.version>3.0.0</mockito.version>
     </properties>
 
     <groupId>io.jenkins.plugins</groupId>
@@ -38,70 +50,70 @@
         </dependency>
 
         <dependency>
-            <groupId>com.azure</groupId>
-            <artifactId>azure-storage-blob</artifactId>
-            <version>12.8.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.google.dagger</groupId>
             <artifactId>dagger</artifactId>
-            <version>2.29.1</version>
+            <version>${dagger.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.dagger</groupId>
             <artifactId>dagger-compiler</artifactId>
-            <version>2.29.1</version>
+            <version>${dagger.version}</version>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>29.0-jre</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.30</version>
         </dependency>
 
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>3.14.3</version>
+            <version>${okhttp.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>logging-interceptor</artifactId>
-            <version>3.14.3</version>
+            <version>${okhttp.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>retrofit</artifactId>
-            <version>2.6.2</version>
+            <version>${retrofit.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>converter-moshi</artifactId>
-            <version>2.6.2</version>
+            <version>${retrofit.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.squareup.moshi</groupId>
             <artifactId>moshi</artifactId>
-            <version>1.8.0</version>
+            <version>${moshi.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-storage-blob</artifactId>
+            <version>${azure-storage-blob.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.azure</groupId>
+                    <artifactId>azure-core-http-netty</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-core-http-okhttp</artifactId>
+            <version>${azure-core-http-okhttp.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.dongliu</groupId>
             <artifactId>apk-parser</artifactId>
-            <version>2.6.9</version>
+            <version>${apk-parser.version}</version>
         </dependency>
 
         <dependency>
@@ -149,42 +161,42 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>mock-slave</artifactId>
-            <version>1.13</version>
+            <version>${mock-slave.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.google.truth</groupId>
             <artifactId>truth</artifactId>
-            <version>1.0</version>
+            <version>${truth.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.google.truth.extensions</groupId>
             <artifactId>truth-java8-extension</artifactId>
-            <version>1.0</version>
+            <version>${truth.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>mockwebserver</artifactId>
-            <version>3.14.3</version>
+            <version>${okhttp.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>3.0.0</version>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -192,11 +204,10 @@
 
     <dependencyManagement>
         <dependencies>
-
             <dependency>
                 <groupId>io.jenkins.tools.bom</groupId>
                 <artifactId>bom-2.222.x</artifactId>
-                <version>10</version>
+                <version>17</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -223,6 +234,30 @@
                 <groupId>org.checkerframework</groupId>
                 <artifactId>checker-qual</artifactId>
                 <version>3.3.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.30</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib</artifactId>
+                <version>1.4.10</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib-common</artifactId>
+                <version>1.4.10</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>27.0.1-jre</version>
             </dependency>
 
         </dependencies>

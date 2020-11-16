@@ -8,11 +8,11 @@ import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import io.jenkins.plugins.appcenter.util.RemoteFileUtils;
 import io.jenkins.plugins.appcenter.util.TestFileUtil;
+import okhttp3.Headers;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
@@ -97,17 +97,25 @@ public class UploadAppToResourceTaskTest {
     }
 
     @Test
-    @Ignore("Unable to test chunked uploads due to inability to mock BlobStorage server using MockWebserver.")
     public void should_ReturnDebugSymbolUploadId_When_DebugSymbolsAreFound_ChunkedMode() throws Exception {
         // Given
         final UploadRequest request = baseRequest.newBuilder()
             .setPathToDebugSymbols("string")
-            .setSymbolUploadUrl("<accountname>.blob.core.windows.net/upload-debug-symbols")
+            .setSymbolUploadUrl(mockWebServer.url("perry/casey/xiola").toString())
             .setSymbolUploadId("string")
             .build();
 
         mockWebServer.enqueue(new MockResponse().setResponseCode(200));
-        mockWebServer.enqueue(new MockResponse().setResponseCode(200));
+        mockWebServer.enqueue(new MockResponse().setResponseCode(201)
+            .setHeaders(Headers.of(
+                "ETag", "0x8CB171BA9E94B0B",
+                "Last-Modified", "Thu, 01 Jan 1970 00:00:00 GMT",
+                "Content-MD5", "sQqNsWTgdUEFt6mb5y4/5Q==",
+                "x-ms-request-server-encrypted", "false",
+                "x-ms-version-id", "Thu, 01 Jan 1970 00:00:00 GMT"
+            ))
+            .setChunkedBody("", 1)
+        );
 
         given(mockRemoteFileUtils.getRemoteFile(anyString())).willReturn(TestFileUtil.createFileForTesting(), TestFileUtil.createLargeFileForTesting());
 
