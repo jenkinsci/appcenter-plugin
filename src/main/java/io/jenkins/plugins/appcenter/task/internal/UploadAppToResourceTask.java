@@ -1,11 +1,11 @@
 package io.jenkins.plugins.appcenter.task.internal;
 
-import hudson.FilePath;
 import hudson.model.TaskListener;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.AppCenterLogger;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
+import io.jenkins.plugins.appcenter.util.RemoteFileUtils;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -23,21 +23,22 @@ import static java.util.Objects.requireNonNull;
 public final class UploadAppToResourceTask implements AppCenterTask<UploadRequest>, AppCenterLogger {
 
     private static final long serialVersionUID = 1L;
+    private static final int MAX_NON_CHUNKED_UPLOAD_SIZE = (1024 * 1024) * 256; // 256 MB in bytes
 
     @Nonnull
     private final TaskListener taskListener;
     @Nonnull
-    private final FilePath filePath;
-    @Nonnull
     private final AppCenterServiceFactory factory;
+    @Nonnull
+    private final RemoteFileUtils remoteFileUtils;
 
     @Inject
     UploadAppToResourceTask(@Nonnull final TaskListener taskListener,
-                            @Nonnull final FilePath filePath,
-                            @Nonnull final AppCenterServiceFactory factory) {
+                            @Nonnull final AppCenterServiceFactory factory,
+                            @Nonnull final RemoteFileUtils remoteFileUtils) {
         this.taskListener = taskListener;
-        this.filePath = filePath;
         this.factory = factory;
+        this.remoteFileUtils = remoteFileUtils;
     }
 
     @Nonnull
@@ -60,7 +61,7 @@ public final class UploadAppToResourceTask implements AppCenterTask<UploadReques
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
 
-        final File file = new File(filePath.child(pathToApp).getRemote());
+        final File file = remoteFileUtils.getRemoteFile(pathToApp);
         final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         final MultipartBody.Part body = MultipartBody.Part.createFormData("ipa", file.getName(), requestFile);
 
@@ -84,11 +85,39 @@ public final class UploadAppToResourceTask implements AppCenterTask<UploadReques
         final String pathToDebugSymbols = request.pathToDebugSymbols;
         final String symbolUploadUrl = requireNonNull(request.symbolUploadUrl, "symbolUploadUrl cannot be null");
 
-        log("Uploading symbols to resource.");
+        final File file = remoteFileUtils.getRemoteFile(pathToDebugSymbols);
+        if (file.length() > MAX_NON_CHUNKED_UPLOAD_SIZE) {
+            return uploadSymbolsChunked(request, symbolUploadUrl, file);
+        } else {
+            return uploadSymbolsComplete(request, symbolUploadUrl, file);
+        }
+    }
+
+    @Nonnull
+    private CompletableFuture<UploadRequest> uploadSymbolsChunked(@Nonnull UploadRequest request, @Nonnull String symbolUploadUrl, @Nonnull File file) {
+        log("Uploading symbols to resource chunked.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
 
-        final File file = new File(filePath.child(pathToDebugSymbols).getRemote());
+        CompletableFuture.runAsync(() -> factory.createBlobUploadService(symbolUploadUrl).uploadFromFile(file.getPath(), true))
+            .whenComplete((responseBody, throwable) -> {
+                if (throwable != null) {
+                    final AppCenterException exception = logFailure("Upload symbols to resource chunked unsuccessful: ", throwable);
+                    future.completeExceptionally(exception);
+                } else {
+                    log("Upload symbols to resource chunked successful.");
+                    future.complete(request);
+                }
+            });
+
+        return future;
+    }
+
+    @Nonnull
+    private CompletableFuture<UploadRequest> uploadSymbolsComplete(@Nonnull UploadRequest request, @Nonnull String symbolUploadUrl, @Nonnull File file) {
+        log("Uploading all symbols at once to resource.");
+
+        final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
         final RequestBody requestFile = RequestBody.create(null, file);
 
         factory.createUploadService(symbolUploadUrl)
