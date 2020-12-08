@@ -195,6 +195,8 @@ public final class UploadRequest implements Serializable {
             this.mandatoryUpdate = uploadRequest.mandatoryUpdate;
             this.buildVersion = uploadRequest.buildVersion;
             this.pathToDebugSymbols = uploadRequest.pathToDebugSymbols;
+            this.commitHash = uploadRequest.commitHash;
+            this.branchName = uploadRequest.branchName;
 
             // Expected to be nullable until they are added during UploadTask.
             this.uploadUrl = uploadRequest.uploadUrl;
@@ -203,8 +205,6 @@ public final class UploadRequest implements Serializable {
             this.symbolUploadRequest = uploadRequest.symbolUploadRequest;
             this.symbolUploadUrl = uploadRequest.symbolUploadUrl;
             this.symbolUploadId = uploadRequest.symbolUploadId;
-            this.commitHash = uploadRequest.commitHash;
-            this.branchName = uploadRequest.branchName;
         }
 
         public Builder setOwnerName(@Nonnull String ownerName) {
