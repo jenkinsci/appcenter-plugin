@@ -35,9 +35,15 @@ public final class UploadRequest implements Serializable {
     // execution they should be nullable prior to being set.
 
     @Nullable
-    public final String uploadUrl;
-    @Nullable
     public final String uploadId;
+    @Nullable
+    public final String uploadDomain;
+    @Nullable
+    public final String token;
+    @Nullable
+    public final String packageAssetId;
+    @Nullable
+    public final Integer chunkSize;
     @Nullable
     public final Integer releaseId;
     @Nullable
@@ -64,8 +70,11 @@ public final class UploadRequest implements Serializable {
             ", mandatoryUpdate=" + mandatoryUpdate +
             ", buildVersion='" + buildVersion + '\'' +
             ", pathToDebugSymbols='" + pathToDebugSymbols + '\'' +
-            ", uploadUrl='" + uploadUrl + '\'' +
             ", uploadId='" + uploadId + '\'' +
+            ", uploadDomain='" + uploadDomain + '\'' +
+            ", token='" + token + '\'' +
+            ", packageAssetId='" + packageAssetId + '\'' +
+            ", chunkSize=" + chunkSize +
             ", releaseId=" + releaseId +
             ", symbolUploadRequest=" + symbolUploadRequest +
             ", symbolUploadUrl='" + symbolUploadUrl + '\'' +
@@ -80,27 +89,12 @@ public final class UploadRequest implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UploadRequest that = (UploadRequest) o;
-        return notifyTesters == that.notifyTesters &&
-            mandatoryUpdate == that.mandatoryUpdate &&
-            ownerName.equals(that.ownerName) &&
-            appName.equals(that.appName) &&
-            pathToApp.equals(that.pathToApp) &&
-            destinationGroups.equals(that.destinationGroups) &&
-            releaseNotes.equals(that.releaseNotes) &&
-            pathToReleaseNotes.equals(that.pathToReleaseNotes) &&
-            buildVersion.equals(that.buildVersion) &&
-            pathToDebugSymbols.equals(that.pathToDebugSymbols) &&
-            Objects.equals(uploadUrl, that.uploadUrl) &&
-            Objects.equals(uploadId, that.uploadId) &&
-            Objects.equals(releaseId, that.releaseId) &&
-            Objects.equals(symbolUploadRequest, that.symbolUploadRequest) &&
-            Objects.equals(symbolUploadUrl, that.symbolUploadUrl) &&
-            Objects.equals(symbolUploadId, that.symbolUploadId);
+        return notifyTesters == that.notifyTesters && mandatoryUpdate == that.mandatoryUpdate && ownerName.equals(that.ownerName) && appName.equals(that.appName) && pathToApp.equals(that.pathToApp) && destinationGroups.equals(that.destinationGroups) && releaseNotes.equals(that.releaseNotes) && pathToReleaseNotes.equals(that.pathToReleaseNotes) && buildVersion.equals(that.buildVersion) && pathToDebugSymbols.equals(that.pathToDebugSymbols) && Objects.equals(uploadId, that.uploadId) && Objects.equals(uploadDomain, that.uploadDomain) && Objects.equals(token, that.token) && Objects.equals(packageAssetId, that.packageAssetId) && Objects.equals(chunkSize, that.chunkSize) && Objects.equals(releaseId, that.releaseId) && Objects.equals(symbolUploadRequest, that.symbolUploadRequest) && Objects.equals(symbolUploadUrl, that.symbolUploadUrl) && Objects.equals(symbolUploadId, that.symbolUploadId) && Objects.equals(commitHash, that.commitHash) && Objects.equals(branchName, that.branchName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ownerName, appName, pathToApp, destinationGroups, releaseNotes, pathToReleaseNotes, mandatoryUpdate, notifyTesters, buildVersion, pathToDebugSymbols, uploadUrl, uploadId, releaseId, symbolUploadRequest, symbolUploadUrl, symbolUploadId);
+        return Objects.hash(ownerName, appName, pathToApp, destinationGroups, releaseNotes, pathToReleaseNotes, notifyTesters, mandatoryUpdate, buildVersion, pathToDebugSymbols, uploadId, uploadDomain, token, packageAssetId, chunkSize, releaseId, symbolUploadRequest, symbolUploadUrl, symbolUploadId, commitHash, branchName);
     }
 
     private UploadRequest(Builder builder) {
@@ -116,8 +110,11 @@ public final class UploadRequest implements Serializable {
         this.pathToDebugSymbols = builder.pathToDebugSymbols;
 
         // Expected to be nullable until they are added during UploadTask.
-        this.uploadUrl = builder.uploadUrl;
         this.uploadId = builder.uploadId;
+        this.uploadDomain = builder.uploadDomain;
+        this.token = builder.token;
+        this.packageAssetId = builder.packageAssetId;
+        this.chunkSize = builder.chunkSize;
         this.releaseId = builder.releaseId;
         this.symbolUploadRequest = builder.symbolUploadRequest;
         this.symbolUploadUrl = builder.symbolUploadUrl;
@@ -153,9 +150,15 @@ public final class UploadRequest implements Serializable {
 
         // Expected to be nullable until they are added during UploadTask.
         @Nullable
-        private String uploadUrl;
-        @Nullable
         private String uploadId;
+        @Nullable
+        private String uploadDomain;
+        @Nullable
+        private String token;
+        @Nullable
+        private String packageAssetId;
+        @Nullable
+        private Integer chunkSize;
         @Nullable
         private Integer releaseId;
         @Nullable
@@ -199,8 +202,11 @@ public final class UploadRequest implements Serializable {
             this.branchName = uploadRequest.branchName;
 
             // Expected to be nullable until they are added during UploadTask.
-            this.uploadUrl = uploadRequest.uploadUrl;
             this.uploadId = uploadRequest.uploadId;
+            this.uploadDomain = uploadRequest.uploadDomain;
+            this.token = uploadRequest.token;
+            this.packageAssetId = uploadRequest.packageAssetId;
+            this.chunkSize = uploadRequest.chunkSize;
             this.releaseId = uploadRequest.releaseId;
             this.symbolUploadRequest = uploadRequest.symbolUploadRequest;
             this.symbolUploadUrl = uploadRequest.symbolUploadUrl;
@@ -260,14 +266,28 @@ public final class UploadRequest implements Serializable {
         // Properties above this line are expected to be set by plugin configuration before a run.
         // Properties below this line are expected to be set during a run as these values will come
         // from AppCenter during execution they should be nullable prior to being set.
-
-        public Builder setUploadUrl(@Nonnull String uploadUrl) {
-            this.uploadUrl = uploadUrl;
+        public Builder setUploadId(@Nonnull String uploadId) {
+            this.uploadId = uploadId;
             return this;
         }
 
-        public Builder setUploadId(@Nonnull String uploadId) {
-            this.uploadId = uploadId;
+        public Builder setUploadDomain(@Nonnull String uploadDomain) {
+            this.uploadDomain = uploadDomain;
+            return this;
+        }
+
+        public Builder setToken(@Nonnull String token) {
+            this.token = token;
+            return this;
+        }
+
+        public Builder setPackageAssetId(@Nonnull String packageAssetId) {
+            this.packageAssetId = packageAssetId;
+            return this;
+        }
+
+        public Builder setChunkSize(@Nonnull Integer chunkSize) {
+            this.chunkSize = chunkSize;
             return this;
         }
 
