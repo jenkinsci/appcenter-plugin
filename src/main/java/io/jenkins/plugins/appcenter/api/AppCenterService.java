@@ -14,6 +14,9 @@ public interface AppCenterService {
         @Path("app_name") @Nonnull String appName,
         @Body @Nonnull ReleaseUploadBeginRequest releaseUploadBeginRequest);
 
+    @POST
+    CompletableFuture<SetMetadataResponse> setMetaData(@Url @Nonnull String url);
+
     @PATCH("v0.1/apps/{owner_name}/{app_name}/release_uploads/{upload_id}")
     CompletableFuture<ReleaseUploadEndResponse> releaseUploadsComplete(
         @Path("owner_name") @Nonnull String user,
