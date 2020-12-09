@@ -54,7 +54,7 @@ public class ProxyTest {
         // Then
         jenkinsRule.assertBuildStatus(Result.SUCCESS, freeStyleBuild);
         assertThat(proxyWebServer.getRequestCount()).isEqualTo(0);
-        assertThat(mockWebServer.getRequestCount()).isEqualTo(4);
+        assertThat(mockWebServer.getRequestCount()).isEqualTo(7);
     }
 
     @Test
@@ -68,7 +68,7 @@ public class ProxyTest {
 
         // Then
         jenkinsRule.assertBuildStatus(Result.SUCCESS, freeStyleBuild);
-        assertThat(proxyWebServer.getRequestCount()).isEqualTo(4);
+        assertThat(proxyWebServer.getRequestCount()).isEqualTo(7);
         assertThat(mockWebServer.getRequestCount()).isEqualTo(0);
     }
 
@@ -88,7 +88,7 @@ public class ProxyTest {
 
         // Then
         jenkinsRule.assertBuildStatus(Result.SUCCESS, freeStyleBuild);
-        assertThat(proxyWebServer.getRequestCount()).isEqualTo(5);
+        assertThat(proxyWebServer.getRequestCount()).isEqualTo(8);
         assertThat(mockWebServer.getRequestCount()).isEqualTo(0);
         // proxy auth is performed on second request
         assertThat(proxyWebServer.takeRequest().getHeader(HttpHeaders.PROXY_AUTHORIZATION)).isNull();
@@ -109,23 +109,6 @@ public class ProxyTest {
         // Then
         jenkinsRule.assertBuildStatus(Result.SUCCESS, freeStyleBuild);
         assertThat(proxyWebServer.getRequestCount()).isEqualTo(0);
-        assertThat(mockWebServer.getRequestCount()).isEqualTo(4);
-    }
-
-    @Test
-    public void should_SendUploadRequestsDirectly_When_NoProxyHostConfiguredForAppCenterAPI() throws Exception {
-        // Given
-        final String noProxyHost = mockWebServer.url("/").url().getHost();
-        jenkinsRule.jenkins.proxy = new ProxyConfiguration(proxyWebServer.getHostName(), proxyWebServer.getPort(), null, null, noProxyHost);
-
-        MockWebServerUtil.enqueueUploadViaProxy(mockWebServer, proxyWebServer);
-
-        // When
-        final FreeStyleBuild freeStyleBuild = freeStyleProject.scheduleBuild2(0).get();
-
-        // Then
-        jenkinsRule.assertBuildStatus(Result.SUCCESS, freeStyleBuild);
-        assertThat(proxyWebServer.getRequestCount()).isEqualTo(1);
-        assertThat(mockWebServer.getRequestCount()).isEqualTo(3);
+        assertThat(mockWebServer.getRequestCount()).isEqualTo(7);
     }
 }
