@@ -1,6 +1,8 @@
 package io.jenkins.plugins.appcenter.api;
 
 import io.jenkins.plugins.appcenter.model.appcenter.*;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.http.*;
 
 import javax.annotation.Nonnull;
@@ -16,6 +18,26 @@ public interface AppCenterService {
 
     @POST
     CompletableFuture<SetMetadataResponse> setMetaData(@Url @Nonnull String url);
+
+    @Headers("Content-Type: application/octet-stream")
+    @POST
+    CompletableFuture<ResponseBody> uploadApp(@Url @Nonnull String url, @Body @Nonnull RequestBody file);
+
+    @POST
+    CompletableFuture<ResponseBody> finishRelease(@Url @Nonnull String url);
+
+    @PATCH("v0.1/apps/{owner_name}/{app_name}/uploads/releases/{upload_id}")
+    CompletableFuture<UpdateReleaseUploadResponse> updateReleaseUpload(
+        @Path("owner_name") @Nonnull String user,
+        @Path("app_name") @Nonnull String appName,
+        @Path("upload_id") @Nonnull String uploadId,
+        @Body @Nonnull UpdateReleaseUploadRequest updateReleaseUploadRequest);
+
+    @GET("v0.1/apps/{owner_name}/{app_name}/uploads/releases/{upload_id}")
+    CompletableFuture<PollForReleaseResponse> pollForRelease(
+        @Path("owner_name") @Nonnull String user,
+        @Path("app_name") @Nonnull String appName,
+        @Path("upload_id") @Nonnull String uploadId);
 
     @PATCH("v0.1/apps/{owner_name}/{app_name}/release_uploads/{upload_id}")
     CompletableFuture<ReleaseUploadEndResponse> releaseUploadsComplete(
