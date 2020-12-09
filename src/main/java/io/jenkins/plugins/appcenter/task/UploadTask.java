@@ -16,7 +16,9 @@ public final class UploadTask extends MasterToSlaveCallable<Boolean, AppCenterEx
     private final CreateUploadResourceTask createUploadResource;
     private final SetMetadataTask setMetadataTask;
     private final UploadAppToResourceTask uploadAppToResource;
-    private final CommitUploadResourceTask commitUploadResource;
+    private final FinishReleaseTask finishReleaseTask;
+    private final UpdateReleaseTask updateReleaseTask;
+    private final PollForReleaseTask pollForReleaseTask;
     private final DistributeResourceTask distributeResource;
     private final UploadRequest originalRequest;
 
@@ -25,14 +27,18 @@ public final class UploadTask extends MasterToSlaveCallable<Boolean, AppCenterEx
                final CreateUploadResourceTask createUploadResource,
                final SetMetadataTask setMetadataTask,
                final UploadAppToResourceTask uploadAppToResource,
-               final CommitUploadResourceTask commitUploadResource,
+               final FinishReleaseTask finishReleaseTask,
+               final UpdateReleaseTask updateReleaseTask,
+               final PollForReleaseTask pollForReleaseTask,
                final DistributeResourceTask distributeResource,
                final UploadRequest request) {
         this.prerequisitesTask = prerequisitesTask;
         this.createUploadResource = createUploadResource;
         this.setMetadataTask = setMetadataTask;
         this.uploadAppToResource = uploadAppToResource;
-        this.commitUploadResource = commitUploadResource;
+        this.finishReleaseTask = finishReleaseTask;
+        this.updateReleaseTask = updateReleaseTask;
+        this.pollForReleaseTask = pollForReleaseTask;
         this.distributeResource = distributeResource;
         this.originalRequest = request;
     }
@@ -45,7 +51,9 @@ public final class UploadTask extends MasterToSlaveCallable<Boolean, AppCenterEx
             .thenCompose(createUploadResource::execute)
             .thenCompose(setMetadataTask::execute)
             .thenCompose(uploadAppToResource::execute)
-            .thenCompose(commitUploadResource::execute)
+            .thenCompose(finishReleaseTask::execute)
+            .thenCompose(updateReleaseTask::execute)
+            .thenCompose(pollForReleaseTask::execute)
             .thenCompose(distributeResource::execute)
             .whenComplete((uploadRequest, throwable) -> {
                 if (throwable != null) {
