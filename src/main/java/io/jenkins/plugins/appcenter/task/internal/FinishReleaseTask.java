@@ -12,6 +12,8 @@ import javax.inject.Singleton;
 import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
 
+import static java.util.Objects.requireNonNull;
+
 @Singleton
 public final class FinishReleaseTask implements AppCenterTask<UploadRequest>, AppCenterLogger {
 
@@ -37,11 +39,15 @@ public final class FinishReleaseTask implements AppCenterTask<UploadRequest>, Ap
 
     @Nonnull
     private CompletableFuture<UploadRequest> finishRelease(@Nonnull UploadRequest request) {
+        final String uploadDomain = requireNonNull(request.uploadDomain, "uploadDomain cannot be null");
+        final String packageAssetId = requireNonNull(request.packageAssetId, "packageAssetId cannot be null");
+        final String token = requireNonNull(request.token, "token cannot be null");
+
         log("Finishing release.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
 
-        final String url = getUrl(request);
+        final String url = getUrl(uploadDomain, packageAssetId, token);
 
         factory.createAppCenterService()
             .finishRelease(url)
@@ -59,8 +65,8 @@ public final class FinishReleaseTask implements AppCenterTask<UploadRequest>, Ap
     }
 
     @Nonnull
-    private String getUrl(@Nonnull UploadRequest request) {
-        return String.format("%1$s/upload/finished/%2$s?token=%3$s", request.uploadDomain, request.packageAssetId, request.token);
+    private String getUrl(@Nonnull String uploadDomain, @Nonnull String packageAssetId, @Nonnull String token) {
+        return String.format("%1$s/upload/finished/%2$s?token=%3$s", uploadDomain, packageAssetId, token);
     }
 
     @Override
