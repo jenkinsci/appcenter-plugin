@@ -58,7 +58,6 @@ public class FinishReleaseTaskTest {
         // Given
         final UploadRequest uploadRequest = baseRequest.newBuilder()
             .build();
-        mockWebServer.enqueue(new MockResponse().setResponseCode(200));
 
         // When
         final ThrowingRunnable throwingRunnable = () -> task.execute(uploadRequest).get();
@@ -74,7 +73,6 @@ public class FinishReleaseTaskTest {
         final UploadRequest uploadRequest = baseRequest.newBuilder()
             .setUploadDomain("upload-domain")
             .build();
-        mockWebServer.enqueue(new MockResponse().setResponseCode(200));
 
         // When
         final ThrowingRunnable throwingRunnable = () -> task.execute(uploadRequest).get();
@@ -91,7 +89,6 @@ public class FinishReleaseTaskTest {
             .setUploadDomain("upload-domain")
             .setPackageAssetId("package_asset_id")
             .build();
-        mockWebServer.enqueue(new MockResponse().setResponseCode(200));
 
         // When
         final ThrowingRunnable throwingRunnable = () -> task.execute(uploadRequest).get();
