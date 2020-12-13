@@ -5,13 +5,15 @@ import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.AppCenterLogger;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
+import io.jenkins.plugins.appcenter.util.RemoteFileUtils;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.File;
 import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
+
+import static java.util.Objects.requireNonNull;
 
 @Singleton
 public final class SetMetadataTask implements AppCenterTask<UploadRequest>, AppCenterLogger {
@@ -22,12 +24,16 @@ public final class SetMetadataTask implements AppCenterTask<UploadRequest>, AppC
     private final TaskListener taskListener;
     @Nonnull
     private final AppCenterServiceFactory factory;
+    @Nonnull
+    private final RemoteFileUtils remoteFileUtils;
 
     @Inject
     SetMetadataTask(@Nonnull final TaskListener taskListener,
-                    @Nonnull final AppCenterServiceFactory factory) {
+                    @Nonnull final AppCenterServiceFactory factory,
+                    @Nonnull final RemoteFileUtils remoteFileUtils) {
         this.taskListener = taskListener;
         this.factory = factory;
+        this.remoteFileUtils = remoteFileUtils;
     }
 
     @Nonnull
@@ -38,11 +44,15 @@ public final class SetMetadataTask implements AppCenterTask<UploadRequest>, AppC
 
     @Nonnull
     private CompletableFuture<UploadRequest> setMetadata(@Nonnull UploadRequest request) {
+        final String uploadDomain = requireNonNull(request.uploadDomain, "uploadDomain cannot be null");
+        final String packageAssetId = requireNonNull(request.packageAssetId, "packageAssetId cannot be null");
+        final String token = requireNonNull(request.token, "token cannot be null");
+
         log("Setting metadata.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
 
-        final String url = getUrl(request);
+        final String url = getUrl(request.pathToApp, uploadDomain, packageAssetId, token);
 
         factory.createAppCenterService()
             .setMetaData(url)
@@ -63,45 +73,14 @@ public final class SetMetadataTask implements AppCenterTask<UploadRequest>, AppC
         return future;
     }
 
-    @Nonnull
-    private String getUrl(@Nonnull UploadRequest request) {
-        final File file = new File(request.pathToApp);
-        final String fileName = getFileName(file);
-        final long fileSize = getFileSize(file);
-        final String contentType = getContentType(request.pathToApp);
-
-        return String.format("%1$s/upload/set_metadata/%2$s?file_name=%3$s&file_size=%4$d&token=%5$s&content_type=%6$s", request.uploadDomain, request.packageAssetId, fileName, fileSize, request.token, contentType);
-    }
 
     @Nonnull
-    private String getFileName(@Nonnull File file) {
-        // TODO: Move to Prerequisite Task
-        return file.getName();
-    }
+    private String getUrl(@Nonnull String pathToApp, @Nonnull String uploadDomain, @Nonnull String packageAssetId, @Nonnull String token) {
+        final String fileName = remoteFileUtils.getFileName(pathToApp);
+        final long fileSize = remoteFileUtils.getFileSize(pathToApp);
+        final String contentType = remoteFileUtils.getContentType(pathToApp);
 
-    private long getFileSize(@Nonnull File file) {
-        // TODO: Move to Prerequisite Task
-        return file.length();
-    }
-
-    @Nonnull
-    private String getContentType(@Nonnull String pathToApp) {
-        // TODO: Move to Prerequisite Task
-        if (pathToApp.endsWith(".apk") || pathToApp.endsWith(".aab")) return "application/vnd.android.package-archive";
-        if (pathToApp.endsWith(".msi")) return "application/x-msi";
-        if (pathToApp.endsWith(".plist")) return "application/xml";
-        if (pathToApp.endsWith(".aetx")) return "application/c-x509-ca-cert";
-        if (pathToApp.endsWith(".cer")) return "application/pkix-cert";
-        if (pathToApp.endsWith("xap")) return "application/x-silverlight-app";
-        if (pathToApp.endsWith(".appx")) return "application/x-appx";
-        if (pathToApp.endsWith(".appxbundle")) return "application/x-appxbundle";
-        if (pathToApp.endsWith(".appxupload") || pathToApp.endsWith(".appxsym")) return "application/x-appxupload";
-        if (pathToApp.endsWith(".msix")) return "application/x-msix";
-        if (pathToApp.endsWith(".msixbundle")) return "application/x-msixbundle";
-        if (pathToApp.endsWith(".msixupload") || pathToApp.endsWith(".msixsym")) return "application/x-msixupload";
-
-        // Otherwise
-        return "application/octet-stream";
+        return String.format("%1$s/upload/set_metadata/%2$s?file_name=%3$s&file_size=%4$d&token=%5$s&content_type=%6$s", uploadDomain, packageAssetId, fileName, fileSize, token, contentType);
     }
 
     @Override
