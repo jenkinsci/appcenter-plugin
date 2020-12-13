@@ -1,6 +1,7 @@
 package io.jenkins.plugins.appcenter.util;
 
 import hudson.FilePath;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,7 +63,8 @@ public class RemoteFileUtilsTest {
         final long fileSize = remoteFileUtils.getFileSize(TEST_FILE_PATH);
 
         // Then
-        assertThat(fileSize).isEqualTo(41);
+        // Windows reports the file size differently so for the sake of simplicity we adjust our assertion here.
+        assertThat(fileSize).isEqualTo(SystemUtils.IS_OS_UNIX ? 41 : 42);
     }
 
     @Test
