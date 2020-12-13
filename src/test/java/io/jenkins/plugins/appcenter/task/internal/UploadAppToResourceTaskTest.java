@@ -55,7 +55,10 @@ public class UploadAppToResourceTaskTest {
     @Before
     public void setUp() {
         baseRequest = new UploadRequest.Builder()
-//            .setUploadUrl(mockWebServer.url("upload").toString()) // TODO: Fix Me
+            .setUploadDomain(mockWebServer.url("upload").toString())
+            .setPackageAssetId("package-asset-id")
+            .setToken("token")
+            .setChunkSize(4098)
             .setUploadId("upload-id")
             .setPathToApp("three/days/xiola.apk")
             .build();
@@ -154,7 +157,7 @@ public class UploadAppToResourceTaskTest {
 
         // Then
         assertThat(recordedRequest.getPath())
-            .isEqualTo("/upload");
+            .isEqualTo("/upload/upload/upload_chunk/package-asset-id?token=token&block_number=1");
     }
 
     @Test
