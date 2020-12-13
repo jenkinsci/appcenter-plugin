@@ -10,7 +10,6 @@ import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
@@ -26,7 +25,6 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
-@Ignore
 public class CreateUploadResourceTaskTest {
 
     @Rule
