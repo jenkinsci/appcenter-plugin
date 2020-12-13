@@ -5,6 +5,7 @@ import hudson.model.TaskListener;
 import hudson.util.Secret;
 import io.jenkins.plugins.appcenter.AppCenterException;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
+import io.jenkins.plugins.appcenter.model.appcenter.SymbolUploadBeginRequest;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -57,78 +58,69 @@ public class CreateUploadResourceTaskTest {
 
     @Test
     public void should_ReturnResponse_When_RequestIsSuccessful() throws Exception {
-        // TODO: Fix Me
-//        // Given
-//        final UploadRequest expected = baseRequest.newBuilder().setUploadId("string").setUploadUrl("string").build();
-//        mockWebServer.enqueue(new MockResponse().setResponseCode(201).setBody("{\n" +
-//            "  \"upload_id\": \"string\",\n" +
-//            "  \"upload_url\": \"string\",\n" +
-//            "  \"asset_id\": \"string\",\n" +
-//            "  \"asset_domain\": \"string\",\n" +
-//            "  \"asset_token\": \"string\"\n" +
-//            "}"));
-//
-//        // When
-//        final UploadRequest actual = task.execute(baseRequest).get();
-//
-//        // Then
-//        assertThat(actual)
-//            .isEqualTo(expected);
+        // Given
+        final UploadRequest expected = baseRequest.newBuilder().setUploadId("string").setUploadDomain("string").setToken("string").setPackageAssetId("string").build();
+        mockWebServer.enqueue(new MockResponse().setResponseCode(201).setBody("{\n" +
+            "  \"id\": \"string\",\n" +
+            "  \"upload_domain\": \"string\",\n" +
+            "  \"url_encoded_token\": \"string\",\n" +
+            "  \"package_asset_id\": \"string\"\n" +
+            "}"));
+
+        // When
+        final UploadRequest actual = task.execute(baseRequest).get();
+
+        // Then
+        assertThat(actual)
+            .isEqualTo(expected);
     }
 
     @Test
     public void should_ReturnResponse_When_DebugSymbolsAreFound() throws Exception {
-        // TODO: Fix Me
-//        // Given
-//        final UploadRequest request = baseRequest.newBuilder()
-//            .setPathToDebugSymbols("path/to/mappings.txt")
-//            .setSymbolUploadRequest(new SymbolUploadBeginRequest(SymbolUploadBeginRequest.SymbolTypeEnum.AndroidProguard, null, "mappings.txt", "1", "1.0.0"))
-//            .build();
-//        final UploadRequest expected = request.newBuilder()
-//            .setUploadId("string").setUploadUrl("string")
-//            .setSymbolUploadId("string").setSymbolUploadUrl("string")
-//            .build();
-//        mockWebServer.enqueue(new MockResponse().setResponseCode(201).setBody("{\n" +
-//            "  \"upload_id\": \"string\",\n" +
-//            "  \"upload_url\": \"string\",\n" +
-//            "  \"asset_id\": \"string\",\n" +
-//            "  \"asset_domain\": \"string\",\n" +
-//            "  \"asset_token\": \"string\"\n" +
-//            "}"));
-//        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
-//            "  \"symbol_upload_id\": \"string\",\n" +
-//            "  \"upload_url\": \"string\",\n" +
-//            "  \"expiration_date\": \"2019-11-17T12:01:43.953Z\"\n" +
-//            "}"));
-//
-//        // When
-//        final UploadRequest actual = task.execute(request).get();
-//
-//        // Then
-//        assertThat(actual)
-//            .isEqualTo(expected);
+        // Given
+        final UploadRequest request = baseRequest.newBuilder()
+            .setPathToDebugSymbols("path/to/mappings.txt")
+            .setSymbolUploadRequest(new SymbolUploadBeginRequest(SymbolUploadBeginRequest.SymbolTypeEnum.AndroidProguard, null, "mappings.txt", "1", "1.0.0"))
+            .build();
+        final UploadRequest expected = request.newBuilder().setUploadId("string").setUploadDomain("string").setToken("string").setPackageAssetId("string").setSymbolUploadId("string").setSymbolUploadUrl("string").build();
+        mockWebServer.enqueue(new MockResponse().setResponseCode(201).setBody("{\n" +
+            "  \"id\": \"string\",\n" +
+            "  \"upload_domain\": \"string\",\n" +
+            "  \"url_encoded_token\": \"string\",\n" +
+            "  \"package_asset_id\": \"string\"\n" +
+            "}"));
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
+            "  \"symbol_upload_id\": \"string\",\n" +
+            "  \"upload_url\": \"string\",\n" +
+            "  \"expiration_date\": \"2019-11-17T12:01:43.953Z\"\n" +
+            "}"));
+
+        // When
+        final UploadRequest actual = task.execute(request).get();
+
+        // Then
+        assertThat(actual)
+            .isEqualTo(expected);
     }
 
     @Test
     public void should_ReturnResponse_When_RequestIsSuccessful_NonAsciiCharactersInFileName() throws Exception {
-        // TODO: Fix Me
-//        // Given
-//        final UploadRequest request = baseRequest.newBuilder().setAppName("åþþ ñåmë").build();
-//        final UploadRequest expected = request.newBuilder().setUploadId("string").setUploadUrl("string").build();
-//        mockWebServer.enqueue(new MockResponse().setResponseCode(201).setBody("{\n" +
-//            "  \"upload_id\": \"string\",\n" +
-//            "  \"upload_url\": \"string\",\n" +
-//            "  \"asset_id\": \"string\",\n" +
-//            "  \"asset_domain\": \"string\",\n" +
-//            "  \"asset_token\": \"string\"\n" +
-//            "}"));
-//
-//        // When
-//        final UploadRequest actual = task.execute(request).get();
-//
-//        // Then
-//        assertThat(actual)
-//            .isEqualTo(expected);
+        // Given
+        final UploadRequest request = baseRequest.newBuilder().setAppName("åþþ ñåmë").build();
+        final UploadRequest expected = request.newBuilder().setUploadId("string").setUploadDomain("string").setToken("string").setPackageAssetId("string").build();
+        mockWebServer.enqueue(new MockResponse().setResponseCode(201).setBody("{\n" +
+            "  \"id\": \"string\",\n" +
+            "  \"upload_domain\": \"string\",\n" +
+            "  \"url_encoded_token\": \"string\",\n" +
+            "  \"package_asset_id\": \"string\"\n" +
+            "}"));
+
+        // When
+        final UploadRequest actual = task.execute(request).get();
+
+        // Then
+        assertThat(actual)
+            .isEqualTo(expected);
     }
 
     @Test
