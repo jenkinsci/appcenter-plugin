@@ -76,21 +76,23 @@ public final class UploadAppToResourceTask implements AppCenterTask<UploadReques
         // TODO: Retrofit (via OkHttp) is supposed to be able to do this natively if you set the contentLength to -1. Investigate
         final String url = getUrl(request);
         final File file = remoteFileUtils.getRemoteFile(request.pathToApp);
+        final long fileSize = file.length();
+        final int noOfBlocks = (int) Math.ceil((double) fileSize / chunkSize);
 
         try (final BufferedSource bufferedSource = Okio.buffer(Okio.source(file))) {
             bufferedSource.skip(offset);
             final Buffer buffer = new Buffer();
-            final boolean isFinal = !bufferedSource.request(chunkSize);
+            bufferedSource.request(chunkSize);
             bufferedSource.read(buffer, chunkSize);
             final RequestBody requestFile = RequestBody.create(buffer.readByteArray(), null);
-            upload(request, offset, chunkSize, url, requestFile, blockNumber, future, isFinal);
+            upload(request, offset, chunkSize, url, requestFile, blockNumber, noOfBlocks, future);
         } catch (IOException e) {
             final AppCenterException exception = logFailure("Upload app to resource unsuccessful", e);
             future.completeExceptionally(exception);
         }
     }
 
-    private void upload(@Nonnull UploadRequest request, int offset, int chunkSize, @Nonnull String url, @Nonnull RequestBody requestFile, int blockNumber, @Nonnull CompletableFuture<UploadRequest> future, boolean isFinal) {
+    private void upload(@Nonnull UploadRequest request, int offset, int chunkSize, @Nonnull String url, @Nonnull RequestBody requestFile, int blockNumber, int noOfBlocks, @Nonnull CompletableFuture<UploadRequest> future) {
         factory.createAppCenterService()
             .uploadApp(url + "&block_number=" + blockNumber, requestFile)
             .whenComplete((responseBody, throwable) -> {
@@ -98,14 +100,13 @@ public final class UploadAppToResourceTask implements AppCenterTask<UploadReques
                     final AppCenterException exception = logFailure("Upload app to resource unsuccessful", throwable);
                     future.completeExceptionally(exception);
                 } else {
-                    if (isFinal) {
-                        log(String.format("Upload app to resource chunk %1$d and final successful.", blockNumber));
+                    log(String.format("Upload app to resource chunk %1$d / %2$d successful.", blockNumber, noOfBlocks));
+                    if (blockNumber == noOfBlocks) {
                         future.complete(request);
-                        return;
+                    } else {
+                        calculateChunks(request, offset + chunkSize, chunkSize, blockNumber + 1, future);
                     }
 
-                    log(String.format("Upload app to resource chunk %1$d successful.", blockNumber));
-                    calculateChunks(request, offset + chunkSize, chunkSize, blockNumber + 1, future);
                 }
             });
     }
