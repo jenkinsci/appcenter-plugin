@@ -7,7 +7,9 @@ import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import io.jenkins.plugins.appcenter.util.RemoteFileUtils;
 import okhttp3.RequestBody;
-import org.apache.commons.io.FileUtils;
+import okio.Buffer;
+import okio.BufferedSource;
+import okio.Okio;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -75,22 +77,13 @@ public final class UploadAppToResourceTask implements AppCenterTask<UploadReques
         final String url = getUrl(request);
         final File file = remoteFileUtils.getRemoteFile(request.pathToApp);
 
-        try {
-            final byte[] bytes = FileUtils.readFileToByteArray(file);
-            final int size = bytes.length;
-            final int remainingSize = size - offset;
-            final boolean canChunk = remainingSize > chunkSize;
-
-            int byteCount;
-            if (canChunk) {
-                // We can safely take a whole chunk from what remains given the offset.
-                byteCount = chunkSize;
-            } else {
-                // We can only safely take what remains and not the full chunk given the offset.
-                byteCount = remainingSize;
-            }
-            final RequestBody requestFile = RequestBody.create(bytes, null, offset, byteCount);
-            upload(request, offset, chunkSize, url, requestFile, blockNumber, future, !canChunk);
+        try (final BufferedSource bufferedSource = Okio.buffer(Okio.source(file))) {
+            bufferedSource.skip(offset);
+            final Buffer buffer = new Buffer();
+            final boolean isFinal = !bufferedSource.request(chunkSize);
+            bufferedSource.read(buffer, chunkSize);
+            final RequestBody requestFile = RequestBody.create(buffer.readByteArray(), null);
+            upload(request, offset, chunkSize, url, requestFile, blockNumber, future, isFinal);
         } catch (IOException e) {
             final AppCenterException exception = logFailure("Upload app to resource unsuccessful", e);
             future.completeExceptionally(exception);
