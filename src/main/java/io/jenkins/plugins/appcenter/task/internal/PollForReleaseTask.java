@@ -52,6 +52,10 @@ public final class PollForReleaseTask implements AppCenterTask<UploadRequest>, A
     }
 
     private void poll(@Nonnull UploadRequest request, @Nonnull String uploadId, @Nonnull CompletableFuture<UploadRequest> future) {
+        poll(request, uploadId, future, 0);
+    }
+
+    private void poll(@Nonnull UploadRequest request, @Nonnull String uploadId, @Nonnull CompletableFuture<UploadRequest> future, int timeoutExponent) {
         factory.createAppCenterService()
             .pollForRelease(request.ownerName, request.appName, uploadId)
             .whenComplete((pollForReleaseResponse, throwable) -> {
@@ -62,8 +66,7 @@ public final class PollForReleaseTask implements AppCenterTask<UploadRequest>, A
                     switch (pollForReleaseResponse.upload_status) {
                         case uploadStarted:
                         case uploadFinished:
-                            log("Polling for app release successful however not yet ready will try again.");
-                            retryPolling(request, uploadId, future);
+                            retryPolling(request, uploadId, future, timeoutExponent);
                             break;
                         case readyToBePublished:
                             log("Polling for app release successful.");
@@ -83,10 +86,13 @@ public final class PollForReleaseTask implements AppCenterTask<UploadRequest>, A
             });
     }
 
-    private void retryPolling(@Nonnull UploadRequest request, @Nonnull String uploadId, @Nonnull CompletableFuture<UploadRequest> future) {
+    private void retryPolling(@Nonnull UploadRequest request, @Nonnull String uploadId, @Nonnull CompletableFuture<UploadRequest> future, int timeoutExponent) {
         try {
-            TimeUnit.SECONDS.sleep(1L);
-            poll(request, uploadId, future);
+            final double pow = Math.pow(2, timeoutExponent);
+            final long timeout = Double.valueOf(pow).longValue();
+            log(String.format("Polling for app release successful however not yet ready will try again in %d seconds.", timeout));
+            TimeUnit.SECONDS.sleep(timeout);
+            poll(request, uploadId, future, timeoutExponent + 1);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
