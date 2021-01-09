@@ -6,14 +6,16 @@ import io.jenkins.plugins.appcenter.AppCenterLogger;
 import io.jenkins.plugins.appcenter.api.AppCenterServiceFactory;
 import io.jenkins.plugins.appcenter.task.request.UploadRequest;
 import io.jenkins.plugins.appcenter.util.RemoteFileUtils;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okio.Buffer;
+import okio.BufferedSource;
+import okio.Okio;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
 
@@ -54,30 +56,64 @@ public final class UploadAppToResourceTask implements AppCenterTask<UploadReques
 
     @Nonnull
     private CompletableFuture<UploadRequest> uploadApp(@Nonnull UploadRequest request) {
-        final String pathToApp = request.pathToApp;
-        final String uploadUrl = requireNonNull(request.uploadUrl, "uploadUrl cannot be null");
+        requireNonNull(request.uploadDomain, "uploadDomain cannot be null");
+        requireNonNull(request.packageAssetId, "packageAssetId cannot be null");
+        requireNonNull(request.token, "token cannot be null");
+        final Integer chunkSize = requireNonNull(request.chunkSize, "chunkSize cannot be null");
 
         log("Uploading app to resource.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
 
-        final File file = remoteFileUtils.getRemoteFile(pathToApp);
-        final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        final MultipartBody.Part body = MultipartBody.Part.createFormData("ipa", file.getName(), requestFile);
+        int offset = 0;
+        int blockNumber = 1;
+        calculateChunks(request, offset, chunkSize, blockNumber, future);
 
-        factory.createUploadService(uploadUrl)
-            .uploadApp(uploadUrl, body)
+        return future;
+    }
+
+    private void calculateChunks(@Nonnull UploadRequest request, int offset, int chunkSize, int blockNumber, @Nonnull CompletableFuture<UploadRequest> future) {
+        // TODO: Retrofit (via OkHttp) is supposed to be able to do this natively if you set the contentLength to -1. Investigate
+        final String url = getUrl(request);
+        final File file = remoteFileUtils.getRemoteFile(request.pathToApp);
+        final long fileSize = file.length();
+        final int noOfBlocks = (int) Math.ceil((double) fileSize / chunkSize);
+
+        try (final BufferedSource bufferedSource = Okio.buffer(Okio.source(file))) {
+            bufferedSource.skip(offset);
+            final Buffer buffer = new Buffer();
+            bufferedSource.request(chunkSize);
+            bufferedSource.read(buffer, chunkSize);
+            final RequestBody requestFile = RequestBody.create(buffer.readByteArray(), null);
+            upload(request, offset, chunkSize, url, requestFile, blockNumber, noOfBlocks, future);
+        } catch (IOException e) {
+            final AppCenterException exception = logFailure("Upload app to resource unsuccessful", e);
+            future.completeExceptionally(exception);
+        }
+    }
+
+    private void upload(@Nonnull UploadRequest request, int offset, int chunkSize, @Nonnull String url, @Nonnull RequestBody requestFile, int blockNumber, int noOfBlocks, @Nonnull CompletableFuture<UploadRequest> future) {
+        factory.createAppCenterService()
+            .uploadApp(url + "&block_number=" + blockNumber, requestFile)
             .whenComplete((responseBody, throwable) -> {
                 if (throwable != null) {
                     final AppCenterException exception = logFailure("Upload app to resource unsuccessful", throwable);
                     future.completeExceptionally(exception);
                 } else {
-                    log("Upload app to resource successful.");
-                    future.complete(request);
+                    log(String.format("Upload app to resource chunk %1$d / %2$d successful.", blockNumber, noOfBlocks));
+                    if (blockNumber == noOfBlocks) {
+                        future.complete(request);
+                    } else {
+                        calculateChunks(request, offset + chunkSize, chunkSize, blockNumber + 1, future);
+                    }
+
                 }
             });
+    }
 
-        return future;
+    @Nonnull
+    private String getUrl(@Nonnull UploadRequest request) {
+        return String.format("%1$s/upload/upload_chunk/%2$s?token=%3$s", request.uploadDomain, request.packageAssetId, request.token);
     }
 
     @Nonnull
@@ -118,7 +154,7 @@ public final class UploadAppToResourceTask implements AppCenterTask<UploadReques
         log("Uploading all symbols at once to resource.");
 
         final CompletableFuture<UploadRequest> future = new CompletableFuture<>();
-        final RequestBody requestFile = RequestBody.create(null, file);
+        final RequestBody requestFile = RequestBody.create(file, null);
 
         factory.createUploadService(symbolUploadUrl)
             .uploadSymbols(symbolUploadUrl, requestFile)

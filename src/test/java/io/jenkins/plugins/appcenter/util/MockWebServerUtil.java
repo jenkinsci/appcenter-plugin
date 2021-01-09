@@ -5,10 +5,7 @@ import okhttp3.mockwebserver.MockWebServer;
 
 import javax.annotation.Nonnull;
 
-import static java.net.HttpURLConnection.HTTP_CREATED;
-import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
-import static java.net.HttpURLConnection.HTTP_OK;
-import static java.net.HttpURLConnection.HTTP_PROXY_AUTH;
+import static java.net.HttpURLConnection.*;
 
 public class MockWebServerUtil {
 
@@ -25,18 +22,41 @@ public class MockWebServerUtil {
     }
 
     private static void enqueueSuccess(final @Nonnull MockWebServer mockAppCenterServer, final @Nonnull MockWebServer mockUploadServer) {
+        // Create upload resource for app
         mockAppCenterServer.enqueue(new MockResponse().setResponseCode(HTTP_CREATED).setBody("{\n" +
-            "  \"upload_id\": \"string\",\n" +
-            "  \"upload_url\": \"" + mockUploadServer.url("/").toString() + "\",\n" +
-            "  \"asset_id\": \"string\",\n" +
+            "  \"id\": \"string\",\n" +
+            "  \"upload_domain\": \"" + mockUploadServer.url("/").toString() + "\",\n" +
             "  \"asset_domain\": \"string\",\n" +
-            "  \"asset_token\": \"string\"\n" +
+            "  \"url_encoded_token\": \"string\",\n" +
+            "  \"package_asset_id\": \"string\"\n" +
             "}"));
-        mockUploadServer.enqueue(new MockResponse().setResponseCode(HTTP_OK));
+
+        // Set Metadata
         mockAppCenterServer.enqueue(new MockResponse().setResponseCode(HTTP_OK).setBody("{\n" +
-            "  \"release_id\": 0,\n" +
+            "  \"chunk_size\": 1234\n" +
+            "}"));
+
+        // Upload app
+        mockAppCenterServer.enqueue(new MockResponse().setResponseCode(HTTP_OK));
+
+        // Finish Release
+        mockAppCenterServer.enqueue(new MockResponse().setResponseCode(HTTP_OK));
+
+        // Update Release
+        mockAppCenterServer.enqueue(new MockResponse().setResponseCode(HTTP_OK).setBody("{\n" +
+            "  \"id\": \"1234\",\n" +
+            "  \"upload_status\": \"uploadFinished\"\n" +
+            "}"));
+
+        // Poll For Release
+        mockAppCenterServer.enqueue(new MockResponse().setResponseCode(HTTP_OK).setBody("{\n" +
+            "  \"id\": \"1234\",\n" +
+            "  \"upload_status\": \"readyToBePublished\",\n" +
+            "  \"release_distinct_id\": \"4321\",\n" +
             "  \"release_url\": \"string\"\n" +
             "}"));
+
+        // Distribute Resource
         mockAppCenterServer.enqueue(new MockResponse().setResponseCode(HTTP_OK).setBody("{\n" +
             "  \"release_notes\": \"string\"\n" +
             "}"));
@@ -45,11 +65,11 @@ public class MockWebServerUtil {
     public static void enqueueSuccessWithSymbols(final @Nonnull MockWebServer mockAppCenterServer) {
         // Create upload resource for app
         mockAppCenterServer.enqueue(new MockResponse().setResponseCode(HTTP_CREATED).setBody("{\n" +
-            "  \"upload_id\": \"string\",\n" +
-            "  \"upload_url\": \"" + mockAppCenterServer.url("/").toString() + "\",\n" +
-            "  \"asset_id\": \"string\",\n" +
+            "  \"id\": \"string\",\n" +
+            "  \"upload_domain\": \"" + mockAppCenterServer.url("/").toString() + "\",\n" +
             "  \"asset_domain\": \"string\",\n" +
-            "  \"asset_token\": \"string\"\n" +
+            "  \"url_encoded_token\": \"string\",\n" +
+            "  \"package_asset_id\": \"string\"\n" +
             "}"));
 
         // Create upload resource for debug symbols
@@ -59,15 +79,31 @@ public class MockWebServerUtil {
             "  \"expiration_date\": \"2020-03-18T21:16:22.188Z\"\n" +
             "}"));
 
+        // Set Metadata
+        mockAppCenterServer.enqueue(new MockResponse().setResponseCode(HTTP_OK).setBody("{\n" +
+            "  \"chunk_size\": 1234\n" +
+            "}"));
+
         // Upload app
         mockAppCenterServer.enqueue(new MockResponse().setResponseCode(HTTP_OK));
 
         // Upload debug symbols
         mockAppCenterServer.enqueue(new MockResponse().setResponseCode(HTTP_OK));
 
-        // Commit app
+        // Finish Release
+        mockAppCenterServer.enqueue(new MockResponse().setResponseCode(HTTP_OK));
+
+        // Update Release
         mockAppCenterServer.enqueue(new MockResponse().setResponseCode(HTTP_OK).setBody("{\n" +
-            "  \"release_id\": 0,\n" +
+            "  \"id\": \"1234\",\n" +
+            "  \"upload_status\": \"uploadFinished\"\n" +
+            "}"));
+
+        // Poll For Release
+        mockAppCenterServer.enqueue(new MockResponse().setResponseCode(HTTP_OK).setBody("{\n" +
+            "  \"id\": \"1234\",\n" +
+            "  \"upload_status\": \"readyToBePublished\",\n" +
+            "  \"release_distinct_id\": \"4321\",\n" +
             "  \"release_url\": \"string\"\n" +
             "}"));
 

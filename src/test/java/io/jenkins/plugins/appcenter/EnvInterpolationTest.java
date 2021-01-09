@@ -106,7 +106,7 @@ public class EnvInterpolationTest {
         mockWebServer.takeRequest();
         mockWebServer.takeRequest();
         final RecordedRequest recordedRequest = mockWebServer.takeRequest();
-        assertThat(recordedRequest.getBody().readUtf8()).contains("filename=\"xiola.ipa\"");
+        assertThat(recordedRequest.getPath().contains("file_name=xiola.ipa"));
     }
 
     @Test
@@ -140,6 +140,8 @@ public class EnvInterpolationTest {
         mockWebServer.takeRequest();
         mockWebServer.takeRequest();
         mockWebServer.takeRequest();
+        mockWebServer.takeRequest();
+        mockWebServer.takeRequest();
         final RecordedRequest recordedRequest = mockWebServer.takeRequest();
         assertThat(recordedRequest.getBody().readUtf8()).contains("[{\"name\":\"casey\"},{\"name\":\"niccoli\"}]");
     }
@@ -154,6 +156,8 @@ public class EnvInterpolationTest {
 
         // Then
         jenkinsRule.assertBuildStatus(Result.SUCCESS, freeStyleBuild);
+        mockWebServer.takeRequest();
+        mockWebServer.takeRequest();
         mockWebServer.takeRequest();
         mockWebServer.takeRequest();
         mockWebServer.takeRequest();

@@ -57,13 +57,12 @@ public class CreateUploadResourceTaskTest {
     @Test
     public void should_ReturnResponse_When_RequestIsSuccessful() throws Exception {
         // Given
-        final UploadRequest expected = baseRequest.newBuilder().setUploadId("string").setUploadUrl("string").build();
+        final UploadRequest expected = baseRequest.newBuilder().setUploadId("string").setUploadDomain("string").setToken("string").setPackageAssetId("string").build();
         mockWebServer.enqueue(new MockResponse().setResponseCode(201).setBody("{\n" +
-            "  \"upload_id\": \"string\",\n" +
-            "  \"upload_url\": \"string\",\n" +
-            "  \"asset_id\": \"string\",\n" +
-            "  \"asset_domain\": \"string\",\n" +
-            "  \"asset_token\": \"string\"\n" +
+            "  \"id\": \"string\",\n" +
+            "  \"upload_domain\": \"string\",\n" +
+            "  \"url_encoded_token\": \"string\",\n" +
+            "  \"package_asset_id\": \"string\"\n" +
             "}"));
 
         // When
@@ -81,16 +80,12 @@ public class CreateUploadResourceTaskTest {
             .setPathToDebugSymbols("path/to/mappings.txt")
             .setSymbolUploadRequest(new SymbolUploadBeginRequest(SymbolUploadBeginRequest.SymbolTypeEnum.AndroidProguard, null, "mappings.txt", "1", "1.0.0"))
             .build();
-        final UploadRequest expected = request.newBuilder()
-            .setUploadId("string").setUploadUrl("string")
-            .setSymbolUploadId("string").setSymbolUploadUrl("string")
-            .build();
+        final UploadRequest expected = request.newBuilder().setUploadId("string").setUploadDomain("string").setToken("string").setPackageAssetId("string").setSymbolUploadId("string").setSymbolUploadUrl("string").build();
         mockWebServer.enqueue(new MockResponse().setResponseCode(201).setBody("{\n" +
-            "  \"upload_id\": \"string\",\n" +
-            "  \"upload_url\": \"string\",\n" +
-            "  \"asset_id\": \"string\",\n" +
-            "  \"asset_domain\": \"string\",\n" +
-            "  \"asset_token\": \"string\"\n" +
+            "  \"id\": \"string\",\n" +
+            "  \"upload_domain\": \"string\",\n" +
+            "  \"url_encoded_token\": \"string\",\n" +
+            "  \"package_asset_id\": \"string\"\n" +
             "}"));
         mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
             "  \"symbol_upload_id\": \"string\",\n" +
@@ -110,13 +105,12 @@ public class CreateUploadResourceTaskTest {
     public void should_ReturnResponse_When_RequestIsSuccessful_NonAsciiCharactersInFileName() throws Exception {
         // Given
         final UploadRequest request = baseRequest.newBuilder().setAppName("åþþ ñåmë").build();
-        final UploadRequest expected = request.newBuilder().setUploadId("string").setUploadUrl("string").build();
+        final UploadRequest expected = request.newBuilder().setUploadId("string").setUploadDomain("string").setToken("string").setPackageAssetId("string").build();
         mockWebServer.enqueue(new MockResponse().setResponseCode(201).setBody("{\n" +
-            "  \"upload_id\": \"string\",\n" +
-            "  \"upload_url\": \"string\",\n" +
-            "  \"asset_id\": \"string\",\n" +
-            "  \"asset_domain\": \"string\",\n" +
-            "  \"asset_token\": \"string\"\n" +
+            "  \"id\": \"string\",\n" +
+            "  \"upload_domain\": \"string\",\n" +
+            "  \"url_encoded_token\": \"string\",\n" +
+            "  \"package_asset_id\": \"string\"\n" +
             "}"));
 
         // When
