@@ -93,6 +93,28 @@ public class MockWebServerUtil {
         // Finish Release
         mockAppCenterServer.enqueue(new MockResponse().setResponseCode(HTTP_OK));
 
+        // Finish symbol release
+        mockAppCenterServer.enqueue(new MockResponse().setResponseCode(HTTP_OK).setBody("{\n" +
+            "  \"symbol_upload_id\": \"string\",\n" +
+            "  \"app_id\": \"string\",\n" +
+            "  \"user\": {\n" +
+            "    \"email\": \"string\",\n" +
+            "    \"display_name\": \"string\"\n" +
+            "  },\n" +
+            "  \"status\": \"created\",\n" +
+            "  \"symbol_type\": \"AndroidProguard\",\n" +
+            "  \"symbols_uploaded\": [\n" +
+            "    {\n" +
+            "      \"symbol_id\": \"string\",\n" +
+            "      \"platform\": \"string\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"origin\": \"User\",\n" +
+            "  \"file_name\": \"string\",\n" +
+            "  \"file_size\": 0,\n" +
+            "  \"timestamp\": \"2019-11-17T12:12:06.701Z\"\n" +
+            "}"));
+
         // Update Release
         mockAppCenterServer.enqueue(new MockResponse().setResponseCode(HTTP_OK).setBody("{\n" +
             "  \"id\": \"1234\",\n" +
@@ -105,28 +127,6 @@ public class MockWebServerUtil {
             "  \"upload_status\": \"readyToBePublished\",\n" +
             "  \"release_distinct_id\": \"4321\",\n" +
             "  \"release_url\": \"string\"\n" +
-            "}"));
-
-        // Commit debug symbols
-        mockAppCenterServer.enqueue(new MockResponse().setResponseCode(HTTP_OK).setBody("{\n" +
-            "  \"symbol_upload_id\": \"string\",\n" +
-            "  \"app_id\": \"string\",\n" +
-            "  \"user\": {\n" +
-            "    \"email\": \"string\",\n" +
-            "    \"display_name\": \"string\"\n" +
-            "  },\n" +
-            "  \"status\": \"created\",\n" +
-            "  \"symbol_type\": \"Apple\",\n" +
-            "  \"symbols_uploaded\": [\n" +
-            "    {\n" +
-            "      \"symbol_id\": \"string\",\n" +
-            "      \"platform\": \"string\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"origin\": \"User\",\n" +
-            "  \"file_name\": \"string\",\n" +
-            "  \"file_size\": 0,\n" +
-            "  \"timestamp\": \"2020-03-18T21:28:19.024Z\"\n" +
             "}"));
 
         // Distribute app
