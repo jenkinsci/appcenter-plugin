@@ -114,7 +114,7 @@ public final class PrerequisitesTask implements AppCenterTask<UploadRequest>, Ap
     @Nonnull
     private SymbolUploadBeginRequest symbolUploadRequest(@Nonnull String pathToApp, @Nonnull String pathToDebugSymbols) throws IllegalStateException, IOException {
         if (pathToApp.endsWith(".apk")) return androidSymbolsUpload(pathToApp, pathToDebugSymbols);
-        if (pathToApp.endsWith(".ipa") || pathToApp.endsWith(".app.zip") || pathToApp.endsWith(".pkg") || pathToApp.endsWith(".dmg")) return appleSymbolsUpload(pathToApp);
+        if (pathToApp.endsWith(".ipa") || pathToApp.endsWith(".app.zip") || pathToApp.endsWith(".pkg") || pathToApp.endsWith(".dmg")) return appleSymbolsUpload(pathToDebugSymbols);
 
         throw new IllegalStateException("Unable to determine application type and therefore debug symbol type");
     }
@@ -141,8 +141,8 @@ public final class PrerequisitesTask implements AppCenterTask<UploadRequest>, Ap
     }
 
     @Nonnull
-    private SymbolUploadBeginRequest appleSymbolsUpload(@Nonnull String pathToApp) {
-        final File file = new File(filePath.child(pathToApp).getRemote());
+    private SymbolUploadBeginRequest appleSymbolsUpload(@Nonnull String pathToDebugSymbols) {
+        final File file = new File(filePath.child(pathToDebugSymbols).getRemote());
 
         return new SymbolUploadBeginRequest(Apple, null, file.getName(), "", "");
     }

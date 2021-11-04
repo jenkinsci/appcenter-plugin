@@ -43,6 +43,33 @@ public class RemoteFileUtilsTest {
     }
 
     @Test
+    public void should_ReturnDifferentFiles_When_MultipleFileExists() {
+        // Given
+        final String TEST_PATH_2 = TEST_FILE_PATH+"2";
+        final File expected = new File(TEST_FILE_PATH);
+        final File expected2 = new File(TEST_PATH_2);
+        given(filePath.getRemote()).willReturn(TEST_FILE_PATH);
+
+        // When
+        final File remoteFile = remoteFileUtils.getRemoteFile(TEST_FILE_PATH);
+
+        // Then
+        assertThat(remoteFile).isEqualTo(expected);
+
+        // Given
+        given(filePath.getRemote()).willReturn(TEST_PATH_2);
+        // When
+        final File remoteFile2 = remoteFileUtils.getRemoteFile(TEST_PATH_2);
+        // Then
+        assertThat(remoteFile2).isEqualTo(expected2);
+
+        // When
+        final File firstFile = remoteFileUtils.getRemoteFile(TEST_FILE_PATH);
+        // Then
+        assertThat(firstFile).isEqualTo(expected);
+    }
+
+    @Test
     public void should_ReturnFileName_When_FileExists() {
         // Given
         given(filePath.getRemote()).willReturn(TEST_FILE_PATH);

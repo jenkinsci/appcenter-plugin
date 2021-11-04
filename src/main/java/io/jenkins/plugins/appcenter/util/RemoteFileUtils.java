@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.Serializable;
+import java.util.HashMap;
 
 public class RemoteFileUtils implements Serializable {
 
@@ -16,7 +17,7 @@ public class RemoteFileUtils implements Serializable {
     private final FilePath filePath;
 
     @Nullable
-    private File file;
+    private HashMap<String,File> fileCache;
 
     @Inject
     RemoteFileUtils(@Nonnull final FilePath filePath) {
@@ -25,8 +26,13 @@ public class RemoteFileUtils implements Serializable {
 
     @Nonnull
     public File getRemoteFile(@Nonnull String pathToRemoteFile) {
+        if (fileCache == null) {
+            fileCache = new HashMap();
+        }
+        File file = fileCache.get(pathToRemoteFile);
         if (file == null) {
             file = new File(filePath.child(pathToRemoteFile).getRemote());
+            fileCache.put(pathToRemoteFile, file);
         }
 
         return file;
