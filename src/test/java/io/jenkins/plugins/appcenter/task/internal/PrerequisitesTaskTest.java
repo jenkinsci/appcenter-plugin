@@ -184,8 +184,8 @@ public class PrerequisitesTaskTest {
         final FilePath[] releaseNotes = {new FilePath(new File(pathToReleaseNotes))};
         given(mockFilePath.list(anyString())).willReturn(files, debugSymbols, releaseNotes);
         given(mockFilePath.child(anyString())).willReturn(mockFilePath);
-        given(mockFilePath.getRemote()).willReturn(pathToApp);
-        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(Apple, null, "app.ipa", "", "");
+        given(mockFilePath.getRemote()).willReturn(pathToDebugSymbols);
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(Apple, null, "symbols.zip", "", "");
         final UploadRequest expected = fullUploadRequest.newBuilder()
             .setPathToApp(pathToApp)
             .setPathToDebugSymbols(pathToDebugSymbols)
@@ -212,8 +212,8 @@ public class PrerequisitesTaskTest {
         final FilePath[] releaseNotes = {new FilePath(new File(pathToReleaseNotes))};
         given(mockFilePath.list(anyString())).willReturn(files, debugSymbols, releaseNotes);
         given(mockFilePath.child(anyString())).willReturn(mockFilePath);
-        given(mockFilePath.getRemote()).willReturn(pathToApp);
-        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(Apple, null, "app.app.zip", "", "");
+        given(mockFilePath.getRemote()).willReturn(pathToDebugSymbols);
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(Apple, null, "symbols.zip", "", "");
         final UploadRequest expected = fullUploadRequest.newBuilder()
             .setPathToApp(pathToApp)
             .setPathToDebugSymbols(pathToDebugSymbols)
@@ -240,8 +240,8 @@ public class PrerequisitesTaskTest {
         final FilePath[] releaseNotes = {new FilePath(new File(pathToReleaseNotes))};
         given(mockFilePath.list(anyString())).willReturn(files, debugSymbols, releaseNotes);
         given(mockFilePath.child(anyString())).willReturn(mockFilePath);
-        given(mockFilePath.getRemote()).willReturn(pathToApp);
-        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(Apple, null, "app.pkg", "", "");
+        given(mockFilePath.getRemote()).willReturn(pathToDebugSymbols);
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(Apple, null, "symbols.zip", "", "");
         final UploadRequest expected = fullUploadRequest.newBuilder()
             .setPathToApp(pathToApp)
             .setPathToDebugSymbols(pathToDebugSymbols)
@@ -268,8 +268,8 @@ public class PrerequisitesTaskTest {
         final FilePath[] releaseNotes = {new FilePath(new File(pathToReleaseNotes))};
         given(mockFilePath.list(anyString())).willReturn(files, debugSymbols, releaseNotes);
         given(mockFilePath.child(anyString())).willReturn(mockFilePath);
-        given(mockFilePath.getRemote()).willReturn(pathToApp);
-        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(Apple, null, "app.dmg", "", "");
+        given(mockFilePath.getRemote()).willReturn(pathToDebugSymbols);
+        final SymbolUploadBeginRequest symbolUploadBeginRequest = new SymbolUploadBeginRequest(Apple, null, "symbols.zip", "", "");
         final UploadRequest expected = fullUploadRequest.newBuilder()
             .setPathToApp(pathToApp)
             .setPathToDebugSymbols(pathToDebugSymbols)
