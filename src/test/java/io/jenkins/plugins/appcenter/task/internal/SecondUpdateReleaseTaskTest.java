@@ -24,7 +24,7 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UpdateReleaseTaskTest {
+public class SecondUpdateReleaseTaskTest {
 
     @Rule
     public MockWebServer mockWebServer = new MockWebServer();
@@ -44,50 +44,19 @@ public class UpdateReleaseTaskTest {
 
     @Before
     public void setUp() {
-        baseRequest = new UploadRequest.Builder()
-            .setOwnerName("owner-name")
-            .setAppName("app-name")
-            .setPathToApp("path-to-app")
-            .build();
-        given(mockTaskListener.getLogger()).willReturn(mockLogger);
+        baseRequest = new UploadRequest.Builder().setOwnerName("owner-name").setAppName("app-name").setPathToApp("path-to-app").build();
         final AppCenterServiceFactory factory = new AppCenterServiceFactory(Secret.fromString("secret-token"), mockWebServer.url("/").toString(), mockProxyConfig);
         task = new UpdateReleaseTask(mockTaskListener, factory);
     }
-    
-    @Test
-    public void should_ReturnResponse_When_RequestIsSuccessful() throws Exception {
-        // Given
-        final UploadRequest uploadRequest = baseRequest.newBuilder()
-            .setUploadId("upload_id")
-            .build();
-        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{" +
-            "\"id\": \"upload_id\",\n" +
-            "\"upload_status\": \"uploadFinished\"\n" +
-            "}")
-        );
-
-        // When
-        final UploadRequest actual = task.execute(uploadRequest).get();
-
-        // Then
-        assertThat(actual)
-            .isEqualTo(uploadRequest);
-    }
 
     @Test
-    public void should_ReturnException_When_RequestIsUnSuccessful() {
+    public void should_ReturnException_When_UploadIdIsMissing() {
         // Given
-        final UploadRequest uploadRequest = baseRequest.newBuilder()
-            .setUploadId("upload_id")
-            .build();
-        mockWebServer.enqueue(new MockResponse().setResponseCode(400));
-
+        final UploadRequest uploadRequest = baseRequest.newBuilder().build();
         // When
         final ThrowingRunnable throwingRunnable = () -> task.execute(uploadRequest).get();
-
         // Then
-        final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
-        assertThat(exception).hasCauseThat().isInstanceOf(AppCenterException.class);
-        assertThat(exception).hasCauseThat().hasMessageThat().contains("Updating release unsuccessful");
+        final NullPointerException exception = assertThrows(NullPointerException.class, throwingRunnable);
+        assertThat(exception).hasMessageThat().contains("uploadId cannot be null");
     }
 }
