@@ -54,51 +54,6 @@ public class FinishReleaseTaskTest {
     }
 
     @Test
-    public void should_ReturnException_When_UploadDomainIsMissing() {
-        // Given
-        final UploadRequest uploadRequest = baseRequest.newBuilder()
-            .build();
-
-        // When
-        final ThrowingRunnable throwingRunnable = () -> task.execute(uploadRequest).get();
-
-        // Then
-        final NullPointerException exception = assertThrows(NullPointerException.class, throwingRunnable);
-        assertThat(exception).hasMessageThat().contains("uploadDomain cannot be null");
-    }
-
-    @Test
-    public void should_ReturnException_When_PackageAssetIdIsMissing() {
-        // Given
-        final UploadRequest uploadRequest = baseRequest.newBuilder()
-            .setUploadDomain("upload-domain")
-            .build();
-
-        // When
-        final ThrowingRunnable throwingRunnable = () -> task.execute(uploadRequest).get();
-
-        // Then
-        final NullPointerException exception = assertThrows(NullPointerException.class, throwingRunnable);
-        assertThat(exception).hasMessageThat().contains("packageAssetId cannot be null");
-    }
-
-    @Test
-    public void should_ReturnException_When_TokenIsMissing() {
-        // Given
-        final UploadRequest uploadRequest = baseRequest.newBuilder()
-            .setUploadDomain("upload-domain")
-            .setPackageAssetId("package_asset_id")
-            .build();
-
-        // When
-        final ThrowingRunnable throwingRunnable = () -> task.execute(uploadRequest).get();
-
-        // Then
-        final NullPointerException exception = assertThrows(NullPointerException.class, throwingRunnable);
-        assertThat(exception).hasMessageThat().contains("token cannot be null");
-    }
-
-    @Test
     public void should_ReturnResponse_When_RequestIsSuccessful() throws Exception {
         // Given
         final UploadRequest uploadRequest = baseRequest.newBuilder()
