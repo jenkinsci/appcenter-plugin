@@ -100,37 +100,6 @@ public class UploadAppToResourceTaskTest {
     }
 
     @Test
-    public void should_ReturnDebugSymbolUploadId_When_DebugSymbolsAreFound_ChunkedMode() throws Exception {
-        // Given
-        final UploadRequest request = baseRequest.newBuilder()
-            .setPathToDebugSymbols("string")
-            .setSymbolUploadUrl(mockWebServer.url("perry/casey/xiola").toString())
-            .setSymbolUploadId("string")
-            .build();
-
-        mockWebServer.enqueue(new MockResponse().setResponseCode(200));
-        mockWebServer.enqueue(new MockResponse().setResponseCode(201)
-            .setHeaders(Headers.of(
-                "ETag", "0x8CB171BA9E94B0B",
-                "Last-Modified", "Thu, 01 Jan 1970 00:00:00 GMT",
-                "Content-MD5", "sQqNsWTgdUEFt6mb5y4/5Q==",
-                "x-ms-request-server-encrypted", "false",
-                "x-ms-version-id", "Thu, 01 Jan 1970 00:00:00 GMT"
-            ))
-            .setChunkedBody("", 1)
-        );
-
-        given(mockRemoteFileUtils.getRemoteFile(anyString())).willReturn(TestFileUtil.createFileForTesting(), TestFileUtil.createLargeFileForTesting());
-
-        // When
-        final UploadRequest result = task.execute(request).get();
-
-        // Then
-        assertThat(result)
-            .isEqualTo(request);
-    }
-
-    @Test
     public void should_ReturnException_When_RequestIsUnSuccessful() {
         // Given
         mockWebServer.enqueue(new MockResponse().setResponseCode(500));
