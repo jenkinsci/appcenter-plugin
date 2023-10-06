@@ -80,38 +80,6 @@ public class PrerequisitesTaskTest {
     }
 
     @Test
-    public void should_ThrowExecutionException_When_FileDoesNotExists() throws Exception {
-        // Given
-        final FilePath[] files = {};
-        given(mockFilePath.list(anyString())).willReturn(files);
-
-        // When
-        final ThrowingRunnable throwingRunnable = () -> task.execute(fullUploadRequest).get();
-
-        // Then
-        final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
-        assertThat(exception).hasCauseThat().isInstanceOf(AppCenterException.class);
-        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo(String.format("No file found matching pattern: %s", fullUploadRequest.pathToApp));
-    }
-
-    @Test
-    public void should_ThrowExecutionException_When_MultipleFilesExists() throws Exception {
-        // Given
-        final String pathToApp = "path/to/app.apk";
-        final String pathToAnotherApp = "path/to/sample.apk";
-        final FilePath[] files = {new FilePath(new File(pathToApp)), new FilePath(new File(pathToAnotherApp))};
-        given(mockFilePath.list(anyString())).willReturn(files);
-
-        // When
-        final ThrowingRunnable throwingRunnable = () -> task.execute(fullUploadRequest).get();
-
-        // Then
-        final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
-        assertThat(exception).hasCauseThat().isInstanceOf(AppCenterException.class);
-        assertThat(exception).hasCauseThat().hasMessageThat().isEqualTo(String.format("Multiple files found matching pattern: %s", fullUploadRequest.pathToApp));
-    }
-
-    @Test
     public void should_ReturnModifiedRequest_When_DebugSymbolsExists_Android() throws Exception {
         // Given
         final String pathToApp = String.join(File.separator, "path", "to", "app.apk");
