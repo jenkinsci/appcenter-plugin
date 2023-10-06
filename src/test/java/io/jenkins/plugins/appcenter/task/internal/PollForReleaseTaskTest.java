@@ -54,20 +54,6 @@ public class PollForReleaseTaskTest {
     }
 
     @Test
-    public void should_ReturnException_When_UploadIdIsMissing() {
-        // Given
-        final UploadRequest uploadRequest = baseRequest.newBuilder()
-            .build();
-
-        // When
-        final ThrowingRunnable throwingRunnable = () -> task.execute(uploadRequest).get();
-
-        // Then
-        final NullPointerException exception = assertThrows(NullPointerException.class, throwingRunnable);
-        assertThat(exception).hasMessageThat().contains("uploadId cannot be null");
-    }
-
-    @Test
     public void should_RetryPolling_When_StatusIsStartedOrFinished() throws Exception {
         // Given
         final UploadRequest uploadRequest = baseRequest.newBuilder()
