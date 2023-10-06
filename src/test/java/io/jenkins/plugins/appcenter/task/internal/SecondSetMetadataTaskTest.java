@@ -25,7 +25,7 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SetMetadataTaskTest {
+public class SecondSetMetadataTaskTest {
 
     @Rule
     public MockWebServer mockWebServer = new MockWebServer();
@@ -48,53 +48,41 @@ public class SetMetadataTaskTest {
 
     @Before
     public void setUp() {
-        baseRequest = new UploadRequest.Builder()
-            .setOwnerName("owner-name")
-            .setAppName("app-name")
-            .setPathToApp("path-to-app")
-            .build();
-        given(mockTaskListener.getLogger()).willReturn(mockLogger);
+        baseRequest = new UploadRequest.Builder().setOwnerName("owner-name").setAppName("app-name").setPathToApp("path-to-app").build();
         final AppCenterServiceFactory factory = new AppCenterServiceFactory(Secret.fromString("secret-token"), mockWebServer.url("/").toString(), mockProxyConfig);
         task = new SetMetadataTask(mockTaskListener, factory, remoteFileUtils);
     }
 
     @Test
-    public void should_ReturnResponse_When_RequestIsSuccessful() throws Exception {
+    public void should_ReturnException_When_UploadDomainIsMissing() {
         // Given
-        final UploadRequest uploadRequest = baseRequest.newBuilder()
-            .setUploadDomain("upload-domain")
-            .setPackageAssetId("package_asset_id")
-            .setToken("token")
-            .build();
-        final UploadRequest expected = uploadRequest.newBuilder().setChunkSize(4098).build();
-        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\n" +
-            " \"chunk_size\": 4098\n" +
-            "}"));
-
+        final UploadRequest uploadRequest = baseRequest.newBuilder().build();
         // When
-        final UploadRequest actual = task.execute(uploadRequest).get();
-
+        final ThrowingRunnable throwingRunnable = () -> task.execute(uploadRequest).get();
         // Then
-        assertThat(actual)
-            .isEqualTo(expected);
+        final NullPointerException exception = assertThrows(NullPointerException.class, throwingRunnable);
+        assertThat(exception).hasMessageThat().contains("uploadDomain cannot be null");
     }
 
     @Test
-    public void should_ReturnException_When_RequestIsUnSuccessful() {
+    public void should_ReturnException_When_PackageAssetIdIsMissing() {
         // Given
-        final UploadRequest uploadRequest = baseRequest.newBuilder()
-            .setUploadDomain("upload-domain")
-            .setPackageAssetId("package_asset_id")
-            .setToken("token")
-            .build();
-        mockWebServer.enqueue(new MockResponse().setResponseCode(400));
-
+        final UploadRequest uploadRequest = baseRequest.newBuilder().setUploadDomain("upload-domain").build();
         // When
         final ThrowingRunnable throwingRunnable = () -> task.execute(uploadRequest).get();
-
         // Then
-        final ExecutionException exception = assertThrows(ExecutionException.class, throwingRunnable);
-        assertThat(exception).hasCauseThat().isInstanceOf(AppCenterException.class);
-        assertThat(exception).hasCauseThat().hasMessageThat().contains("Setting metadata unsuccessful");
+        final NullPointerException exception = assertThrows(NullPointerException.class, throwingRunnable);
+        assertThat(exception).hasMessageThat().contains("packageAssetId cannot be null");
+    }
+
+    @Test
+    public void should_ReturnException_When_TokenIsMissing() {
+        // Given
+        final UploadRequest uploadRequest = baseRequest.newBuilder().setUploadDomain("upload-domain").setPackageAssetId("package_asset_id").build();
+        // When
+        final ThrowingRunnable throwingRunnable = () -> task.execute(uploadRequest).get();
+        // Then
+        final NullPointerException exception = assertThrows(NullPointerException.class, throwingRunnable);
+        assertThat(exception).hasMessageThat().contains("token cannot be null");
     }
 }
